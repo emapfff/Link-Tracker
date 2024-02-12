@@ -1,9 +1,9 @@
 app:
-  telegram-token: unset
+  telegram-token: 6457945538:AAF7C-GkdB1U0iuSWjZggR8djLGIpL81XRA
 
 spring:
   application:
-    name: bot
+    name: worker
   jackson:
     time-zone: UTC
 

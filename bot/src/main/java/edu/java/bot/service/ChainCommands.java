@@ -11,10 +11,10 @@ public class ChainCommands {
     }
 
     private void buildChain(){
-        chain = new startCommand(new helpCommand(null));
+        chain = new startCommand(new helpCommand(new trackCommand(new listCommand(new untrackCommand(null)))));
     }
 
-    public SendMessage handleCommand (Update update){
-        return chain.handleCommand(update);
+    public SendMessage handleCommand (Update update, Bot telegramBot){
+        return chain.handleCommand(update, telegramBot);
     }
 }

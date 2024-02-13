@@ -7,7 +7,8 @@ public class helpCommand extends Command{
     public helpCommand(Command nextCommand) {
         super(nextCommand);
     }
-    public SendMessage handleCommand(Update update){
+    @Override
+    public SendMessage handleCommand(Update update, Bot telegramBot){
         if (super.getCommand(update).equals("/help")){
             return new SendMessage(super.getChatId(update),
                 "/start -- зарегистрировать пользователя\n" +
@@ -15,8 +16,7 @@ public class helpCommand extends Command{
                 "/track -- начать отслеживание ссылки\n" +
                 "/untrack -- прекратить отслеживание ссылки\n" +
                 "/list -- показать список отслеживаемых ссылок)\n");
-        } else {
-            return super.handleCommand(update);
         }
+        return super.handleCommand(update, telegramBot);
     }
 }

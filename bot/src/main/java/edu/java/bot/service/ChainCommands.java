@@ -6,15 +6,15 @@ import com.pengrad.telegrambot.request.SendMessage;
 public class ChainCommands {
     Command chain;
 
-    public ChainCommands(){
+    public ChainCommands() {
         buildChain();
     }
 
-    private void buildChain(){
-        chain = new startCommand(new helpCommand(new trackCommand(new listCommand(new untrackCommand(null)))));
+    private void buildChain() {
+        chain = new StartCommand(new HelpCommand(new TrackCommand(new ListCommand(new UntrackCommand(null)))));
     }
 
-    public SendMessage handleCommand (Update update, Bot telegramBot){
+    public SendMessage handleCommand(Update update, Bot telegramBot) {
         return chain.handleCommand(update, telegramBot);
     }
 }

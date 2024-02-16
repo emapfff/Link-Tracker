@@ -39,7 +39,7 @@ class HelpCommandTest {
                     /help -- вывести окно с командами
                     /track -- начать отслеживание ссылки
                     /untrack -- прекратить отслеживание ссылки
-                    /list -- показать список отслеживаемых ссылок)
+                    /list -- показать список отслеживаемых ссылок
                     """);
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }

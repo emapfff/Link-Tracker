@@ -29,8 +29,8 @@ public class Bot {
         BotCommand listCommand = new BotCommand("/list", "показать список отслеживаемых ссылок");
         SetMyCommands allCommands = new SetMyCommands(startCommand, helpCommand,
             trackCommand, untrackCommand, listCommand);
-        telegramBot.execute(allCommands);
         this.telegramBot = telegramBot;
+        this.telegramBot.execute(allCommands);
     }
 
     public void processUpdate() {

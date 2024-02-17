@@ -6,19 +6,18 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class CommandTest {
     private Command command;
-    private Bot bot;
-
     @Mock
-    TelegramBot telegramBot;
+    private Bot bot;
 
     @BeforeEach
     public void setUp(){
-        bot = new Bot(telegramBot);
+        MockitoAnnotations.openMocks(this);
         command = new Command(null){
             @Override
             protected String getCommand(Update update){

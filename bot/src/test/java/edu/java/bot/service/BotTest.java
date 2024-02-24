@@ -79,6 +79,7 @@ public class BotTest {
         assertTrue(containsURL1);
         assertFalse(containsURL2);
     }
+
     @Test
     public void testExecuteCommand() {
         Long userId = 123456789L;

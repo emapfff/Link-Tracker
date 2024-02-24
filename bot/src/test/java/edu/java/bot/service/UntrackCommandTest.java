@@ -58,7 +58,7 @@ class UntrackCommandTest {
     }
 
     @Test
-    void testHandleUntrackCommandEmptyList(){
+    void testHandleUntrackCommandEmptyList() {
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/untrack");
         when(message.chat()).thenReturn(chat);
@@ -69,7 +69,8 @@ class UntrackCommandTest {
         SendMessage result = untrackCommand.handleCommand(update, bot);
         SendMessage expectedMessage = new SendMessage(
             chat.id(),
-            "Список ссылок пуст. Для удаления ссылки список не должен быть пустым.");
+            "Список ссылок пуст. Для удаления ссылки список не должен быть пустым."
+        );
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
 
@@ -98,7 +99,7 @@ class UntrackCommandTest {
     }
 
     @Test
-    void testHandleDeleteNotURL(){
+    void testHandleDeleteNotURL() {
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
@@ -106,7 +107,8 @@ class UntrackCommandTest {
         SendMessage result = untrackCommand.handleDeleteUrl(update, urlStr, bot);
         SendMessage expectedMessage = new SendMessage(
             chat.id(),
-            "Неверна указана ссылка. Для отправки ссылки введите команду /track");
+            "Неверна указана ссылка. Для отправки ссылки введите команду /track"
+        );
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
 }

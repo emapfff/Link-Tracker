@@ -44,7 +44,7 @@ class TrackCommandTest {
     }
 
     @Test
-    void testHandleNoTrackCommand(){
+    void testHandleNoTrackCommand() {
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/no track");
         when(message.chat()).thenReturn(chat);
@@ -56,7 +56,7 @@ class TrackCommandTest {
     }
 
     @Test
-    void testHandleCorrectURL(){
+    void testHandleCorrectURL() {
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
@@ -65,13 +65,14 @@ class TrackCommandTest {
         SendMessage result = trackCommand.handleAddUrl(update, url, bot);
         SendMessage unexpectedMessage = new SendMessage(
             update.message().chat().id(),
-            "Неверна указана ссылка. Для отправки ссылки введите команду /track");
+            "Неверна указана ссылка. Для отправки ссылки введите команду /track"
+        );
         assertNotEquals(unexpectedMessage.getParameters(), result.getParameters());
 
     }
 
     @Test
-    void testHandleIncorrectURL(){
+    void testHandleIncorrectURL() {
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
@@ -80,7 +81,8 @@ class TrackCommandTest {
         SendMessage result = trackCommand.handleAddUrl(update, url, bot);
         SendMessage expectedMessage = new SendMessage(
             update.message().chat().id(),
-            "Неверна указана ссылка. Для отправки ссылки введите команду /track");
+            "Неверна указана ссылка. Для отправки ссылки введите команду /track"
+        );
         assertEquals(expectedMessage.getParameters(), result.getParameters());
     }
 

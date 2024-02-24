@@ -16,12 +16,12 @@ import lombok.Getter;
 
 public class Bot {
     @Getter private final TelegramBot telegramBot;
-    private static ChainCommands chainCommands;
+    private final ChainCommands chainCommands;
     public Map<Long, List<URL>> references;
 
     public Bot(TelegramBot telegramBot) {
-        chainCommands = new ChainCommands();
-        references = new HashMap<>();
+        this.chainCommands = new ChainCommands();
+        this.references = new HashMap<>();
         BotCommand startCommand = new BotCommand("/start", "зарегистрировать пользователя");
         BotCommand helpCommand = new BotCommand("/help", "вывести окно с командами");
         BotCommand trackCommand = new BotCommand("/track", "начать отслеживание ссылки");

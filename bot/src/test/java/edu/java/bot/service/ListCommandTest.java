@@ -22,6 +22,7 @@ class ListCommandTest {
 
     @InjectMocks
     private ListCommand listCommand;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -57,7 +58,7 @@ class ListCommandTest {
     }
 
     @Test
-    void testHandleEmptyList(){
+    void testHandleEmptyList() {
         Update update = mock(Update.class);
         Message message = mock(Message.class);
         Chat chat = mock(Chat.class);
@@ -75,7 +76,7 @@ class ListCommandTest {
     }
 
     @Test
-    void testHandleNotEmptyList(){
+    void testHandleNotEmptyList() {
         Update update = mock(Update.class);
         Message message = mock(Message.class);
         Chat chat = mock(Chat.class);

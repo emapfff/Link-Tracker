@@ -11,7 +11,12 @@ public class ChainCommands {
     }
 
     private void buildChain() {
-        chain = new StartCommand(new HelpCommand(new TrackCommand(new ListCommand(new UntrackCommand(null)))));
+        this.chain = new StartCommand(
+            new HelpCommand(
+                new TrackCommand(
+                    new ListCommand(
+                        new UntrackCommand(
+                            null)))));
     }
 
     public SendMessage handleCommand(Update update, Bot telegramBot) {

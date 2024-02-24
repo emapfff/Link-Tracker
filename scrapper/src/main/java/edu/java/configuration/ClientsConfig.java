@@ -10,6 +10,6 @@ import org.springframework.validation.annotation.Validated;
 public record ClientsConfig(
     @NotEmpty
     @Bean
-    String github_base_url,
-    String stackoverflow_base_url
+    String githubBaseUrl,
+    String stackoverflowBaseUrl
 ) {}

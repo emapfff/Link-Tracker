@@ -6,12 +6,13 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record QuestionResponse (
+public record QuestionResponse(
     List<ItemResponse> items
 ) {
-    public record ItemResponse(@JsonProperty("is_answered") boolean is_answered,
-                        @JsonProperty("answer_count") int answer_count,
-                        @JsonProperty("question_id") long question_id,
-                        @JsonProperty("last_activity_date") OffsetDateTime last_activity_date
-                        ){}
+    public record ItemResponse(@JsonProperty("is_answered") boolean isAnswered,
+                               @JsonProperty("answer_count") int answerCount,
+                               @JsonProperty("question_id") long questionId,
+                               @JsonProperty("last_activity_date") OffsetDateTime lastActivity
+    ) {
+    }
 }

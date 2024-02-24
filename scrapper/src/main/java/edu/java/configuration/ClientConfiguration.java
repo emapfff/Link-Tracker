@@ -14,13 +14,14 @@ public  class ClientConfiguration {
     public ClientConfiguration(ClientsConfig clientsConfig) {
         this.config = clientsConfig;
     }
+
     @Bean
     public GitHubClient gitHubClient() {
-        return new GitHubClient(config.github_base_url());
+        return new GitHubClient(config.githubBaseUrl());
     }
 
     @Bean
     public StackOverflowClient stackOverflowClient() {
-        return new StackOverflowClient(config.stackoverflow_base_url());
+        return new StackOverflowClient(config.stackoverflowBaseUrl());
     }
 }

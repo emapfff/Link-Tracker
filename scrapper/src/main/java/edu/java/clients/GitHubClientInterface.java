@@ -1,7 +1,7 @@
 package edu.java.clients;
 
-import edu.java.responses.RepositoryResponse;
 import edu.java.responses.GitHubUserResponse;
+import edu.java.responses.RepositoryResponse;
 
 public interface GitHubClientInterface {
     GitHubUserResponse fetchUser(String user);

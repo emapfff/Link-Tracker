@@ -1,7 +1,7 @@
 package edu.java.clients;
 
-import edu.java.responses.RepositoryResponse;
 import edu.java.responses.GitHubUserResponse;
+import edu.java.responses.RepositoryResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -11,7 +11,6 @@ public class GitHubClient implements GitHubClientInterface {
 
     public GitHubClient(String baseUrl) {
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
-        System.out.println(baseUrl);
     }
 
     @Override
@@ -20,9 +19,10 @@ public class GitHubClient implements GitHubClientInterface {
     }
 
     @Override
-    public RepositoryResponse fetchRepository(String user, String repo){
-        return this.webClient.get().uri("/repos/{user}/{repo}", user, repo).retrieve().
-            bodyToMono(RepositoryResponse.class).block();
+    public RepositoryResponse fetchRepository(String user, String repo) {
+        return this.webClient.get().uri("/repos/{user}/{repo}", user, repo)
+            .retrieve()
+            .bodyToMono(RepositoryResponse.class).block();
     }
 
 }

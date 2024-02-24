@@ -10,13 +10,12 @@ public class StackOverflowClient implements StackOverflowInterface {
 
     public StackOverflowClient(String baseUrl) {
         this.webClient = WebClient.builder().baseUrl(baseUrl).build();
-        System.out.println(baseUrl);
     }
 
     @Override
     public QuestionResponse fetchQuestion(long id) {
-        return this.webClient.get().uri("/questions/{id}/?order=desc&sort=activity&site=stackoverflow" , id)
-                .retrieve().bodyToMono(QuestionResponse.class).block();
+        return this.webClient.get().uri("/questions/{id}?site=stackoverflow", id)
+            .retrieve().bodyToMono(QuestionResponse.class).block();
     }
 
 }

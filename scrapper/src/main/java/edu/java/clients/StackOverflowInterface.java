@@ -4,5 +4,4 @@ import edu.java.responses.QuestionResponse;
 
 public interface StackOverflowInterface {
     QuestionResponse fetchQuestion(long id);
-
 }

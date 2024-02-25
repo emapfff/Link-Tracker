@@ -38,7 +38,9 @@ class ListCommandTest {
         when(message.text()).thenReturn("/list");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage unexpectedMessage = new SendMessage(chat.id(), "Неверная команда!");
         assertNotEquals(unexpectedMessage, result);
     }
@@ -52,7 +54,9 @@ class ListCommandTest {
         when(message.text()).thenReturn("/no list");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(chat.id(), "Неверная команда!");
         assertNotEquals(expectedMessage, result);
     }
@@ -70,7 +74,9 @@ class ListCommandTest {
         doReturn(urlList)
             .when(bot)
             .getListOfURLS(anyLong());
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(chat.id(), "Список ссылок пуст.");
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
@@ -94,7 +100,9 @@ class ListCommandTest {
         doReturn(urlList)
             .when(bot)
             .getListOfURLS(anyLong());
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage unexpectedMessage = new SendMessage(chat.id(), "Список ссылок пуст.");
         assertNotEquals(result.getParameters(), unexpectedMessage.getParameters());
     }

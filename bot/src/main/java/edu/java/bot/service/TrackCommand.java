@@ -19,6 +19,13 @@ public class TrackCommand extends Command {
         return super.handleCommand(update, telegramBot);
     }
 
+    /**
+     * here produce url link processing
+     * @param update last message from user
+     * @param urlStr message as a link from user
+     * @param bot current bot
+     * @return message with some text, about processing url link
+     */
     SendMessage handleAddUrl(Update update, String urlStr, Bot bot) {
         try {
             URL url = new URL(urlStr);

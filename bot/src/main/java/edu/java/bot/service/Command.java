@@ -20,6 +20,13 @@ public abstract class Command {
         return new SendMessage(getChatId(update), "Неверная команда!");
     }
 
+    /**
+     * this method needs for get one message from user
+     * it works while bot do not get some messages from user
+     * @param update last message from user
+     * @param telegramBot current bot
+     * @return getting message from user
+     */
     protected String waitingNewMessage(Update update, Bot telegramBot) {
         List<Update> lastUpdate = new ArrayList<>();
         GetUpdates getUpdate;

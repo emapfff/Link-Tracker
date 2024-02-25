@@ -13,7 +13,6 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class UntrackCommandTest {
@@ -40,7 +39,9 @@ class UntrackCommandTest {
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doReturn("someUrl").when(untrackCommand).waitingNewMessage(any(), any());
+
         SendMessage result = untrackCommand.handleCommand(update, bot);
+
         SendMessage unexpectedMessage = new SendMessage(chat.id(), "Неверная команда!");
         assertNotEquals(unexpectedMessage.getParameters(), result.getParameters());
     }
@@ -52,7 +53,9 @@ class UntrackCommandTest {
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doReturn("someUrl").when(untrackCommand).waitingNewMessage(any(), any());
+
         SendMessage result = untrackCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(chat.id(), "Неверная команда!");
         assertEquals(expectedMessage.getParameters(), result.getParameters());
     }
@@ -66,7 +69,9 @@ class UntrackCommandTest {
         doReturn(Collections.emptyList())
             .when(bot)
             .getListOfURLS(anyLong());
+
         SendMessage result = untrackCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(
             chat.id(),
             "Список ссылок пуст. Для удаления ссылки список не должен быть пустым."
@@ -81,7 +86,9 @@ class UntrackCommandTest {
         when(chat.id()).thenReturn(123456789L);
         String urlStr = "http://example.com";
         doReturn(true).when(bot).containsURL(anyLong(), any());
+
         SendMessage result = untrackCommand.handleDeleteUrl(update, urlStr, bot);
+
         SendMessage expectedMessage = new SendMessage(chat.id(), "Ссылка была удалена из списка.");
         assertEquals(expectedMessage.getParameters(), result.getParameters());
     }
@@ -93,7 +100,9 @@ class UntrackCommandTest {
         when(chat.id()).thenReturn(123456789L);
         String urlStr = "http://example.com";
         doReturn(false).when(bot).containsURL(anyLong(), any());
+
         SendMessage result = untrackCommand.handleDeleteUrl(update, urlStr, bot);
+
         SendMessage expectedMessage = new SendMessage(chat.id(), "Данной ссылки нет в списке.");
         assertEquals(expectedMessage.getParameters(), result.getParameters());
     }
@@ -104,7 +113,9 @@ class UntrackCommandTest {
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         String urlStr = "some url";
+
         SendMessage result = untrackCommand.handleDeleteUrl(update, urlStr, bot);
+
         SendMessage expectedMessage = new SendMessage(
             chat.id(),
             "Неверна указана ссылка. Для отправки ссылки введите команду /track"

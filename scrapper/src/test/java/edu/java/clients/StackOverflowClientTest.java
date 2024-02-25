@@ -43,6 +43,7 @@ class StackOverflowClientTest {
                         "\"last_activity_date\" : \"2024-02-09T17:47:19Z\"}]}"
                     )));
         StackOverflowClient stackOverflowClient = new StackOverflowClient("http://localhost:" + wireMockServer.port());
+
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123);
         QuestionResponse.ItemResponse itemResponse = questionResponse.items().getFirst();
 

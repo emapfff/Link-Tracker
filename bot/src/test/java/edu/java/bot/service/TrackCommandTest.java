@@ -38,7 +38,9 @@ class TrackCommandTest {
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doReturn("someUrl").when(trackCommand).waitingNewMessage(any(), any());
+
         SendMessage result = trackCommand.handleCommand(update, bot);
+
         verify(bot).executeCommand(any());
         assertNotNull(result);
     }
@@ -50,7 +52,9 @@ class TrackCommandTest {
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doReturn("someUrl").when(trackCommand).waitingNewMessage(any(), any());
+
         SendMessage result = trackCommand.handleCommand(update, bot);
+
         SendMessage expected = new SendMessage(update.message().chat().id(), "Неверная команда!");
         assertEquals(expected.getParameters(), result.getParameters());
     }
@@ -60,9 +64,10 @@ class TrackCommandTest {
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-
         String url = "http://example.com";
+
         SendMessage result = trackCommand.handleAddUrl(update, url, bot);
+
         SendMessage unexpectedMessage = new SendMessage(
             update.message().chat().id(),
             "Неверна указана ссылка. Для отправки ссылки введите команду /track"
@@ -76,9 +81,10 @@ class TrackCommandTest {
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-
         String url = "some";
+
         SendMessage result = trackCommand.handleAddUrl(update, url, bot);
+
         SendMessage expectedMessage = new SendMessage(
             update.message().chat().id(),
             "Неверна указана ссылка. Для отправки ссылки введите команду /track"
@@ -91,10 +97,11 @@ class TrackCommandTest {
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-
         String urlStr = "http://example.com";
         doReturn(true).when(bot).containsURL(any(), any());
+
         SendMessage result = trackCommand.handleAddUrl(update, urlStr, bot);
+
         SendMessage expected = new SendMessage(chat.id(), "Ссылка уже находится в списке.");
         assertEquals(result.getParameters(), expected.getParameters());
     }
@@ -104,10 +111,11 @@ class TrackCommandTest {
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-
         String urlStr = "http://example.com";
         doReturn(false).when(bot).containsURL(any(), any());
+
         SendMessage result = trackCommand.handleAddUrl(update, urlStr, bot);
+
         SendMessage expected = new SendMessage(chat.id(), "Ссылка добавлена.");
         assertEquals(result.getParameters(), expected.getParameters());
     }

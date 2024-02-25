@@ -28,6 +28,13 @@ public class UntrackCommand extends Command {
         return super.handleCommand(update, telegramBot);
     }
 
+    /**
+     * method needs for deleting links from map, after user used /untrack command
+     * @param update get last message
+     * @param urlStr link, which needs delete from map
+     * @param bot current bot
+     * @return message about deleting link
+     */
     SendMessage handleDeleteUrl(Update update, String urlStr, Bot bot) {
         try {
             URL url = new URL(urlStr);

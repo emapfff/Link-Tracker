@@ -36,11 +36,12 @@ class StartCommandTest {
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doNothing().when(bot).addUser(anyLong());
+
         SendMessage result = startCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage =
             new SendMessage(update.message().chat().id(), "Добро пожаловать в Worker бота, null null!");
         verify(bot).addUser(123456789L);
-
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
 
@@ -51,9 +52,10 @@ class StartCommandTest {
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doNothing().when(bot).addUser(anyLong());
-        SendMessage result = startCommand.handleCommand(update, bot);
-        SendMessage expectedMessage = new SendMessage(update.message().chat().id(), "Неверная команда!");
 
+        SendMessage result = startCommand.handleCommand(update, bot);
+
+        SendMessage expectedMessage = new SendMessage(update.message().chat().id(), "Неверная команда!");
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
 

@@ -6,11 +6,8 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import edu.java.responses.GitHubUserResponse;
 import edu.java.responses.RepositoryResponse;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaTypeEditor;
-import java.time.OffsetDateTime;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -43,6 +40,7 @@ class GitHubClientTest {
                         "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
             ));
         GitHubClient gitHubClient = new GitHubClient("http://localhost:" + wireMockServer.port());
+
         GitHubUserResponse gitHubUserResponse = gitHubClient.fetchUser("user");
 
         assertEquals(gitHubUserResponse.userName(), "Emil");
@@ -61,6 +59,7 @@ class GitHubClientTest {
                         "\"owner:login\" : \"user\"}")
             ));
         GitHubClient gitHubClient = new GitHubClient("http://localhost:" + wireMockServer.port());
+
         RepositoryResponse repositoryResponse = gitHubClient.fetchRepository("owner", "repo");
 
         assertEquals(repositoryResponse.repoName(), "repo_name");

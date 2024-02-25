@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 
+
 public class Bot {
     @Getter private final TelegramBot telegramBot;
     private final ChainCommands chainCommands;
@@ -33,6 +34,9 @@ public class Bot {
         this.telegramBot.execute(allCommands);
     }
 
+    /**
+     * processUpdate method needs for get message from user and do it every time while bot is working
+     */
     public void processUpdate() {
         int offset = 0;
         while (true) {

@@ -1,6 +1,5 @@
 package edu.java.bot.service;
 
-import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +43,9 @@ public class CommandTest {
     @Test
     public void testHandleCommand() {
         Update update = mock(Update.class);
+
         SendMessage result = command.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(command.getChatId(update), "Неверная команда!");
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }

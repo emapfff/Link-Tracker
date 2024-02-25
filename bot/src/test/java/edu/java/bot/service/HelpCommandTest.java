@@ -34,7 +34,9 @@ class HelpCommandTest {
         when(message.text()).thenReturn("/help");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
+
         SendMessage result = helpCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(update.message().chat().id(), """
             /start -- зарегистрировать пользователя
             /help -- вывести окно с командами
@@ -51,7 +53,9 @@ class HelpCommandTest {
         when(message.text()).thenReturn("/no help");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
+
         SendMessage result = helpCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(update.message().chat().id(), "Неверная команда!");
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }

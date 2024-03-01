@@ -8,11 +8,12 @@ import edu.java.responses.RepositoryResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GitHubClientTest {
 
@@ -29,6 +30,7 @@ class GitHubClientTest {
     public static void stop(){
         wireMockServer.stop();
     }
+
     @Test
     void fetchUserTest() {
         stubFor(get(urlEqualTo("/users/user"))
@@ -39,10 +41,11 @@ class GitHubClientTest {
                     .withBody("{\"login\" : \"Emil\", " +
                         "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
             ));
-        GitHubClient gitHubClient = new GitHubClient("http://localhost:" + wireMockServer.port());
+        GitHubClient gitHubClient = new GitHubClient(WebClient.create("http://localhost:" + wireMockServer.port()));
 
-        GitHubUserResponse gitHubUserResponse = gitHubClient.fetchUser("user");
+        GitHubUserResponse gitHubUserResponse = gitHubClient.fetchUser("user").block();
 
+        assert gitHubUserResponse != null;
         assertEquals(gitHubUserResponse.userName(), "Emil");
         assertEquals(gitHubUserResponse.lastUpdate().toString(), "2024-02-09T17:47:19Z");
     }
@@ -58,10 +61,11 @@ class GitHubClientTest {
                         "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
                         "\"owner:login\" : \"user\"}")
             ));
-        GitHubClient gitHubClient = new GitHubClient("http://localhost:" + wireMockServer.port());
+        GitHubClient gitHubClient = new GitHubClient(WebClient.create("http://localhost:" + wireMockServer.port()));
 
-        RepositoryResponse repositoryResponse = gitHubClient.fetchRepository("owner", "repo");
+        RepositoryResponse repositoryResponse = gitHubClient.fetchRepository("owner", "repo").block();
 
+        assert repositoryResponse != null;
         assertEquals(repositoryResponse.repoName(), "repo_name");
         assertEquals(repositoryResponse.lastUpdate().toString(), "2024-02-09T17:47:19Z");
     }

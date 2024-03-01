@@ -1,27 +1,27 @@
 package edu.java.configuration;
 
-import edu.java.clients.GitHubClient;
-import edu.java.clients.StackOverflowClient;
+import edu.java.configuration.ClientsConfig;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @EnableConfigurationProperties(ClientsConfig.class)
-public  class ClientConfiguration {
-    private final ClientsConfig config;
-
-    public ClientConfiguration(ClientsConfig clientsConfig) {
-        this.config = clientsConfig;
+public class ClientConfiguration {
+    @Bean
+    public WebClient githubClient(ClientsConfig clientsConfig) {
+        return WebClient
+            .builder()
+            .baseUrl(clientsConfig.githubBaseUrl())
+            .build();
     }
 
     @Bean
-    public GitHubClient gitHubClient() {
-        return new GitHubClient(config.githubBaseUrl());
-    }
-
-    @Bean
-    public StackOverflowClient stackOverflowClient() {
-        return new StackOverflowClient(config.stackoverflowBaseUrl());
+    public WebClient stackOverflowClient(ClientsConfig clientsConfig) {
+        return WebClient
+            .builder()
+            .baseUrl(clientsConfig.stackoverflowBaseUrl())
+            .build();
     }
 }

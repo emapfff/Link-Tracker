@@ -22,7 +22,7 @@ public class UntrackCommand extends Command {
                     "Отправьте ссылку для прекращения отслеживания."
                 ));
             }
-            String urlStr = waitingNewMessage(update, telegramBot);
+            String urlStr = telegramBot.waitingNewMessage(update);
             return handleDeleteUrl(update, urlStr, telegramBot);
         }
         return super.handleCommand(update, telegramBot);

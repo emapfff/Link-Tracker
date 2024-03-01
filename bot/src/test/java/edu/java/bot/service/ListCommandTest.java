@@ -23,6 +23,11 @@ class ListCommandTest {
     @InjectMocks
     private ListCommand listCommand;
 
+
+    Update update = mock(Update.class);
+    Message message = mock(Message.class);
+    Chat chat = mock(Chat.class);
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -31,9 +36,6 @@ class ListCommandTest {
 
     @Test
     void testHandleListCommand() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/list");
         when(message.chat()).thenReturn(chat);
@@ -47,9 +49,6 @@ class ListCommandTest {
 
     @Test
     void testHandleNotLitCommand() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/no list");
         when(message.chat()).thenReturn(chat);
@@ -63,9 +62,6 @@ class ListCommandTest {
 
     @Test
     void testHandleEmptyList() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/list");
         when(message.chat()).thenReturn(chat);
@@ -83,9 +79,6 @@ class ListCommandTest {
 
     @Test
     void testHandleNotEmptyList() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/list");
         when(message.chat()).thenReturn(chat);

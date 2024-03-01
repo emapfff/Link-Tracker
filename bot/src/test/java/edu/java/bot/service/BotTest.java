@@ -2,13 +2,14 @@ package edu.java.bot.service;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.configuration.ApplicationConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -16,17 +17,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
+@EnableConfigurationProperties(ApplicationConfig.class)
 public class BotTest {
-
-    @InjectMocks
     private Bot bot;
 
     @Mock
-    private TelegramBot telegramBot;
+    private ApplicationConfig applicationConfig;
 
     @BeforeEach
-    public void setUp() {
-        bot = new Bot(telegramBot);
+    public void setUp(){
+        bot = new Bot(applicationConfig);
     }
 
     @Test
@@ -88,10 +88,12 @@ public class BotTest {
     @Test
     public void testExecuteCommand() {
         Long userId = 123456789L;
+        TelegramBot telegramBotMock = Mockito.mock(TelegramBot.class);
+        bot.setTelegramBot(telegramBotMock);
         SendMessage sendMessage = new SendMessage(userId, "Hello");
 
         bot.executeCommand(sendMessage);
 
-        Mockito.verify(telegramBot).execute(sendMessage);
+        Mockito.verify(bot.getTelegramBot()).execute(sendMessage);
     }
 }

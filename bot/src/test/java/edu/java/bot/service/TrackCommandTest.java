@@ -37,7 +37,7 @@ class TrackCommandTest {
         when(message.text()).thenReturn("/track");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-        doReturn("someUrl").when(trackCommand).waitingNewMessage(any(), any());
+        doReturn("someUrl").when(bot).waitingNewMessage(any());
 
         SendMessage result = trackCommand.handleCommand(update, bot);
 
@@ -51,7 +51,7 @@ class TrackCommandTest {
         when(message.text()).thenReturn("/no track");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-        doReturn("someUrl").when(trackCommand).waitingNewMessage(any(), any());
+        doReturn("someUrl").when(bot).waitingNewMessage(any());
 
         SendMessage result = trackCommand.handleCommand(update, bot);
 

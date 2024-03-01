@@ -7,6 +7,7 @@ import edu.java.responses.QuestionResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -42,9 +43,11 @@ class StackOverflowClientTest {
                         "\"question_id\" : \"123\"," +
                         "\"last_activity_date\" : \"2024-02-09T17:47:19Z\"}]}"
                     )));
-        StackOverflowClient stackOverflowClient = new StackOverflowClient("http://localhost:" + wireMockServer.port());
+        StackOverflowClient stackOverflowClient = new StackOverflowClient(
+            WebClient.create("http://localhost:" + wireMockServer.port()));
 
-        QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123);
+        QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
+        assert questionResponse != null;
         QuestionResponse.ItemResponse itemResponse = questionResponse.items().getFirst();
 
         assertTrue(itemResponse.isAnswered());

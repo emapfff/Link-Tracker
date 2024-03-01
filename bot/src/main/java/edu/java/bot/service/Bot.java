@@ -7,22 +7,36 @@ import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
+import edu.java.bot.configuration.ApplicationConfig;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class Bot {
-    @Getter private final TelegramBot telegramBot;
+    @Getter
+    @Setter
+    private TelegramBot telegramBot;
     private final ChainCommands chainCommands;
     public Map<Long, List<URL>> references;
 
-    public Bot(TelegramBot telegramBot) {
+    @Autowired
+    public Bot(ApplicationConfig applicationConfig) {
         this.chainCommands = new ChainCommands();
         this.references = new HashMap<>();
+        this.telegramBot = new TelegramBot(applicationConfig.telegramToken());
+    }
+
+    /**
+     * creating menu with list of commands in telegram bot
+     */
+    public void createMenu() {
         BotCommand startCommand = new BotCommand("/start", "зарегистрировать пользователя");
         BotCommand helpCommand = new BotCommand("/help", "вывести окно с командами");
         BotCommand trackCommand = new BotCommand("/track", "начать отслеживание ссылки");
@@ -30,7 +44,6 @@ public class Bot {
         BotCommand listCommand = new BotCommand("/list", "показать список отслеживаемых ссылок");
         SetMyCommands allCommands = new SetMyCommands(startCommand, helpCommand,
             trackCommand, untrackCommand, listCommand);
-        this.telegramBot = telegramBot;
         this.telegramBot.execute(allCommands);
     }
 
@@ -38,6 +51,7 @@ public class Bot {
      * processUpdate method needs for get message from user and do it every time while bot is working
      */
     public void processUpdate() {
+        createMenu();
         int offset = 0;
         while (true) {
             GetUpdates getUpdates = new GetUpdates().limit(1).offset(offset + 1).timeout(0);
@@ -48,7 +62,26 @@ public class Bot {
                 updates.forEach(update -> executeCommand(chainCommands.handleCommand(update, this)));
             }
         }
+    }
 
+    /**
+     * this method needs for get one message from user
+     * it works while bot do not get some messages from user
+     *
+     * @param update last message from user
+     * @return getting message from user
+     */
+    protected String waitingNewMessage(Update update) {
+        List<Update> lastUpdate = new ArrayList<>();
+        GetUpdates getUpdate;
+        while (lastUpdate.isEmpty()) {
+            getUpdate = new GetUpdates().limit(1).offset(update.updateId() + 1).timeout(0);
+            lastUpdate = this.telegramBot.execute(getUpdate).updates();
+        }
+        String message = lastUpdate.getFirst().message().text();
+        getUpdate = new GetUpdates().limit(1).offset(lastUpdate.getFirst().updateId() + 1).timeout(0);
+        this.telegramBot.execute(getUpdate).updates();
+        return message;
     }
 
     public void addUser(Long id) {

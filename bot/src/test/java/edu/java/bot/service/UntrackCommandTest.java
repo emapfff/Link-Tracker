@@ -38,7 +38,7 @@ class UntrackCommandTest {
         when(message.text()).thenReturn("/untrack");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-        doReturn("someUrl").when(untrackCommand).waitingNewMessage(any(), any());
+        doReturn("someUrl").when(bot).waitingNewMessage(any());
 
         SendMessage result = untrackCommand.handleCommand(update, bot);
 
@@ -52,7 +52,7 @@ class UntrackCommandTest {
         when(message.text()).thenReturn("/not untrack");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
-        doReturn("someUrl").when(untrackCommand).waitingNewMessage(any(), any());
+        doReturn("someUrl").when(bot).waitingNewMessage(any());
 
         SendMessage result = untrackCommand.handleCommand(update, bot);
 

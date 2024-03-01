@@ -1,6 +1,5 @@
 package edu.java.configuration;
 
-import edu.java.configuration.ClientsConfig;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

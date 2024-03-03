@@ -8,6 +8,4 @@ import java.time.OffsetDateTime;
 public record RepositoryResponse(
     @JsonProperty("name") String repoName,
     @JsonProperty("updated_at") OffsetDateTime lastUpdate
-){
-
-}
+){}

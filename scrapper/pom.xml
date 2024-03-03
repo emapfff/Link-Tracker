@@ -125,7 +125,7 @@
         </dependency>
         <dependency>
             <groupId>edu.java.models</groupId>
-            <artifactId>models</artifactId>
+            <artifactId>connector</artifactId>
             <version>0.1</version>
             <scope>compile</scope>
         </dependency>

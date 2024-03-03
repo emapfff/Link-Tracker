@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>edu.java.models</groupId>
-    <artifactId>models</artifactId>
+    <artifactId>connector</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

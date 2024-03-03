@@ -8,6 +8,4 @@ import java.time.OffsetDateTime;
 public record GitHubUserResponse(
     @JsonProperty("login") String userName,
     @JsonProperty("updated_at") OffsetDateTime lastUpdate
-) {
-
-}
+) {}

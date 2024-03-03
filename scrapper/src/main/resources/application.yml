@@ -9,8 +9,10 @@ spring:
     name: scrapper
 
 clients:
-  github_base-url: https://api.github.com
+  github_base_url: https://api.github.com
   stackoverflow_base_url: https://api.stackexchange.com/2.3
+  bot_base_url: https://localhost:8080
+
 
 server:
   port: 8080

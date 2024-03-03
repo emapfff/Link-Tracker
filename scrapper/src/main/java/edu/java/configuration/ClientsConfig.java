@@ -9,6 +9,8 @@ import org.springframework.validation.annotation.Validated;
 public record ClientsConfig(
     @Bean
     String githubBaseUrl,
+    @Bean
     String stackoverflowBaseUrl,
-    String botClientBaseUrl
+    @Bean
+    String botBaseUrl
 ) {}

@@ -1,4 +1,4 @@
-package sharedDTOs;
+package dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +11,4 @@ public record ApiErrorResponse(
     @JsonProperty("exceptionName") String exceptionName,
     @JsonProperty("exceptionMessage") String exceptionMessage,
     @JsonProperty("stacktrace") List<String> stacktrace
-) {
-
-}
+) {}

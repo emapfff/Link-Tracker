@@ -17,10 +17,11 @@ public class ClientConfiguration {
     }
 
     @Bean
-    public WebClient stackOverflowClient(ClientsConfig clientsConfig) {
+    public WebClient stackoverflowClient(ClientsConfig clientsConfig) {
         return WebClient
             .builder()
             .baseUrl(clientsConfig.stackoverflowBaseUrl())
             .build();
     }
+
 }

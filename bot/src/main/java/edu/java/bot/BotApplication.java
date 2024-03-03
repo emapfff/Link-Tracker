@@ -2,7 +2,6 @@ package edu.java.bot;
 
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.service.Bot;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.SpringApplication;
@@ -20,8 +19,4 @@ public class BotApplication {
         SpringApplication.run(BotApplication.class, args);
     }
 
-    @PostConstruct
-    public void startBot() {
-        bot.processUpdate();
-    }
 }

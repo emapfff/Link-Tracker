@@ -19,6 +19,11 @@ public class ListCommand extends Command {
         return super.handleCommand(update, telegramBot);
     }
 
+    /**
+     * Convert all url links for list of strings of links
+     * @param urlList list consists url links
+     * @return strings of url links
+     */
     static String convertUrlListToString(List<URL> urlList) {
          String listOfURLs = urlList.stream()
             .map(URL::toString)

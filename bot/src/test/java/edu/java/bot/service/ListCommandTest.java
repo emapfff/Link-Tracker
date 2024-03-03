@@ -22,6 +22,12 @@ class ListCommandTest {
 
     @InjectMocks
     private ListCommand listCommand;
+
+
+    Update update = mock(Update.class);
+    Message message = mock(Message.class);
+    Chat chat = mock(Chat.class);
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -30,37 +36,32 @@ class ListCommandTest {
 
     @Test
     void testHandleListCommand() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/list");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage unexpectedMessage = new SendMessage(chat.id(), "Неверная команда!");
         assertNotEquals(unexpectedMessage, result);
     }
 
     @Test
     void testHandleNotLitCommand() {
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/no list");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(chat.id(), "Неверная команда!");
         assertNotEquals(expectedMessage, result);
     }
 
     @Test
-    void testHandleEmptyList(){
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
+    void testHandleEmptyList() {
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/list");
         when(message.chat()).thenReturn(chat);
@@ -69,16 +70,15 @@ class ListCommandTest {
         doReturn(urlList)
             .when(bot)
             .getListOfURLS(anyLong());
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(chat.id(), "Список ссылок пуст.");
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
 
     @Test
-    void testHandleNotEmptyList(){
-        Update update = mock(Update.class);
-        Message message = mock(Message.class);
-        Chat chat = mock(Chat.class);
+    void testHandleNotEmptyList() {
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/list");
         when(message.chat()).thenReturn(chat);
@@ -93,7 +93,9 @@ class ListCommandTest {
         doReturn(urlList)
             .when(bot)
             .getListOfURLS(anyLong());
+
         SendMessage result = listCommand.handleCommand(update, bot);
+
         SendMessage unexpectedMessage = new SendMessage(chat.id(), "Список ссылок пуст.");
         assertNotEquals(result.getParameters(), unexpectedMessage.getParameters());
     }

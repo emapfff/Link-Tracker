@@ -1,6 +1,5 @@
 package edu.java.bot.service;
 
-import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,36 +15,39 @@ public class CommandTest {
     private Bot bot;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
-        command = new Command(null){
+        command = new Command(null) {
             @Override
-            protected String getCommand(Update update){
+            protected String getCommand(Update update) {
                 return "test command";
             }
+
             @Override
-            protected Long getUserId(Update update){
+            protected Long getUserId(Update update) {
                 return 123456L;
             }
+
             @Override
-            protected Long getChatId(Update update){
+            protected Long getChatId(Update update) {
                 return 223L;
             }
 
             @Override
-            protected String getUserName(Update update){
+            protected String getUserName(Update update) {
                 return "Test user";
             }
         };
     }
 
     @Test
-    public void testHandleCommand(){
+    public void testHandleCommand() {
         Update update = mock(Update.class);
-        SendMessage result = command.handleCommand(update, bot);
-        SendMessage expectedMessage = new SendMessage(command.getChatId(update), "Неверная команда!");
-        assertEquals(result.getParameters(),expectedMessage.getParameters());
-    }
 
+        SendMessage result = command.handleCommand(update, bot);
+
+        SendMessage expectedMessage = new SendMessage(command.getChatId(update), "Неверная команда!");
+        assertEquals(result.getParameters(), expectedMessage.getParameters());
+    }
 
 }

@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+
 class StartCommandTest {
     @Mock
     private Bot bot;
@@ -18,40 +19,44 @@ class StartCommandTest {
     @InjectMocks
     private StartCommand startCommand;
 
-
     Update update = mock(Update.class);
     Chat chat = mock(Chat.class);
     Message message = mock(Message.class);
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
         startCommand = new StartCommand(null);
     }
+
     @Test
-    public void testHandleStartCommand(){
+    public void testHandleStartCommand() {
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/start");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doNothing().when(bot).addUser(anyLong());
+
         SendMessage result = startCommand.handleCommand(update, bot);
-        SendMessage expectedMessage = new SendMessage(update.message().chat().id(), "Добро пожаловать в Worker бота, null null!");
+
+        SendMessage expectedMessage =
+            new SendMessage(update.message().chat().id(), "Добро пожаловать в Worker бота, null null!");
         verify(bot).addUser(123456789L);
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
 
     @Test
-    public void testHandleNoStartCommand(){
+    public void testHandleNoStartCommand() {
         when(update.message()).thenReturn(message);
         when(message.text()).thenReturn("/no start");
         when(message.chat()).thenReturn(chat);
         when(chat.id()).thenReturn(123456789L);
         doNothing().when(bot).addUser(anyLong());
+
         SendMessage result = startCommand.handleCommand(update, bot);
+
         SendMessage expectedMessage = new SendMessage(update.message().chat().id(), "Неверная команда!");
         assertEquals(result.getParameters(), expectedMessage.getParameters());
     }
-
 
 }

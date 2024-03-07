@@ -15,7 +15,8 @@ public class StackOverflowClient {
         return this.stackoverflowClient
             .get()
             .uri("/questions/{id}?site=stackoverflow", id)
-            .retrieve().bodyToMono(QuestionResponse.class);
+            .retrieve()
+            .bodyToMono(QuestionResponse.class);
     }
 
 }

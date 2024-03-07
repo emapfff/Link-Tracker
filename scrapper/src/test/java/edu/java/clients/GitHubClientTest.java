@@ -28,7 +28,7 @@ class GitHubClientTest {
     }
 
     @AfterAll
-    public static void stop(){
+    public static void stop() {
         wireMockServer.stop();
     }
 

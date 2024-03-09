@@ -1,5 +1,19 @@
 package edu.java.scrapper;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import liquibase.Contexts;
+import liquibase.LabelExpression;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.DirectoryResourceAccessor;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
@@ -17,11 +31,46 @@ public abstract class IntegrationTest {
             .withPassword("postgres");
         POSTGRES.start();
 
-        runMigrations(POSTGRES);
+        try {
+            runMigrations(POSTGRES);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private static void runMigrations(JdbcDatabaseContainer<?> c) {
-        // ...
+    private static void runMigrations(JdbcDatabaseContainer<?> c) throws SQLException {
+        String jdbcUrl = c.getJdbcUrl();
+        String userName = c.getUsername();
+        String password = c.getPassword();
+        try {
+            Connection connection = DriverManager
+                .getConnection(
+                    jdbcUrl,
+                    userName,
+                    password
+                );
+            Database database = DatabaseFactory.getInstance()
+                .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+
+            Path pathToChangeLog = new File(".")
+                .toPath()
+                .toAbsolutePath()
+                .getParent()
+                .getParent()
+                .resolve("migrations");
+
+            Liquibase liquibase = new liquibase.Liquibase(
+                "master.xml",
+                new DirectoryResourceAccessor(pathToChangeLog),
+                database
+            );
+
+            liquibase.update(new Contexts(), new LabelExpression());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        } catch (LiquibaseException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DynamicPropertySource
@@ -31,3 +80,4 @@ public abstract class IntegrationTest {
         registry.add("spring.datasource.password", POSTGRES::getPassword);
     }
 }
+

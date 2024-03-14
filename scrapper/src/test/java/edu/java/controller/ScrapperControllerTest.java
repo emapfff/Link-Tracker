@@ -11,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,7 +68,7 @@ class ScrapperControllerTest {
 
     @Test
     void addLinkWithStatus200() throws Exception {
-        AddLinkRequest addLinkRequest = new AddLinkRequest("https://link");
+        AddLinkRequest addLinkRequest = new AddLinkRequest(new URI("https://link"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/links?tgChatId=1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +86,7 @@ class ScrapperControllerTest {
 
     @Test
     void addLinkWithStatus400TgChatIdIncorrect() throws Exception {
-        AddLinkRequest addLinkRequest = new AddLinkRequest("https://link");
+        AddLinkRequest addLinkRequest = new AddLinkRequest(new URI("https://link"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/links?tgChatId=-1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +96,7 @@ class ScrapperControllerTest {
 
     @Test
     void deleteLinkWithStatus200() throws Exception {
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest("https://link");
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(new URI("https://link"));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/links?tgChatId=1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +106,7 @@ class ScrapperControllerTest {
 
     @Test
     void deleteLinkWithStatus400() throws Exception {
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest("https://link");
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(new URI("https://link"));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/links?tgChatId=-1")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -2,7 +2,7 @@ package edu.java.handler;
 
 import dto.ApiErrorResponse;
 import edu.java.exceptions.AbsentChatException;
-import edu.java.exceptions.IncorrectParametersExceptions;
+import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ApiErrorHandler {
-    @ExceptionHandler(IncorrectParametersExceptions.class)
+public class ApiErrorHandlerScrapper {
+    @ExceptionHandler(IncorrectParametersException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(responseCode = "400",
                  description = "Некорректные параметры запроса",
@@ -23,11 +23,11 @@ public class ApiErrorHandler {
                      schema = @Schema(implementation = ApiErrorResponse.class)
                  )
     )
-    public ApiErrorResponse handleIncorrectParametersHandler(IncorrectParametersExceptions exception) {
+    public ApiErrorResponse handleIncorrectParametersHandler(IncorrectParametersException exception) {
         return new ApiErrorResponse(
             "Некорректные параметры запроса",
             HttpStatus.BAD_REQUEST.toString(),
-            exception.getClass().getSimpleName(),
+            exception.getName(),
             exception.getMessage(),
             null
         );
@@ -46,7 +46,7 @@ public class ApiErrorHandler {
         return new ApiErrorResponse(
             "Чат не существует",
             HttpStatus.NOT_FOUND.toString(),
-            exception.getClass().getSimpleName(),
+            exception.getName(),
             exception.getMessage(),
             null
         );
@@ -65,7 +65,7 @@ public class ApiErrorHandler {
         return new ApiErrorResponse(
             "Ссылка не найдена",
             HttpStatus.NOT_FOUND.toString(),
-            exception.getClass().getSimpleName(),
+            exception.getName(),
             exception.getMessage(),
             null
         );

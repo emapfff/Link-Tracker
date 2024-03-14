@@ -5,7 +5,7 @@ import dto.LinkResponse;
 import dto.ListLinksResponse;
 import dto.RemoveLinkRequest;
 import edu.java.exceptions.AbsentChatException;
-import edu.java.exceptions.IncorrectParametersExceptions;
+import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
@@ -31,7 +31,7 @@ public class ScrapperController {
     @PostMapping("/tg-chat/{id}")
     public Mono<Void> registrationChat(@PathVariable(value = "id") Integer id) {
         if (id < 0) {
-            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         }
         return Mono.empty();
     }
@@ -40,7 +40,7 @@ public class ScrapperController {
     @DeleteMapping("/tg-chat/{id}")
     public Mono<Void> removeChat(@PathVariable(value = "id") Integer id) {
         if (id < 0) {
-            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         } else if (id == 0) { // тут будет проверка на отсутствия чата в бд
             throw new AbsentChatException(ABSENT_CHAT);
         }
@@ -51,7 +51,7 @@ public class ScrapperController {
     @GetMapping("/links")
     public Mono<ListLinksResponse> getLinks(@Required Integer tgChatId) {
         if (tgChatId < 0) {
-            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         }
         ListLinksResponse listLinksResponse = new ListLinksResponse(null, 0);
         return Mono.just(listLinksResponse);
@@ -65,9 +65,9 @@ public class ScrapperController {
     )
         throws URISyntaxException {
         if (tgChatId < 0) {
-            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         } else if (addLinkRequest.link() == null) { //потом будет проверка на валидность линки
-            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         }
         LinkResponse linkResponse = new LinkResponse(0, new URI(""));
         return Mono.just(linkResponse);
@@ -80,7 +80,7 @@ public class ScrapperController {
         @RequestBody RemoveLinkRequest removeLinkRequest
     ) throws URISyntaxException {
         if (tgChatId < 0) {
-            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         } else if (removeLinkRequest.link() == null) { // тут будет проверка на то, что есть линк в чате в бд или нет
             throw new LinkNotFoundException(LINK_NOT_FOUND);
         }

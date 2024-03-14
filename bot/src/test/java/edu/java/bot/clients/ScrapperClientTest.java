@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
+import java.net.URI;
+import java.net.URISyntaxException;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
@@ -79,13 +81,13 @@ class ScrapperClientTest {
     }
 
     @Test
-    void addLink() {
+    void addLink() throws URISyntaxException {
         stubFor(post(urlEqualTo("/links"))
             .willReturn(
                 aResponse()
                     .withStatus(200)
             ));
-        AddLinkRequest addLinkRequest = new AddLinkRequest("http://mycore");
+        AddLinkRequest addLinkRequest = new AddLinkRequest(new URI("http://mycore"));
         String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.addLink(123, addLinkRequest)).verifyComplete();
@@ -97,13 +99,14 @@ class ScrapperClientTest {
     }
 
     @Test
-    void deleteLink() {
+    void deleteLink() throws URISyntaxException {
         stubFor(delete(urlEqualTo("/links"))
             .willReturn(
                 aResponse()
                     .withStatus(200)
             ));
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest("http://mycore");
+
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(new URI("http://mycore"));
         String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.deleteLink(123, removeLinkRequest)).verifyComplete();

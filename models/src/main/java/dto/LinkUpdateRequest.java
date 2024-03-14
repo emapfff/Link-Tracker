@@ -6,7 +6,6 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public record LinkUpdateRequest(
-
     Integer id,
     URI url,
     String description,

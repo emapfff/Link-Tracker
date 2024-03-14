@@ -1,7 +1,7 @@
 package edu.java.clients;
 
 import dto.LinkUpdateRequest;
-import edu.java.exceptions.IncorrectParametersExceptions;
+import edu.java.exceptions.IncorrectParametersException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -14,7 +14,7 @@ public class BotClient {
 
     public void sendUpdate(LinkUpdateRequest linkUpdateRequest) {
         if (linkUpdateRequest == null) {
-            throw new IncorrectParametersExceptions("Некорректные параметры запроса");
+            throw new IncorrectParametersException("Некорректные параметры запроса");
         }
         this.botWebClient
             .post()

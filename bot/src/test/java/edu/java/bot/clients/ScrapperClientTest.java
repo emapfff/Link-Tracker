@@ -3,7 +3,8 @@ package edu.java.bot.clients;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import dto.AddLinkRequest;
 import dto.RemoveLinkRequest;
-import org.junit.jupiter.api.BeforeAll;
+import edu.java.bot.configuration.ScrapperClientProperties;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
@@ -24,9 +25,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 class ScrapperClientTest {
     private static ScrapperClient scrapperClient;
 
-    @BeforeAll
-    public static void setUp() {
-        scrapperClient = new ScrapperClient(WebClient.create("http://localhost:8080"));
+    @BeforeEach
+    public void setUp() {
+        ScrapperClientProperties properties = new ScrapperClientProperties(
+            "http://localhost:8010",
+            new ScrapperClientProperties.Path("/links", "/tg-chat/"),
+            new ScrapperClientProperties.Header("Tg-Chat-Id")
+        );
+        scrapperClient = new ScrapperClient(WebClient.create("http://localhost:8080"), properties);
     }
 
     @Test
@@ -38,7 +44,7 @@ class ScrapperClientTest {
             )
         );
 
-        StepVerifier.create(scrapperClient.registrationChat(123)).verifyComplete();
+        scrapperClient.registrationChat(123);
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }
@@ -51,7 +57,7 @@ class ScrapperClientTest {
                     .withStatus(200)
             ));
 
-        StepVerifier.create(scrapperClient.removeChat(123)).verifyComplete();
+        scrapperClient.removeChat(123);
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }
@@ -80,12 +86,13 @@ class ScrapperClientTest {
                     .withStatus(200)
             ));
         AddLinkRequest addLinkRequest = new AddLinkRequest("http://mycore");
+        String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.addLink(123, addLinkRequest)).verifyComplete();
 
         verify(postRequestedFor(urlEqualTo("/links"))
             .withHeader("Tg-Chat-Id", equalTo(String.valueOf(123)))
-            .withRequestBody(equalToJson("{ \"link\" :  \"http://mycore\"}"))
+            .withRequestBody(equalToJson(expectedRequest))
         );
     }
 
@@ -97,12 +104,13 @@ class ScrapperClientTest {
                     .withStatus(200)
             ));
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest("http://mycore");
+        String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.deleteLink(123, removeLinkRequest)).verifyComplete();
 
         verify(deleteRequestedFor(urlEqualTo("/links"))
             .withHeader("Tg-Chat-Id", equalTo(String.valueOf(123)))
-            .withRequestBody(equalToJson("{ \"link\" : \"http://mycore\"}"))
+            .withRequestBody(equalToJson(expectedRequest))
         );
     }
 }

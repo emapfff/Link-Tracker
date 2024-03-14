@@ -1,7 +1,9 @@
 package dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 
 public record RemoveLinkRequest(
-    @JsonProperty("link") String link
+    String link
 ) {}

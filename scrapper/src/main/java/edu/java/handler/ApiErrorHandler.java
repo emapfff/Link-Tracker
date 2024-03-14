@@ -1,19 +1,21 @@
 package edu.java.handler;
 
 import dto.ApiErrorResponse;
-import exceptions.AbsentChatException;
-import exceptions.IncorrectParametersExceptions;
+import edu.java.exceptions.AbsentChatException;
+import edu.java.exceptions.IncorrectParametersExceptions;
+import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiErrorHandler {
     @ExceptionHandler(IncorrectParametersExceptions.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(responseCode = "400",
                  description = "Некорректные параметры запроса",
                  content = @Content(
@@ -21,18 +23,18 @@ public class ApiErrorHandler {
                      schema = @Schema(implementation = ApiErrorResponse.class)
                  )
     )
-    public ResponseEntity<ApiErrorResponse> incorrectParametersHandler(IncorrectParametersExceptions exception) {
-        ApiErrorResponse apiResponse = new ApiErrorResponse(
+    public ApiErrorResponse handleIncorrectParametersHandler(IncorrectParametersExceptions exception) {
+        return new ApiErrorResponse(
             "Некорректные параметры запроса",
-            "400",
-            "IncorrectParameters",
+            HttpStatus.BAD_REQUEST.toString(),
+            exception.getClass().getSimpleName(),
             exception.getMessage(),
             null
         );
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AbsentChatException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ApiResponse(responseCode = "404",
                  description = "Чат не существует",
                  content = @Content(
@@ -40,14 +42,32 @@ public class ApiErrorHandler {
                      schema = @Schema(implementation = ApiErrorResponse.class)
                  )
     )
-    public ResponseEntity<ApiErrorResponse> absentChat(AbsentChatException exception) {
-        ApiErrorResponse apiResponse = new ApiErrorResponse(
+    public ApiErrorResponse handleAbsentChat(AbsentChatException exception) {
+        return new ApiErrorResponse(
             "Чат не существует",
-            "404",
-            "AbsentChat",
+            HttpStatus.NOT_FOUND.toString(),
+            exception.getClass().getSimpleName(),
             exception.getMessage(),
             null
         );
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LinkNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ApiResponse(responseCode = "404",
+                 description = "Ссылка не найдена",
+                 content = @Content(
+                     mediaType = "application/json",
+                     schema = @Schema(implementation = ApiErrorResponse.class)
+                 )
+    )
+    public ApiErrorResponse handleLinkNotFound(LinkNotFoundException exception) {
+        return new ApiErrorResponse(
+            "Ссылка не найдена",
+            HttpStatus.NOT_FOUND.toString(),
+            exception.getClass().getSimpleName(),
+            exception.getMessage(),
+            null
+        );
     }
 }

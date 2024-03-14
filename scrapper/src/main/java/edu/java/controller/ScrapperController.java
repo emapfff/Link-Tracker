@@ -4,8 +4,9 @@ import dto.AddLinkRequest;
 import dto.LinkResponse;
 import dto.ListLinksResponse;
 import dto.RemoveLinkRequest;
-import exceptions.AbsentChatException;
-import exceptions.IncorrectParametersExceptions;
+import edu.java.exceptions.AbsentChatException;
+import edu.java.exceptions.IncorrectParametersExceptions;
+import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,30 +23,35 @@ import reactor.core.publisher.Mono;
 @RestController
 @Slf4j
 public class ScrapperController {
+    private static final String INCORRECT_PARAMETERS = "Некорректные параметры запроса";
+    private static final String ABSENT_CHAT = "Чат не существует";
+    private static final String LINK_NOT_FOUND = "Ссылка не найдена";
 
     @ApiResponse(responseCode = "200", description = "Чат зарегистрирован")
     @PostMapping("/tg-chat/{id}")
-    public Mono<Void> registrationChat(@PathVariable(value = "id") Integer id) throws IncorrectParametersExceptions {
+    public Mono<Void> registrationChat(@PathVariable(value = "id") Integer id) {
         if (id < 0) {
-            throw new IncorrectParametersExceptions("");
+            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
         }
         return Mono.empty();
     }
 
     @ApiResponse(responseCode = "200", description = "Чат успешно удалён")
     @DeleteMapping("/tg-chat/{id}")
-    public Mono<Void> removeChat(@PathVariable(value = "id") Integer id) throws IncorrectParametersExceptions {
+    public Mono<Void> removeChat(@PathVariable(value = "id") Integer id) {
         if (id < 0) {
-            throw new IncorrectParametersExceptions("");
+            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+        } else if (id == 0) { // тут будет проверка на отсутствия чата в бд
+            throw new AbsentChatException(ABSENT_CHAT);
         }
         return Mono.empty();
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     @GetMapping("/links")
-    public Mono<ListLinksResponse> getLinks(@Required Integer tgChatId) throws IncorrectParametersExceptions {
+    public Mono<ListLinksResponse> getLinks(@Required Integer tgChatId) {
         if (tgChatId < 0) {
-            throw new IncorrectParametersExceptions("");
+            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
         }
         ListLinksResponse listLinksResponse = new ListLinksResponse(null, 0);
         return Mono.just(listLinksResponse);
@@ -57,9 +63,11 @@ public class ScrapperController {
         @Required Integer tgChatId,
         @RequestBody AddLinkRequest addLinkRequest
     )
-        throws URISyntaxException, IncorrectParametersExceptions {
-        if (tgChatId < 0 || addLinkRequest == null) {
-            throw new IncorrectParametersExceptions("");
+        throws URISyntaxException {
+        if (tgChatId < 0) {
+            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+        } else if (addLinkRequest.link() == null) { //потом будет проверка на валидность линки
+            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
         }
         LinkResponse linkResponse = new LinkResponse(0, new URI(""));
         return Mono.just(linkResponse);
@@ -70,11 +78,11 @@ public class ScrapperController {
     public Mono<LinkResponse> deleteLink(
         @Required Integer tgChatId,
         @RequestBody RemoveLinkRequest removeLinkRequest
-    ) throws URISyntaxException, IncorrectParametersExceptions, AbsentChatException {
+    ) throws URISyntaxException {
         if (tgChatId < 0) {
-            throw new IncorrectParametersExceptions("");
-        } else if (removeLinkRequest == null) {
-            throw new AbsentChatException("");
+            throw new IncorrectParametersExceptions(INCORRECT_PARAMETERS);
+        } else if (removeLinkRequest.link() == null) { // тут будет проверка на то, что есть линк в чате в бд или нет
+            throw new LinkNotFoundException(LINK_NOT_FOUND);
         }
         LinkResponse linkResponse = new LinkResponse(0, new URI(""));
         return Mono.just(linkResponse);

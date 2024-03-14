@@ -1,12 +1,19 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
-  scrapper-base-url: http://localhost:8090
 
 spring:
   application:
     name: worker
   jackson:
     time-zone: UTC
+
+scrapper-client:
+  base-url: http://localhost:8090
+  path:
+    link: "/links"
+    tgChat: "/tg-chat/"
+  header:
+    chatId: "Tg-Chat-Id"
 
 server:
   port: 8090

@@ -1,7 +1,9 @@
 package dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import java.net.URI;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public record AddLinkRequest(
-    @JsonProperty("link") String link
+    URI link
 ) {}

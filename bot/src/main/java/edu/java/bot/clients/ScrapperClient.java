@@ -4,8 +4,10 @@ import dto.AddLinkRequest;
 import dto.LinkResponse;
 import dto.ListLinksResponse;
 import dto.RemoveLinkRequest;
-import lombok.AllArgsConstructor;
+import edu.java.bot.configuration.ScrapperClientProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -14,37 +16,47 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@EnableConfigurationProperties(ScrapperClientProperties.class)
 public class ScrapperClient {
-    private final String link = "/links";
-    private final String tgChat = "/tg-chat/";
-    private final String chatId = "Tg-Chat-Id";
     private final WebClient scrapperWebClient;
+    private final String linkPath;
+    private final String tgChatPath;
+    private final String chatIdHeader;
 
-    public Mono<Void> registrationChat(Integer id) {
-        log.info("chat registration");
-        return this.scrapperWebClient
-            .post()
-            .uri(tgChat + id)
-            .retrieve()
-            .bodyToMono(Void.class);
+    @Autowired
+    public ScrapperClient(WebClient scrapperWebClient, ScrapperClientProperties properties) {
+        this.scrapperWebClient = scrapperWebClient;
+        this.linkPath = properties.path().link();
+        this.tgChatPath = properties.path().tgChat();
+        this.chatIdHeader = properties.header().chatId();
     }
 
-    public Mono<Void> removeChat(Integer id) {
-        log.info("removing chat");
-        return this.scrapperWebClient
+    public void registrationChat(Integer id) {
+        log.info("chat registration");
+        this.scrapperWebClient
             .post()
-            .uri(tgChat + id)
+            .uri(tgChatPath + id)
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(Void.class)
+            .block();
+    }
+
+    public void removeChat(Integer id) {
+        log.info("removing chat");
+        this.scrapperWebClient
+            .post()
+            .uri(tgChatPath + id)
+            .retrieve()
+            .bodyToMono(Void.class)
+            .block();
     }
 
     public Mono<ListLinksResponse> getLinks(Integer tgChatId) {
         log.info("getting links");
         return this.scrapperWebClient
             .get()
-            .uri(link)
-            .header(chatId, tgChatId.toString())
+            .uri(linkPath)
+            .header(chatIdHeader, tgChatId.toString())
             .retrieve()
             .bodyToMono(ListLinksResponse.class);
     }
@@ -53,8 +65,8 @@ public class ScrapperClient {
         log.info("adding link");
         return this.scrapperWebClient
             .post()
-            .uri(link)
-            .header(chatId, tgChatId.toString())
+            .uri(linkPath)
+            .header(chatIdHeader, tgChatId.toString())
             .body(BodyInserters.fromValue(addLinkRequest))
             .retrieve()
             .bodyToMono(LinkResponse.class);
@@ -64,8 +76,8 @@ public class ScrapperClient {
         log.info("deleting link");
         return this.scrapperWebClient
             .method(HttpMethod.DELETE)
-            .uri(link)
-            .header(chatId, tgChatId.toString())
+            .uri(linkPath)
+            .header(chatIdHeader, tgChatId.toString())
             .body(BodyInserters.fromValue(removeLinkRequest))
             .retrieve()
             .bodyToMono(LinkResponse.class);

@@ -2,6 +2,8 @@ package edu.java.clients;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import dto.LinkUpdateRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ class BotClientTest {
     }
 
     @Test
-    void sendUpdate() {
+    void sendUpdate() throws URISyntaxException {
         stubFor(post(urlEqualTo("/updates"))
             .willReturn(
                 aResponse()
@@ -33,17 +35,18 @@ class BotClientTest {
             ));
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123,
-            "http://mycore",
+            new URI("http://mycore"),
             "updating link",
             Arrays.asList(1, 2, 3)
         );
+        String expectedRequest = "{\"id\": 123, " +
+            "\"url\": \"http://mycore\"," +
+            "\"description\": \"updating link\"," +
+            "\"tgChatIds\": [1, 2, 3]}";
 
-        StepVerifier.create(botClient.sendUpdate(linkUpdateRequest)).verifyComplete();
+        botClient.sendUpdate(linkUpdateRequest);
 
         verify(postRequestedFor(urlEqualTo("/updates"))
-            .withRequestBody(equalToJson("{\"id\": 123, " +
-                "\"url\": \"http://mycore\"," +
-                "\"description\": \"updating link\"," +
-                "\"tgChatIds\": [1, 2, 3]}")));
+            .withRequestBody(equalToJson(expectedRequest)));
     }
 }

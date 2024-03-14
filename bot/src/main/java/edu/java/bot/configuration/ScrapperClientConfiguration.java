@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-@EnableConfigurationProperties(ApplicationConfig.class)
+@EnableConfigurationProperties(ScrapperClientProperties.class)
 public class ScrapperClientConfiguration {
     @Bean
-    public WebClient scrapperWebClient(ApplicationConfig applicationConfig) {
+    public WebClient scrapperWebClient(ScrapperClientProperties scrapperClientProperties) {
         return WebClient
             .builder()
-            .baseUrl(applicationConfig.scrapperBaseUrl())
+            .baseUrl(scrapperClientProperties.baseUrl())
             .build();
     }
 }

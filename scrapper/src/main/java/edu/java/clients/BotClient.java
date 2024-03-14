@@ -1,24 +1,28 @@
 package edu.java.clients;
 
 import dto.LinkUpdateRequest;
+import edu.java.exceptions.IncorrectParametersException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
 public class BotClient {
     private final WebClient botWebClient;
 
-    public Mono<Void> sendUpdate(LinkUpdateRequest linkUpdateRequest) {
-        return this.botWebClient
+    public void sendUpdate(LinkUpdateRequest linkUpdateRequest) {
+        if (linkUpdateRequest == null) {
+            throw new IncorrectParametersException("Некорректные параметры запроса");
+        }
+        this.botWebClient
             .post()
             .uri("/updates")
             .body(BodyInserters.fromValue(linkUpdateRequest))
             .retrieve()
-            .bodyToMono(Void.class);
+            .bodyToMono(Void.class)
+            .block();
     }
 
 }

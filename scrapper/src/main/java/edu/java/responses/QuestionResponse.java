@@ -13,6 +13,5 @@ public record QuestionResponse(
                                @JsonProperty("answer_count") int answerCount,
                                @JsonProperty("question_id") long questionId,
                                @JsonProperty("last_activity_date") OffsetDateTime lastActivity
-    ) {
-    }
+    ) {}
 }

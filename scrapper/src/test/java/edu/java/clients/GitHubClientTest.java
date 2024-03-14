@@ -14,6 +14,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class GitHubClientTest {
 
@@ -27,7 +28,7 @@ class GitHubClientTest {
     }
 
     @AfterAll
-    public static void stop(){
+    public static void stop() {
         wireMockServer.stop();
     }
 
@@ -45,7 +46,7 @@ class GitHubClientTest {
 
         GitHubUserResponse gitHubUserResponse = gitHubClient.fetchUser("user").block();
 
-        assert gitHubUserResponse != null;
+        assertNotNull(gitHubUserResponse);
         assertEquals(gitHubUserResponse.userName(), "Emil");
         assertEquals(gitHubUserResponse.lastUpdate().toString(), "2024-02-09T17:47:19Z");
     }
@@ -65,7 +66,7 @@ class GitHubClientTest {
 
         RepositoryResponse repositoryResponse = gitHubClient.fetchRepository("owner", "repo").block();
 
-        assert repositoryResponse != null;
+        assertNotNull(repositoryResponse);
         assertEquals(repositoryResponse.repoName(), "repo_name");
         assertEquals(repositoryResponse.lastUpdate().toString(), "2024-02-09T17:47:19Z");
     }

@@ -13,6 +13,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StackOverflowClientTest {
@@ -47,12 +48,11 @@ class StackOverflowClientTest {
             WebClient.create("http://localhost:" + wireMockServer.port()));
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
-        assert questionResponse != null;
-        QuestionResponse.ItemResponse itemResponse = questionResponse.items().getFirst();
 
-        assertTrue(itemResponse.isAnswered());
-        assertEquals(itemResponse.answerCount(), 23);
-        assertEquals(itemResponse.questionId(), 123);
-        assertEquals(itemResponse.lastActivity().toString(), "2024-02-09T17:47:19Z");
+        assertNotNull(questionResponse);
+        assertTrue(questionResponse.items().getFirst().isAnswered());
+        assertEquals(questionResponse.items().getFirst().answerCount(), 23);
+        assertEquals(questionResponse.items().getFirst().questionId(), 123);
+        assertEquals(questionResponse.items().getFirst().lastActivity().toString(), "2024-02-09T17:47:19Z");
     }
 }

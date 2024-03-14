@@ -1,4 +1,4 @@
-package edu.java.bot.service;
+package edu.java.bot;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.BotCommand;
@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.GetUpdatesResponse;
 import edu.java.bot.configuration.ApplicationConfig;
+import edu.java.bot.service.ChainCommands;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,8 +21,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Bot {
-    @Getter
     @Setter
+    @Getter
     private TelegramBot telegramBot;
     private final ChainCommands chainCommands;
     public Map<Long, List<URL>> references;
@@ -71,7 +72,7 @@ public class Bot {
      * @param update last message from user
      * @return getting message from user
      */
-    protected String waitingNewMessage(Update update) {
+    public String waitingNewMessage(Update update) {
         List<Update> lastUpdate = new ArrayList<>();
         GetUpdates getUpdate;
         while (lastUpdate.isEmpty()) {
@@ -106,7 +107,7 @@ public class Bot {
         return references.get(id);
     }
 
-    protected void executeCommand(SendMessage sendMessage) {
+    public void executeCommand(SendMessage sendMessage) {
         telegramBot.execute(sendMessage);
     }
 }

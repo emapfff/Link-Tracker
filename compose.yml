@@ -3,7 +3,6 @@ services:
     image: postgres:16
     ports:
       - "5432:5432"
-    container_name: database
     environment:
       POSTGRES_DB: scrapper
       POSTGRES_USER: postgres
@@ -27,7 +26,6 @@ services:
       - ./migrations:/liquibase/changelog
     networks:
       - backend
-
 volumes:
   postgresql: { }
 

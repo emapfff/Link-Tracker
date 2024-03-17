@@ -10,8 +10,6 @@ import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@Slf4j
 public class ScrapperController {
     private static final String INCORRECT_PARAMETERS = "Некорректные параметры запроса";
     private static final String ABSENT_CHAT = "Чат не существует";
@@ -49,7 +46,7 @@ public class ScrapperController {
 
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     @GetMapping("/links")
-    public Mono<ListLinksResponse> getLinks(@Required Integer tgChatId) {
+    public Mono<ListLinksResponse> getLinks( Integer tgChatId) {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         }
@@ -60,7 +57,7 @@ public class ScrapperController {
     @ApiResponse(responseCode = "200", description = "Ссылка успешно добавлена")
     @PostMapping("/links")
     public Mono<LinkResponse> addLink(
-        @Required Integer tgChatId,
+        Integer tgChatId,
         @RequestBody AddLinkRequest addLinkRequest
     )
         throws URISyntaxException {
@@ -76,7 +73,7 @@ public class ScrapperController {
     @ApiResponse(responseCode = "200", description = "Ссылка успешно убрана")
     @DeleteMapping("/links")
     public Mono<LinkResponse> deleteLink(
-        @Required Integer tgChatId,
+        Integer tgChatId,
         @RequestBody RemoveLinkRequest removeLinkRequest
     ) throws URISyntaxException {
         if (tgChatId < 0) {

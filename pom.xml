@@ -58,6 +58,7 @@
                 <artifactId>java-telegram-bot-api</artifactId>
                 <version>${java-telegram-bot-api.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.wiremock</groupId>
                 <artifactId>wiremock-standalone</artifactId>

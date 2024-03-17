@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS link
+(
+    id     BIGINT GENERATED ALWAYS AS IDENTITY,
+    url         TEXT NOT NULL,
+    last_update TIMESTAMP    NOT NULL,
+    PRIMARY KEY (id)
+)

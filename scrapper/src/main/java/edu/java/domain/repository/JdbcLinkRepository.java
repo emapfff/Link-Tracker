@@ -1,7 +1,6 @@
 package edu.java.domain.repository;
 
 import edu.java.domain.dto.LinkDto;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -21,7 +20,7 @@ public class JdbcLinkRepository implements EntityOperations<LinkDto> {
         jdbcTemplate.update(
             "INSERT INTO link (url, last_update) VALUES (?, ?)",
             linkDto.getUrl(),
-            Timestamp.valueOf(linkDto.getLast_update().atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
+            Timestamp.valueOf(linkDto.getLastUpdate().atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
         );
     }
 
@@ -40,7 +39,7 @@ public class JdbcLinkRepository implements EntityOperations<LinkDto> {
                 LinkDto linkDto = new LinkDto();
                 linkDto.setId(rs.getInt("id"));
                 linkDto.setUrl(rs.getString("url"));
-                linkDto.setLast_update(rs.getTimestamp("last_update").toInstant().atOffset(ZoneOffset.UTC));
+                linkDto.setLastUpdate(rs.getTimestamp("last_update").toInstant().atOffset(ZoneOffset.UTC));
                 return linkDto;
             }
         );

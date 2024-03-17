@@ -2,7 +2,6 @@ package edu.java.domain.repository;
 
 import edu.java.domain.dto.ChatDto;
 import java.sql.Timestamp;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class JdbcChatRepository implements EntityOperations<ChatDto> {
             "INSERT INTO chat (id, userName, created_at) VALUES (?, ?, ?)",
             chatDto.getId(),
             chatDto.getUserName(),
-            Timestamp.valueOf(chatDto.getCreated_at().atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
+            Timestamp.valueOf(chatDto.getCreatedAt().atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
         );
     }
 
@@ -44,7 +43,7 @@ public class JdbcChatRepository implements EntityOperations<ChatDto> {
                 ChatDto chatDto = new ChatDto();
                 chatDto.setId(rs.getInt("id"));
                 chatDto.setUserName(rs.getString("username"));
-                chatDto.setCreated_at(rs.getTimestamp("created_at").toInstant().atOffset(ZoneOffset.UTC));
+                chatDto.setCreatedAt(rs.getTimestamp("created_at").toInstant().atOffset(ZoneOffset.UTC));
                 return chatDto;
             }
         );

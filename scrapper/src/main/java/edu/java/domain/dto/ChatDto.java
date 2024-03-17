@@ -11,5 +11,5 @@ import lombok.Setter;
 public class ChatDto {
     private Integer id;
     private String userName;
-    private OffsetDateTime created_at;
+    private OffsetDateTime createdAt;
 }

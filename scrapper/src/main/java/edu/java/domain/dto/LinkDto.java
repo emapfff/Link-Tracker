@@ -11,5 +11,5 @@ import lombok.Setter;
 public class LinkDto {
     Integer id;
     String url;
-    OffsetDateTime last_update;
+    OffsetDateTime lastUpdate;
 }

@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RelationLinkChatDto {
-    Integer tg_chat_id;
-    Integer link_id;
+    Integer tgChatId;
+    Integer linkId;
 }

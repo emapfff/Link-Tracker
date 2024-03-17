@@ -46,7 +46,7 @@ public class ScrapperController {
 
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     @GetMapping("/links")
-    public Mono<ListLinksResponse> getLinks( Integer tgChatId) {
+    public Mono<ListLinksResponse> getLinks(Integer tgChatId) {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_PARAMETERS);
         }

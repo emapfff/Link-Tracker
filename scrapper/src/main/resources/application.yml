@@ -7,6 +7,13 @@ app:
 spring:
   application:
     name: scrapper
+  liquibase:
+    enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scrapper
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
 
 clients:
   github_base_url: https://api.github.com

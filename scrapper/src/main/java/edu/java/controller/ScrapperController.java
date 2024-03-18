@@ -10,7 +10,6 @@ import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@Slf4j
 public class ScrapperController {
     private static final String INCORRECT_PARAMETERS = "Некорректные параметры запроса";
     private static final String ABSENT_CHAT = "Чат не существует";

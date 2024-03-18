@@ -5,6 +5,7 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -15,28 +16,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @AllArgsConstructor
-public class JdbcLinkRepository implements EntityOperations<LinkDto> {
+public class JdbcLinkRepository {
 
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
-    @Override
-    public void add(LinkDto linkDto) {
+    public void add(Integer tgChatId, URI url, OffsetDateTime lastUpdate) {
         jdbcTemplate.update(
             "INSERT INTO link (url, last_update) VALUES (?, ?)",
-            linkDto.getUrl().toString(),
-            Timestamp.valueOf(linkDto.getLastUpdate().toLocalDateTime())
+            url.toString(),
+            Timestamp.valueOf(lastUpdate.toLocalDateTime())
         );
     }
 
     @Transactional
-    @Override
-    public int remove(Integer id) {
-        return jdbcTemplate.update("DELETE FROM link WHERE id=?", id);
+    public void remove(Integer tgChatId, URI url) {
+        jdbcTemplate.update("DELETE FROM link WHERE url=?", url.toString());
     }
 
     @Transactional
-    @Override
     public List<LinkDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM link",

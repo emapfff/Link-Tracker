@@ -42,15 +42,13 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void addTest() {
-        linkRepository.add(firstTuple);
-        linkRepository.add(secondTuple);
+        linkRepository.add(11, firstTuple.getUrl(), firstTuple.getLastUpdate());
+        linkRepository.add(22, secondTuple.getUrl(), secondTuple.getLastUpdate());
 
         List<LinkDto> listOfChats = linkRepository.findAll();
 
-        assertEquals(listOfChats.getFirst().getId(), firstTuple.getId());
         assertEquals(listOfChats.getFirst().getUrl(), firstTuple.getUrl());
         assertEquals(listOfChats.getFirst().getLastUpdate().toLocalDate(), firstTuple.getLastUpdate().toLocalDate());
-        assertEquals(listOfChats.getLast().getId(), secondTuple.getId());
         assertEquals(listOfChats.getLast().getUrl(), secondTuple.getUrl());
         assertEquals(listOfChats.getLast().getLastUpdate().toLocalDate(), secondTuple.getLastUpdate().toLocalDate());
     }
@@ -59,11 +57,12 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void removeTest() {
-        linkRepository.remove(2);
+        URI link = URI.create("http://mycore2");
+        linkRepository.remove(22, link);
 
         List<LinkDto> chatDtoList = linkRepository.findAll();
 
         assertEquals(chatDtoList.size(), 1);
-        assertEquals(chatDtoList.getFirst().getId(), 1);
+        assertEquals(chatDtoList.getFirst().getUrl(), URI.create("http://mycore1"));
     }
 }

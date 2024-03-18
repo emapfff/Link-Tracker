@@ -1,4 +1,6 @@
 package edu.java.service.jdbc;
 
-public class JdbcTgChatService {
+import edu.java.service.TgChatService;
+
+public class JdbcTgChatService implements TgChatService {
 }

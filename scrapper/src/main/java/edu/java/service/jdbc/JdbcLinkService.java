@@ -1,5 +1,7 @@
 package edu.java.service.jdbc;
 
-public class JdbcLinkService {
+import edu.java.service.LinkService;
+
+public class JdbcLinkService implements LinkService {
 
 }

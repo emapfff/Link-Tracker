@@ -1,17 +1,22 @@
 package edu.java.domain.repository;
 
 import edu.java.domain.dto.LinkDto;
+import java.net.URI;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@AllArgsConstructor
 public class JdbcLinkRepository implements EntityOperations<LinkDto> {
-    @Autowired
+
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
@@ -19,8 +24,8 @@ public class JdbcLinkRepository implements EntityOperations<LinkDto> {
     public void add(LinkDto linkDto) {
         jdbcTemplate.update(
             "INSERT INTO link (url, last_update) VALUES (?, ?)",
-            linkDto.getUrl(),
-            Timestamp.valueOf(linkDto.getLastUpdate().atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
+            linkDto.getUrl().toString(),
+            Timestamp.valueOf(linkDto.getLastUpdate().toLocalDateTime())
         );
     }
 
@@ -38,8 +43,10 @@ public class JdbcLinkRepository implements EntityOperations<LinkDto> {
             (rs, rowNum) -> {
                 LinkDto linkDto = new LinkDto();
                 linkDto.setId(rs.getInt("id"));
-                linkDto.setUrl(rs.getString("url"));
-                linkDto.setLastUpdate(rs.getTimestamp("last_update").toInstant().atOffset(ZoneOffset.UTC));
+                linkDto.setUrl(URI.create(rs.getString("url")));
+                LocalDateTime localDateTime = rs.getTimestamp("last_update").toLocalDateTime();
+                ZoneOffset systemZoneOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
+                linkDto.setLastUpdate(localDateTime.atOffset(systemZoneOffset));
                 return linkDto;
             }
         );

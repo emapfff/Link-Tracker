@@ -1,5 +1,7 @@
 package edu.java.domain.dto;
 
+import java.net.URI;
+import java.net.URL;
 import java.time.OffsetDateTime;
 import lombok.Data;
 import lombok.Getter;
@@ -10,6 +12,6 @@ import lombok.Setter;
 @Setter
 public class LinkDto {
     Integer id;
-    String url;
+    URI url;
     OffsetDateTime lastUpdate;
 }

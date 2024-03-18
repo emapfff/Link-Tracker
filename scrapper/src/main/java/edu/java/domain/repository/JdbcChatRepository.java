@@ -2,16 +2,20 @@ package edu.java.domain.repository;
 
 import edu.java.domain.dto.ChatDto;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@AllArgsConstructor
 public class JdbcChatRepository implements EntityOperations<ChatDto> {
-    @Autowired
+
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
@@ -21,7 +25,7 @@ public class JdbcChatRepository implements EntityOperations<ChatDto> {
             "INSERT INTO chat (id, userName, created_at) VALUES (?, ?, ?)",
             chatDto.getId(),
             chatDto.getUserName(),
-            Timestamp.valueOf(chatDto.getCreatedAt().atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
+            Timestamp.valueOf(chatDto.getCreatedAt().toLocalDateTime())
         );
     }
 
@@ -43,7 +47,9 @@ public class JdbcChatRepository implements EntityOperations<ChatDto> {
                 ChatDto chatDto = new ChatDto();
                 chatDto.setId(rs.getInt("id"));
                 chatDto.setUserName(rs.getString("username"));
-                chatDto.setCreatedAt(rs.getTimestamp("created_at").toInstant().atOffset(ZoneOffset.UTC));
+                LocalDateTime localDateTime = rs.getTimestamp("created_at").toLocalDateTime();
+                ZoneOffset systemZoneOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
+                chatDto.setCreatedAt(localDateTime.atOffset(systemZoneOffset));
                 return chatDto;
             }
         );

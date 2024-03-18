@@ -10,7 +10,6 @@ import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

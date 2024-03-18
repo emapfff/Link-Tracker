@@ -1,6 +1,5 @@
 package edu.java.domain.dto;
 
-import java.time.OffsetDateTime;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

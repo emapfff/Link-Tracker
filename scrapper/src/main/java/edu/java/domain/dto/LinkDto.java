@@ -1,7 +1,6 @@
 package edu.java.domain.dto;
 
 import java.net.URI;
-import java.net.URL;
 import java.time.OffsetDateTime;
 import lombok.Data;
 import lombok.Getter;

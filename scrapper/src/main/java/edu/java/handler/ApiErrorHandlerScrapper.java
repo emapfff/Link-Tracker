@@ -7,6 +7,9 @@ import edu.java.exceptions.LinkNotFoundException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiErrorHandlerScrapper {
-    @ExceptionHandler(IncorrectParametersException.class)
+    @ExceptionHandler({IncorrectParametersException.class, SQLException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(responseCode = "400",
                  description = "Некорректные параметры запроса",
@@ -29,7 +32,9 @@ public class ApiErrorHandlerScrapper {
             HttpStatus.BAD_REQUEST.toString(),
             exception.getName(),
             exception.getMessage(),
-            null
+            Arrays.stream(exception.getStackTrace())
+                .map(StackTraceElement::toString)
+                .collect(Collectors.toList())
         );
     }
 
@@ -48,7 +53,9 @@ public class ApiErrorHandlerScrapper {
             HttpStatus.NOT_FOUND.toString(),
             exception.getName(),
             exception.getMessage(),
-            null
+            Arrays.stream(exception.getStackTrace())
+                .map(StackTraceElement::toString)
+                .collect(Collectors.toList())
         );
     }
 
@@ -67,7 +74,9 @@ public class ApiErrorHandlerScrapper {
             HttpStatus.NOT_FOUND.toString(),
             exception.getName(),
             exception.getMessage(),
-            null
+            Arrays.stream(exception.getStackTrace())
+                .map(StackTraceElement::toString)
+                .collect(Collectors.toList())
         );
     }
 }

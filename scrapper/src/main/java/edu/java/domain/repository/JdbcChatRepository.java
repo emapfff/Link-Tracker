@@ -31,6 +31,15 @@ public class JdbcChatRepository {
     }
 
     @Transactional
+    public Integer findIdByTgChatId(Integer tgChatId) {
+        return jdbcTemplate.queryForObject(
+            "SELECT count(*) FROM chat WHERE tg_chat_id=?",
+            Integer.class,
+            tgChatId
+        );
+    }
+
+    @Transactional
     public List<ChatDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM chat",

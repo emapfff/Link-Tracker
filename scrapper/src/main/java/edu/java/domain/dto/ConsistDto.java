@@ -7,7 +7,7 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-public class RelationLinkChatDto {
-    Integer tgChatId;
+public class ConsistDto {
+    Integer chatId;
     Integer linkId;
 }

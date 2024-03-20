@@ -5,6 +5,7 @@ import edu.java.scrapper.IntegrationTest;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,8 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
 
         List<LinkDto> listOfChats = linkRepository.findAll();
         assertEquals(listOfChats.getFirst().getUrl(), firstTuple.getUrl());
+        System.out.println((listOfChats.getFirst().getLastUpdate()));
+        System.out.println(firstTuple.getLastUpdate());
         assertEquals(listOfChats.getFirst().getLastUpdate().toLocalDate(), firstTuple.getLastUpdate().toLocalDate());
         assertEquals(listOfChats.getLast().getUrl(), secondTuple.getUrl());
         assertEquals(listOfChats.getLast().getLastUpdate().toLocalDate(), secondTuple.getLastUpdate().toLocalDate());

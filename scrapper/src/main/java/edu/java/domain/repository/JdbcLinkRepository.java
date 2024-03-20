@@ -10,9 +10,11 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @AllArgsConstructor
 public class JdbcLinkRepository {
-    private static final String FIND_ALL_BY_TG_CHAT_ID =
+    private static final String JOIN_TABLES =
         "SELECT link.id, link.url, link.last_update "
             + "FROM link JOIN consists ON link.id = consists.link_id "
-            + "JOIN chat ON chat.id = consists.chat_id WHERE chat.tg_chat_id = ?";
+            + "JOIN chat ON chat.id = consists.chat_id ";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -53,6 +55,15 @@ public class JdbcLinkRepository {
     }
 
     @Transactional
+    public List<Integer> findAllTgChatIdsByUrl(URI url) {
+        return jdbcTemplate.query(
+            JOIN_TABLES + "WHERE link.url=?",
+            new BeanPropertyRowMapper<>(Integer.class),
+            url.toString()
+        );
+    }
+
+    @Transactional
     public Integer findIdByTgChatId(Integer tgChatId) {
         return jdbcTemplate.queryForObject(
             "SELECT id FROM chat WHERE tg_chat_id=?",
@@ -62,15 +73,10 @@ public class JdbcLinkRepository {
 
     }
 
+
     @Transactional
     public void remove(Integer tgChatId, URI url) {
-        Integer chatId = findIdByTgChatId(tgChatId);
         Integer linkId = findLinkIdByChatIdAndUrl(tgChatId, url).getId();
-        jdbcTemplate.update(
-            "DELETE FROM consists WHERE chat_id=? AND link_id=?",
-            chatId,
-            linkId
-        );
         jdbcTemplate.update(
             "DELETE FROM link WHERE url=? and id=?",
             url.toString(),
@@ -81,7 +87,7 @@ public class JdbcLinkRepository {
     @Transactional
     public LinkDto findLinkIdByChatIdAndUrl(Integer tgChatId, URI url) {
         return jdbcTemplate.queryForObject(
-            FIND_ALL_BY_TG_CHAT_ID + " AND url=?",
+            JOIN_TABLES + " WHERE chat.tg_chat_id = ? AND url=?",
             (rs, rowNum) -> getLinkDto(rs),
             tgChatId,
             url.toString()
@@ -99,7 +105,7 @@ public class JdbcLinkRepository {
     @Transactional
     public List<LinkDto> findAllByTgChatId(Integer tgChatId) {
         return jdbcTemplate.query(
-            FIND_ALL_BY_TG_CHAT_ID,
+            JOIN_TABLES + " WHERE chat.tg_chat_id = ?",
             (rs, rowNum) -> getLinkDto(rs),
             tgChatId
         );
@@ -112,7 +118,7 @@ public class JdbcLinkRepository {
         linkDto.setUrl(URI.create(rs.getString("url")));
         LocalDateTime localDateTime = rs.getTimestamp("last_update").toLocalDateTime();
         ZoneOffset systemZoneOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
-        linkDto.setLastUpdate(localDateTime.atOffset(systemZoneOffset));
+        linkDto.setLastUpdate((localDateTime.atOffset(systemZoneOffset)).truncatedTo(ChronoUnit.SECONDS));
         return linkDto;
     }
 }

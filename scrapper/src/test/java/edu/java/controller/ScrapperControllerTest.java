@@ -2,6 +2,8 @@ package edu.java.controller;
 
 import dto.AddLinkRequest;
 import dto.RemoveLinkRequest;
+import edu.java.clients.GitHubClient;
+import edu.java.clients.StackOverflowClient;
 import edu.java.domain.dto.LinkDto;
 import edu.java.service.jdbc.JdbcLinkService;
 import edu.java.service.jdbc.JdbcTgChatService;
@@ -35,6 +37,12 @@ class ScrapperControllerTest {
     @MockBean
     private JdbcTgChatService jdbcTgChatService;
 
+    @MockBean
+    private GitHubClient gitHubClient;
+
+    @MockBean
+    private StackOverflowClient stackOverflowClient;
+
     @Test
     void registrationChatWithStatus200() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/tg-chat/{id}", 123))
@@ -57,7 +65,7 @@ class ScrapperControllerTest {
     @Test
     void addLinkWithStatus200() throws Exception {
         AddLinkRequest addLinkRequest = new AddLinkRequest(new URI("https://link"));
-        when(jdbcLinkService.add(any(), any(), any())).thenReturn(new LinkDto());
+        when(jdbcLinkService.add(any(), any())).thenReturn(new LinkDto());
         mockMvc.perform(MockMvcRequestBuilders.post("/links?tgChatId=1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(addLinkRequest)))

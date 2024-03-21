@@ -29,8 +29,10 @@ public class LinkUpdaterService {
 
     public void checkUpdates() {
         List<LinkDto> links = jdbcLinkRepository.findAll();
+        log.info("Получил ссылки из бд");
         for (var link : links) {
             if ((link.getUrl().getHost()).equals("github.com")) {
+                log.info("github");
                 if (githubUpdater.update(link) == 1) {
                     botClient.sendUpdate(new LinkUpdateRequest(
                         link.getId(),

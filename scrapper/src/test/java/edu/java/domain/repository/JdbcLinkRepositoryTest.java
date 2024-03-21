@@ -101,6 +101,22 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
         List<LinkDto> linkDtos = linkRepository.findAllByTgChatId(11);
 
         assertEquals(linkDtos.size(), 3);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void findAllTgChatIdsByUrlTest() {
+        chatRepository.add(11);
+        chatRepository.add(22);
+        linkRepository.add(11, URI.create("http://mycore1"), OffsetDateTime.now());
+        linkRepository.add(22, URI.create("http://mycore1"), OffsetDateTime.now());
+        linkRepository.add(11, URI.create("http://mycore3"), OffsetDateTime.now());
+
+        List<Integer> listTgChatIds = linkRepository.findAllTgChatIdsByUrl(URI.create("http://mycore1"));
+
+        assertEquals(11, listTgChatIds.getFirst());
+        assertEquals(22, listTgChatIds.getLast());
 
     }
 }

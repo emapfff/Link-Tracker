@@ -1,31 +1,55 @@
 package edu.java.service.jdbc;
 
+import edu.java.clients.GitHubClient;
+import edu.java.clients.StackOverflowClient;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.repository.JdbcChatRepository;
 import edu.java.domain.repository.JdbcLinkRepository;
 import edu.java.exceptions.IncorrectParametersException;
+import edu.java.responses.QuestionResponse;
+import edu.java.responses.RepositoryResponse;
 import edu.java.service.LinkService;
+import edu.java.tools.LinkParse;
+import edu.java.tools.Urls;
 import java.net.URI;
-import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class JdbcLinkService implements LinkService {
     private final static String CHAT_NOT_FOUND = "Чат не был добавлен";
     private final static String LINK_NOT_FOUND = "Ссылка не найдена";
+
+    private final static String INCORRECT_LINK = "Неверна указана ссылка";
     private final JdbcLinkRepository jdbcLinkRepository;
     private final JdbcChatRepository jdbcChatRepository;
+    private final LinkParse linkParse;
+    private final GitHubClient gitHubClient;
+    private final StackOverflowClient stackOverflowClient;
 
     @Override
-    public LinkDto add(Integer tgChatId, URI url, OffsetDateTime lastUpdate) {
+    public LinkDto add(Integer tgChatId, URI url) {
         if (jdbcChatRepository.findIdByTgChatId(tgChatId) == 0) {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);
         }
-        jdbcLinkRepository.add(tgChatId, url, lastUpdate);
+        Urls typeOfLink = linkParse.parse(url);
+        if (typeOfLink.equals(Urls.INCORRECT_URL)) {
+            throw new IncorrectParametersException(INCORRECT_LINK);
+        } else if (typeOfLink.equals(Urls.GITHUB)) {
+            RepositoryResponse repResponse = gitHubClient.fetchRepository(
+                    linkParse.getGithubUser(url), linkParse.getGithubRepo(url))
+                .block();
+            jdbcLinkRepository.add(tgChatId, url, repResponse.lastUpdate());
+        } else {
+            QuestionResponse question = stackOverflowClient.fetchQuestion(linkParse.getStackOverFlowId(url)).block();
+            jdbcLinkRepository.add(tgChatId, url, question.items().getLast().lastActivity());
+        }
+        log.info("Получил ссылки");
         return jdbcLinkRepository.findAllTuplesByUrl(url).getLast();
     }
 

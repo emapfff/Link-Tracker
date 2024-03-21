@@ -2,11 +2,10 @@ package edu.java.service;
 
 import edu.java.domain.dto.LinkDto;
 import java.net.URI;
-import java.time.OffsetDateTime;
 import java.util.Collection;
 
 public interface LinkService {
-    LinkDto add(Integer tgChatId, URI url, OffsetDateTime lastUpdate);
+    LinkDto add(Integer tgChatId, URI url);
 
     LinkDto remove(Integer tgChatId, URI url);
 

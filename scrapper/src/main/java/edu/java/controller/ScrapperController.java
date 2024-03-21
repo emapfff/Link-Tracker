@@ -8,7 +8,6 @@ import edu.java.domain.dto.LinkDto;
 import edu.java.service.jdbc.JdbcLinkService;
 import edu.java.service.jdbc.JdbcTgChatService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -51,7 +50,8 @@ public class ScrapperController {
     @ApiResponse(responseCode = "200", description = "Ссылка успешно добавлена")
     @PostMapping("/links")
     public Mono<LinkResponse> addLink(Integer tgChatId, @RequestBody AddLinkRequest addLinkRequest) {
-        LinkDto addLink = linkService.add(tgChatId, addLinkRequest.link(), OffsetDateTime.now());
+
+        LinkDto addLink = linkService.add(tgChatId, addLinkRequest.link());
         return Mono.just(new LinkResponse(addLink.getId(), addLink.getUrl()));
     }
 

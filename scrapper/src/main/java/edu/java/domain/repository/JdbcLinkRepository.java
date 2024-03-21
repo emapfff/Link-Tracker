@@ -14,7 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,9 +55,14 @@ public class JdbcLinkRepository {
 
     @Transactional
     public List<Integer> findAllTgChatIdsByUrl(URI url) {
-        return jdbcTemplate.query(
-            JOIN_TABLES + "WHERE link.url=?",
-            new BeanPropertyRowMapper<>(Integer.class),
+        return jdbcTemplate.queryForList(
+            """
+                SELECT tg_chat_id
+                FROM link
+                JOIN consists ON link.id = consists.link_id
+                JOIN chat ON chat.id = consists.chat_id
+                WHERE link.url=?""",
+            Integer.class,
             url.toString()
         );
     }

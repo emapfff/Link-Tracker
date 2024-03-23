@@ -46,7 +46,7 @@ class ScrapperClientTest {
             )
         );
 
-        scrapperClient.registrationChat(123);
+        scrapperClient.registrationChat(123L);
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }
@@ -59,12 +59,12 @@ class ScrapperClientTest {
                     .withStatus(200)
             ));
 
-        scrapperClient.removeChat(123);
+        scrapperClient.removeChat(123L);
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }
 
-    @Test
+     @Test
     void getLinks() {
         stubFor(get(urlEqualTo("/links"))
             .willReturn(
@@ -73,7 +73,7 @@ class ScrapperClientTest {
 
             ));
 
-        StepVerifier.create(scrapperClient.getLinks(123)).verifyComplete();
+        StepVerifier.create(scrapperClient.getLinks(123L)).verifyComplete();
 
         verify(getRequestedFor(urlEqualTo("/links"))
             .withHeader("Tg-Chat-Id", equalTo(String.valueOf(123)))
@@ -90,7 +90,7 @@ class ScrapperClientTest {
         AddLinkRequest addLinkRequest = new AddLinkRequest(new URI("http://mycore"));
         String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
-        StepVerifier.create(scrapperClient.addLink(123, addLinkRequest)).verifyComplete();
+        StepVerifier.create(scrapperClient.addLink(123L, addLinkRequest)).verifyComplete();
 
         verify(postRequestedFor(urlEqualTo("/links"))
             .withHeader("Tg-Chat-Id", equalTo(String.valueOf(123)))
@@ -109,7 +109,7 @@ class ScrapperClientTest {
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(new URI("http://mycore"));
         String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
-        StepVerifier.create(scrapperClient.deleteLink(123, removeLinkRequest)).verifyComplete();
+        StepVerifier.create(scrapperClient.deleteLink(123L, removeLinkRequest)).verifyComplete();
 
         verify(deleteRequestedFor(urlEqualTo("/links"))
             .withHeader("Tg-Chat-Id", equalTo(String.valueOf(123)))

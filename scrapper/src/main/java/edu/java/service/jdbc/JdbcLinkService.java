@@ -33,7 +33,7 @@ public class JdbcLinkService implements LinkService {
     private final StackOverflowClient stackOverflowClient;
 
     @Override
-    public LinkDto add(Integer tgChatId, URI url) {
+    public LinkDto add(long tgChatId, URI url) {
         if (jdbcChatRepository.findIdByTgChatId(tgChatId) == 0) {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);
         }
@@ -54,7 +54,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
-    public LinkDto remove(Integer tgChatId, URI url) {
+    public LinkDto remove(long tgChatId, URI url) {
         if (jdbcChatRepository.findIdByTgChatId(tgChatId) == 0) {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);
         }
@@ -68,7 +68,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
-    public Collection<LinkDto> listAll(Integer tgChatId) {
+    public Collection<LinkDto> listAll(long tgChatId) {
         List<LinkDto> dtoList = jdbcLinkRepository.findAllByTgChatId(tgChatId);
         if (dtoList.isEmpty()) {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);

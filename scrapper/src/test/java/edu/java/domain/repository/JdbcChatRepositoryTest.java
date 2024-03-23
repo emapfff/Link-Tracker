@@ -19,8 +19,8 @@ class JdbcChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void addTest() {
-        chatRepository.add(11);
-        chatRepository.add(22);
+        chatRepository.add(11L);
+        chatRepository.add(22L);
 
         List<ChatDto> listOfChats = chatRepository.findAll();
 
@@ -32,10 +32,10 @@ class JdbcChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void removeTest() {
-        chatRepository.add(11);
-        chatRepository.add(22);
+        chatRepository.add(11L);
+        chatRepository.add(22L);
 
-        chatRepository.remove(22);
+        chatRepository.remove(22L);
 
         List<ChatDto> chatDtoList = chatRepository.findAll();
 

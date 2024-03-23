@@ -1,11 +1,10 @@
-package edu.java.scheduler;
+package edu.java.updaters;
 
 import edu.java.clients.GitHubClient;
 import edu.java.domain.dto.LinkDto;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import edu.java.responses.RepositoryResponse;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ class GithubUpdaterTest {
 
     @BeforeEach
     public void setUp() {
-        this.link.setId(1);
+        this.link.setId(1L);
         this.link.setUrl(URI.create("https://github.com/emapfff/java-backend-2024"));
         this.link.setLastUpdate(OffsetDateTime.now());
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -27,19 +28,19 @@ public class ScrapperController {
 
     @ApiResponse(responseCode = "200", description = "Чат зарегистрирован")
     @PostMapping("/tg-chat/{id}")
-    public void registrationChat(@PathVariable(value = "id") Integer id) {
+    public void registrationChat(@PathVariable(value = "id") Long id) {
         chatService.register(id);
     }
 
     @ApiResponse(responseCode = "200", description = "Чат успешно удалён")
     @DeleteMapping("/tg-chat/{id}")
-    public void removeChat(@PathVariable(value = "id") Integer id) {
+    public void removeChat(@PathVariable(value = "id") Long id) {
         chatService.unregister(id);
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     @GetMapping("/links")
-    public Mono<ListLinksResponse> getLinks(Integer tgChatId) {
+    public Mono<ListLinksResponse> getLinks(@RequestHeader("Tg-Chat-Id") Long tgChatId) {
         Collection<LinkDto> links = linkService.listAll(tgChatId);
         List<LinkResponse> linkResponses = links.stream()
             .map(link -> new LinkResponse(link.getId(), link.getUrl()))
@@ -49,15 +50,20 @@ public class ScrapperController {
 
     @ApiResponse(responseCode = "200", description = "Ссылка успешно добавлена")
     @PostMapping("/links")
-    public Mono<LinkResponse> addLink(Integer tgChatId, @RequestBody AddLinkRequest addLinkRequest) {
-
+    public Mono<LinkResponse> addLink(
+        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @RequestBody AddLinkRequest addLinkRequest
+    ) {
         LinkDto addLink = linkService.add(tgChatId, addLinkRequest.link());
         return Mono.just(new LinkResponse(addLink.getId(), addLink.getUrl()));
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылка успешно убрана")
     @DeleteMapping("/links")
-    public Mono<LinkResponse> deleteLink(Integer tgChatId, @RequestBody RemoveLinkRequest removeLinkRequest) {
+    public Mono<LinkResponse> deleteLink(
+        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @RequestBody RemoveLinkRequest removeLinkRequest
+    ) {
         LinkDto deleteLink = linkService.remove(tgChatId, removeLinkRequest.link());
         return Mono.just(new LinkResponse(deleteLink.getId(), deleteLink.getUrl()));
     }

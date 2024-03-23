@@ -29,14 +29,14 @@ public class JdbcLinkRepository {
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public void add(Integer tgChatId, URI url, OffsetDateTime lastUpdate) {
+    public void add(Long tgChatId, URI url, OffsetDateTime lastUpdate) {
         jdbcTemplate.update(
             "INSERT INTO link (url, last_update) VALUES (?, ?)",
             url.toString(),
             Timestamp.valueOf(lastUpdate.toLocalDateTime())
         );
-        Integer chatId = findIdByTgChatId(tgChatId);
-        Integer linkId = findAllTuplesByUrl(url).getLast().getId();
+        Long chatId = findIdByTgChatId(tgChatId);
+        Long linkId = findAllTuplesByUrl(url).getLast().getId();
         jdbcTemplate.update(
             "INSERT INTO consists (chat_id, link_id) VALUES (?, ?)",
             chatId,
@@ -54,33 +54,18 @@ public class JdbcLinkRepository {
     }
 
     @Transactional
-    public List<Integer> findAllTgChatIdsByUrl(URI url) {
-        return jdbcTemplate.queryForList(
-            """
-                SELECT tg_chat_id
-                FROM link
-                JOIN consists ON link.id = consists.link_id
-                JOIN chat ON chat.id = consists.chat_id
-                WHERE link.url=?""",
-            Integer.class,
-            url.toString()
-        );
-    }
-
-    @Transactional
-    public Integer findIdByTgChatId(Integer tgChatId) {
+    public Long findIdByTgChatId(Long tgChatId) {
         return jdbcTemplate.queryForObject(
             "SELECT id FROM chat WHERE tg_chat_id=?",
-            Integer.class,
+            Long.class,
             tgChatId
         );
 
     }
 
-
     @Transactional
-    public void remove(Integer tgChatId, URI url) {
-        Integer linkId = findLinkIdByChatIdAndUrl(tgChatId, url).getId();
+    public void remove(Long tgChatId, URI url) {
+        Long linkId = findLinkIdByChatIdAndUrl(tgChatId, url).getId();
         jdbcTemplate.update(
             "DELETE FROM link WHERE url=? and id=?",
             url.toString(),
@@ -89,11 +74,25 @@ public class JdbcLinkRepository {
     }
 
     @Transactional
-    public LinkDto findLinkIdByChatIdAndUrl(Integer tgChatId, URI url) {
+    public LinkDto findLinkIdByChatIdAndUrl(Long tgChatId, URI url) {
         return jdbcTemplate.queryForObject(
             JOIN_TABLES + " WHERE chat.tg_chat_id = ? AND url=?",
             (rs, rowNum) -> getLinkDto(rs),
             tgChatId,
+            url.toString()
+        );
+    }
+
+    @Transactional
+    public List<Long> findAllTgChatIdsByUrl(URI url) {
+        return jdbcTemplate.queryForList(
+            """
+                SELECT tg_chat_id
+                FROM link
+                JOIN consists ON link.id = consists.link_id
+                JOIN chat ON chat.id = consists.chat_id
+                WHERE link.url=?""",
+            Long.class,
             url.toString()
         );
     }
@@ -107,7 +106,7 @@ public class JdbcLinkRepository {
     }
 
     @Transactional
-    public List<LinkDto> findAllByTgChatId(Integer tgChatId) {
+    public List<LinkDto> findAllByTgChatId(Long tgChatId) {
         return jdbcTemplate.query(
             JOIN_TABLES + " WHERE chat.tg_chat_id = ?",
             (rs, rowNum) -> getLinkDto(rs),
@@ -118,7 +117,7 @@ public class JdbcLinkRepository {
     @NotNull
     private LinkDto getLinkDto(ResultSet rs) throws SQLException {
         LinkDto linkDto = new LinkDto();
-        linkDto.setId(rs.getInt("id"));
+        linkDto.setId(rs.getLong("id"));
         linkDto.setUrl(URI.create(rs.getString("url")));
         LocalDateTime localDateTime = rs.getTimestamp("last_update").toLocalDateTime();
         ZoneOffset systemZoneOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());

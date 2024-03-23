@@ -4,8 +4,10 @@ import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.repository.JdbcLinkRepository;
-import edu.java.scheduler.GithubUpdater;
-import edu.java.scheduler.StackOverFlowUpdater;
+import edu.java.tools.LinkParse;
+import edu.java.tools.Urls;
+import edu.java.updaters.GithubUpdater;
+import edu.java.updaters.StackOverFlowUpdater;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class LinkUpdaterService {
-    private static final String DESCRIPTION = "Обновлено";
     @Autowired
     private BotClient botClient;
 
@@ -27,26 +28,28 @@ public class LinkUpdaterService {
     @Autowired
     private StackOverFlowUpdater stackOverFlowUpdater;
 
+    @Autowired
+    private LinkParse linkParse;
+
     public void checkUpdates() {
         List<LinkDto> links = jdbcLinkRepository.findAll();
         log.info("Получил ссылки из бд");
         for (var link : links) {
-            if ((link.getUrl().getHost()).equals("github.com")) {
-                log.info("github");
+            if (linkParse.parse(link.getUrl()).equals(Urls.GITHUB)) {
                 if (githubUpdater.update(link) == 1) {
                     botClient.sendUpdate(new LinkUpdateRequest(
                         link.getId(),
                         link.getUrl(),
-                        DESCRIPTION,
+                        "Пришло обновление с github!",
                         jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
                     ));
                 }
-            } else if ((link.getUrl().getHost()).equals("stackoverflow.com")) {
+            } else {
                 if (stackOverFlowUpdater.update(link) == 1) {
                     botClient.sendUpdate(new LinkUpdateRequest(
                         link.getId(),
                         link.getUrl(),
-                        DESCRIPTION,
+                        "Пришло уведомление со stackoverflow!",
                         jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
                     ));
                 }

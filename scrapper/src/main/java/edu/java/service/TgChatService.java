@@ -1,7 +1,7 @@
 package edu.java.service;
 
 public interface TgChatService {
-    void register(Integer tgChatId);
+    void register(long tgChatId);
 
-    void unregister(Integer tgChatId);
+    void unregister(long tgChatId);
 }

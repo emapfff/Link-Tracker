@@ -14,16 +14,15 @@ public class JdbcChatRepository {
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public void add(Integer tgChatId) {
+    public void add(Long tgChatId) {
         jdbcTemplate.update(
             "INSERT INTO chat (tg_chat_id) VALUES (?)",
             tgChatId
         );
-
     }
 
     @Transactional
-    public void remove(Integer tgChatId) {
+    public void remove(Long tgChatId) {
         jdbcTemplate.update(
             "DELETE FROM chat WHERE tg_chat_id=?",
             tgChatId
@@ -31,10 +30,10 @@ public class JdbcChatRepository {
     }
 
     @Transactional
-    public Integer findIdByTgChatId(Integer tgChatId) {
+    public Long findIdByTgChatId(Long tgChatId) {
         return jdbcTemplate.queryForObject(
-            "SELECT count(*) FROM chat WHERE tg_chat_id=?",
-            Integer.class,
+            "SELECT COUNT(*) FROM chat WHERE tg_chat_id=?",
+            Long.class,
             tgChatId
         );
     }
@@ -45,8 +44,8 @@ public class JdbcChatRepository {
             "SELECT * FROM chat",
             (rs, rowNum) -> {
                 ChatDto chatDto = new ChatDto();
-                chatDto.setId(rs.getInt("id"));
-                chatDto.setTgChatId(rs.getInt("tg_chat_id"));
+                chatDto.setId(rs.getLong("id"));
+                chatDto.setTgChatId(rs.getLong("tg_chat_id"));
                 return chatDto;
             }
         );

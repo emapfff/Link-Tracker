@@ -1,4 +1,4 @@
-package edu.java.scheduler;
+package edu.java.updaters;
 
 import edu.java.clients.StackOverflowClient;
 import edu.java.domain.dto.LinkDto;

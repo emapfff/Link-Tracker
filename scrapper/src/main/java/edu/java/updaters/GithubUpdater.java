@@ -1,4 +1,4 @@
-package edu.java.scheduler;
+package edu.java.updaters;
 
 import edu.java.clients.GitHubClient;
 import edu.java.domain.dto.LinkDto;
@@ -31,13 +31,11 @@ public class GithubUpdater implements LinkUpdater {
         }
         log.info("Получил инфу с api");
         OffsetDateTime lastUpdate = repositoryResponse.lastUpdate();
-        log.info(lastUpdate.toString());
-        log.info(linkDto.getLastUpdate().toString());
         if (lastUpdate.isAfter(linkDto.getLastUpdate())) {
             log.info("Нужно обновить");
             return 1;
         }
-        log.info("Не треубет обновлений");
+        log.info("Не требует обновлений");
         return 0;
     }
 }

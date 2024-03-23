@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LinkDto {
-    Integer id;
+    Long id;
     URI url;
     OffsetDateTime lastUpdate;
 }

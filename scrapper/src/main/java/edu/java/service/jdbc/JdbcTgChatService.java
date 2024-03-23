@@ -14,7 +14,7 @@ public class JdbcTgChatService implements TgChatService {
     private final JdbcChatRepository jdbcChatRepository;
 
     @Override
-    public void register(Integer tgChatId) {
+    public void register(long tgChatId) {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_ID);
         }
@@ -24,7 +24,7 @@ public class JdbcTgChatService implements TgChatService {
     }
 
     @Override
-    public void unregister(Integer tgChatId) {
+    public void unregister(long tgChatId) {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_ID);
         }

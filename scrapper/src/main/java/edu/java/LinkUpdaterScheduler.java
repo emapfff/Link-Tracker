@@ -1,4 +1,4 @@
-package edu.java.scheduler;
+package edu.java;
 
 import edu.java.service.scheduler.LinkUpdaterService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ public class LinkUpdaterScheduler {
 
     @Scheduled(fixedDelayString = "#{@scheduler.interval()}")
     public void update() {
-        linkUpdaterService.checkUpdates();
+        //linkUpdaterService.checkUpdates();
         log.info("Update");
     }
 }

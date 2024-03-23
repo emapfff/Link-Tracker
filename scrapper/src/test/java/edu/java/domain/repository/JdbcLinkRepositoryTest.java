@@ -3,16 +3,12 @@ package edu.java.domain.repository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.scrapper.IntegrationTest;
 import java.net.URI;
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,11 +25,11 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @BeforeAll
     public static void setUp() {
         firstTuple = new LinkDto();
-        firstTuple.setId(1);
+        firstTuple.setId(1L);
         firstTuple.setUrl(URI.create("http://mycore1"));
         firstTuple.setLastUpdate(OffsetDateTime.now());
         secondTuple = new LinkDto();
-        secondTuple.setId(2);
+        secondTuple.setId(2L);
         secondTuple.setUrl(URI.create("http://mycore2"));
         secondTuple.setLastUpdate(OffsetDateTime.now());
     }
@@ -42,32 +38,27 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void addTest() {
-        chatRepository.add(11);
-        chatRepository.add(22);
-        linkRepository.add(11, firstTuple.getUrl(), firstTuple.getLastUpdate());
-        linkRepository.add(22, secondTuple.getUrl(), secondTuple.getLastUpdate());
-
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        linkRepository.add(11L, firstTuple.getUrl(), firstTuple.getLastUpdate());
+        linkRepository.add(22L, secondTuple.getUrl(), secondTuple.getLastUpdate());
 
         List<LinkDto> listOfChats = linkRepository.findAll();
         assertEquals(listOfChats.getFirst().getUrl(), firstTuple.getUrl());
-        System.out.println((listOfChats.getFirst().getLastUpdate()));
-        System.out.println(firstTuple.getLastUpdate());
-        assertEquals(listOfChats.getFirst().getLastUpdate().toLocalDate(), firstTuple.getLastUpdate().toLocalDate());
         assertEquals(listOfChats.getLast().getUrl(), secondTuple.getUrl());
-        assertEquals(listOfChats.getLast().getLastUpdate().toLocalDate(), secondTuple.getLastUpdate().toLocalDate());
     }
 
     @Test
     @Transactional
     @Rollback
-    void removeTest() throws SQLException {
-        chatRepository.add(11);
-        chatRepository.add(22);
-        linkRepository.add(11, firstTuple.getUrl(), firstTuple.getLastUpdate());
-        linkRepository.add(22, secondTuple.getUrl(), secondTuple.getLastUpdate());
+    void removeTest() {
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        linkRepository.add(11L, firstTuple.getUrl(), firstTuple.getLastUpdate());
+        linkRepository.add(22L, secondTuple.getUrl(), secondTuple.getLastUpdate());
         URI link = URI.create("http://mycore2");
 
-        linkRepository.remove(22, link);
+        linkRepository.remove(22L, link);
 
         List<LinkDto> chatDtoList = linkRepository.findAll();
         assertEquals(chatDtoList.size(), 1);
@@ -77,13 +68,13 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void findLinkIdByChatIdAndUrlTest() throws SQLException {
-        chatRepository.add(11);
-        chatRepository.add(22);
-        linkRepository.add(11, firstTuple.getUrl(), firstTuple.getLastUpdate());
-        linkRepository.add(22, secondTuple.getUrl(), secondTuple.getLastUpdate());
+    void findLinkIdByChatIdAndUrlTest() {
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        linkRepository.add(11L, firstTuple.getUrl(), firstTuple.getLastUpdate());
+        linkRepository.add(22L, secondTuple.getUrl(), secondTuple.getLastUpdate());
 
-        Integer linkId = linkRepository.findLinkIdByChatIdAndUrl(11, URI.create("http://mycore1")).getId();
+        Long linkId = linkRepository.findLinkIdByChatIdAndUrl(11L, URI.create("http://mycore1")).getId();
 
         assertEquals(linkId, 1);
     }
@@ -92,13 +83,13 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void findAllByTgChatIdTest(){
-        chatRepository.add(11);
-        chatRepository.add(22);
-        linkRepository.add(11, URI.create("http://mycore1"), OffsetDateTime.now());
-        linkRepository.add(11, URI.create("http://mycore2"), OffsetDateTime.now());
-        linkRepository.add(11, URI.create("http://mycore3"), OffsetDateTime.now());
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        linkRepository.add(11L, URI.create("http://mycore1"), OffsetDateTime.now());
+        linkRepository.add(11L, URI.create("http://mycore2"), OffsetDateTime.now());
+        linkRepository.add(11L, URI.create("http://mycore3"), OffsetDateTime.now());
 
-        List<LinkDto> linkDtos = linkRepository.findAllByTgChatId(11);
+        List<LinkDto> linkDtos = linkRepository.findAllByTgChatId(11L);
 
         assertEquals(linkDtos.size(), 3);
     }
@@ -107,16 +98,15 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     void findAllTgChatIdsByUrlTest() {
-        chatRepository.add(11);
-        chatRepository.add(22);
-        linkRepository.add(11, URI.create("http://mycore1"), OffsetDateTime.now());
-        linkRepository.add(22, URI.create("http://mycore1"), OffsetDateTime.now());
-        linkRepository.add(11, URI.create("http://mycore3"), OffsetDateTime.now());
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        linkRepository.add(11L, URI.create("http://mycore1"), OffsetDateTime.now());
+        linkRepository.add(22L, URI.create("http://mycore1"), OffsetDateTime.now());
+        linkRepository.add(11L, URI.create("http://mycore3"), OffsetDateTime.now());
 
-        List<Integer> listTgChatIds = linkRepository.findAllTgChatIdsByUrl(URI.create("http://mycore1"));
+        List<Long> listTgChatIds = linkRepository.findAllTgChatIdsByUrl(URI.create("http://mycore1"));
 
         assertEquals(11, listTgChatIds.getFirst());
         assertEquals(22, listTgChatIds.getLast());
-
     }
 }

@@ -31,7 +31,7 @@ public class ScrapperClient {
         this.chatIdHeader = properties.header().chatId();
     }
 
-    public void registrationChat(Integer id) {
+    public void registrationChat(Long id) {
         log.info("chat registration");
         this.scrapperWebClient
             .post()
@@ -41,7 +41,7 @@ public class ScrapperClient {
             .block();
     }
 
-    public void removeChat(Integer id) {
+    public void removeChat(Long id) {
         log.info("removing chat");
         this.scrapperWebClient
             .post()
@@ -51,33 +51,33 @@ public class ScrapperClient {
             .block();
     }
 
-    public Mono<ListLinksResponse> getLinks(Integer tgChatId) {
+    public Mono<ListLinksResponse> getLinks(Long tgChatId) {
         log.info("getting links");
         return this.scrapperWebClient
             .get()
             .uri(linkPath)
-            .header(chatIdHeader, tgChatId.toString())
+            .header(chatIdHeader, Long.toString(tgChatId))
             .retrieve()
             .bodyToMono(ListLinksResponse.class);
     }
 
-    public Mono<LinkResponse> addLink(Integer tgChatId, AddLinkRequest addLinkRequest) {
+    public Mono<LinkResponse> addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         log.info("adding link");
         return this.scrapperWebClient
             .post()
             .uri(linkPath)
-            .header(chatIdHeader, tgChatId.toString())
+            .header(chatIdHeader, Long.toString(tgChatId))
             .body(BodyInserters.fromValue(addLinkRequest))
             .retrieve()
             .bodyToMono(LinkResponse.class);
     }
 
-    public Mono<LinkResponse> deleteLink(Integer tgChatId, RemoveLinkRequest removeLinkRequest) {
+    public Mono<LinkResponse> deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
         log.info("deleting link");
         return this.scrapperWebClient
             .method(HttpMethod.DELETE)
             .uri(linkPath)
-            .header(chatIdHeader, tgChatId.toString())
+            .header(chatIdHeader, Long.toString(tgChatId))
             .body(BodyInserters.fromValue(removeLinkRequest))
             .retrieve()
             .bodyToMono(LinkResponse.class);

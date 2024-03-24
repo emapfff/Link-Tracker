@@ -6,6 +6,7 @@ import edu.java.domain.dto.LinkDto;
 import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.domain.jdbc.JdbcGithubLinkRepository;
 import edu.java.domain.jdbc.JdbcLinkRepository;
+import edu.java.domain.jdbc.JdbcStackOverflowLinkRepository;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
@@ -34,6 +35,7 @@ public class JdbcLinkService implements LinkService {
     private final GitHubClient gitHubClient;
     private final StackOverflowClient stackOverflowClient;
     private final JdbcGithubLinkRepository githubLinkRepository;
+    private final JdbcStackOverflowLinkRepository stackOverflowLinkRepository;
 
     @Override
     public LinkDto add(long tgChatId, URI url) {
@@ -58,6 +60,7 @@ public class JdbcLinkService implements LinkService {
         } else {
             QuestionResponse question = stackOverflowClient.fetchQuestion(linkParse.getStackOverFlowId(url)).block();
             jdbcLinkRepository.add(tgChatId, url, question.items().getLast().lastActivity());
+            stackOverflowLinkRepository.add(tgChatId, url, question.items().getLast().answerCount());
         }
         return jdbcLinkRepository.findAllByUrl(url).getLast();
     }

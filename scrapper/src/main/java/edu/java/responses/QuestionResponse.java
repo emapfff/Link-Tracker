@@ -9,9 +9,9 @@ import java.util.List;
 public record QuestionResponse(
     List<ItemResponse> items
 ) {
-    public record ItemResponse(@JsonProperty("is_answered") boolean isAnswered,
-                               @JsonProperty("answer_count") int answerCount,
-                               @JsonProperty("question_id") long questionId,
+    public record ItemResponse(@JsonProperty("is_answered") Boolean isAnswered,
+                               @JsonProperty("answer_count") Integer answerCount,
+                               @JsonProperty("question_id") Long questionId,
                                @JsonProperty("last_activity_date") OffsetDateTime lastActivity
     ) {}
 }

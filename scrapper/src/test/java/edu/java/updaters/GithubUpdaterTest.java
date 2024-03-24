@@ -2,9 +2,10 @@ package edu.java.updaters;
 
 import edu.java.clients.GitHubClient;
 import edu.java.domain.dto.LinkDto;
+import edu.java.domain.jdbc.JdbcGithubLinkRepository;
+import edu.java.responses.RepositoryResponse;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import edu.java.responses.RepositoryResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

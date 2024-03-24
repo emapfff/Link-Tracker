@@ -61,6 +61,14 @@ public class LinkUpdaterService {
                         jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
                     ));
                 }
+                if (stackOverFlowUpdater.checkAnswers(link) == 1) {
+                    botClient.sendUpdate(new LinkUpdateRequest(
+                        link.getId(),
+                        link.getUrl(),
+                        "Пришел новый ответ!",
+                        jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
+                    ));
+                }
             }
         }
     }

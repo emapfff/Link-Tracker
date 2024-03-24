@@ -30,7 +30,7 @@ public class LinkParse {
         return Arrays.stream(url.getPath().split("/")).toList().get(2);
     }
 
-    public long getStackOverFlowId(URI url) {
+    public Long getStackOverFlowId(URI url) {
         return Long.parseLong(Arrays.stream(url.getPath().split("/")).toList().get(2));
     }
 }

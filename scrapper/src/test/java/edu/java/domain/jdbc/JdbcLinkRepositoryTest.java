@@ -1,4 +1,4 @@
-package edu.java.domain.repository;
+package edu.java.domain.jdbc;
 
 import edu.java.domain.dto.LinkDto;
 import edu.java.scrapper.IntegrationTest;
@@ -68,13 +68,13 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void findLinkIdByChatIdAndUrlTest() {
+    void findLinksByChatIdAndUrlTest() {
         chatRepository.add(11L);
         chatRepository.add(22L);
         linkRepository.add(11L, firstTuple.getUrl(), firstTuple.getLastUpdate());
         linkRepository.add(22L, secondTuple.getUrl(), secondTuple.getLastUpdate());
 
-        Long linkId = linkRepository.findLinkIdByChatIdAndUrl(11L, URI.create("http://mycore1")).getId();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(11L, URI.create("http://mycore1")).getId();
 
         assertEquals(linkId, 1);
     }

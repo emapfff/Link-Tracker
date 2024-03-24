@@ -3,7 +3,7 @@ package edu.java.service.scheduler;
 import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.domain.dto.LinkDto;
-import edu.java.domain.repository.JdbcLinkRepository;
+import edu.java.domain.jdbc.JdbcLinkRepository;
 import edu.java.tools.LinkParse;
 import edu.java.tools.Urls;
 import edu.java.updaters.GithubUpdater;
@@ -41,6 +41,14 @@ public class LinkUpdaterService {
                         link.getId(),
                         link.getUrl(),
                         "Пришло обновление с github!",
+                        jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
+                    ));
+                }
+                if (githubUpdater.checkBranches(link) == 1) {
+                    botClient.sendUpdate(new LinkUpdateRequest(
+                        link.getId(),
+                        link.getUrl(),
+                        "Добавлена новая ветка!",
                         jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
                     ));
                 }

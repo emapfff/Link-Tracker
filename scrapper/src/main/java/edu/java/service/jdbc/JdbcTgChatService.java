@@ -1,6 +1,6 @@
 package edu.java.service.jdbc;
 
-import edu.java.domain.repository.JdbcChatRepository;
+import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.exceptions.AbsentChatException;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.service.TgChatService;
@@ -18,7 +18,7 @@ public class JdbcTgChatService implements TgChatService {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_ID);
         }
-        if (jdbcChatRepository.findIdByTgChatId(tgChatId) == 0) {
+        if (jdbcChatRepository.findCountIdByTgChatId(tgChatId) == 0) {
             jdbcChatRepository.add(tgChatId);
         }
     }
@@ -28,7 +28,7 @@ public class JdbcTgChatService implements TgChatService {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_ID);
         }
-        if (jdbcChatRepository.findIdByTgChatId(tgChatId) == 0) {
+        if (jdbcChatRepository.findCountIdByTgChatId(tgChatId) == 0) {
             throw new AbsentChatException("Чат не существует");
         }
         jdbcChatRepository.remove(tgChatId);

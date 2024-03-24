@@ -1,4 +1,4 @@
-package edu.java.domain.repository;
+package edu.java.domain.jdbc;
 
 import edu.java.domain.dto.ChatDto;
 import java.util.List;
@@ -30,9 +30,19 @@ public class JdbcChatRepository {
     }
 
     @Transactional
-    public Long findIdByTgChatId(Long tgChatId) {
+    public Long findCountIdByTgChatId(Long tgChatId) {
         return jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM chat WHERE tg_chat_id=?",
+            Long.class,
+            tgChatId
+        );
+    }
+
+
+    @Transactional
+    public Long findIdByTgChatId(Long tgChatId) {
+        return jdbcTemplate.queryForObject(
+            "SELECT id FROM chat WHERE tg_chat_id=?",
             Long.class,
             tgChatId
         );

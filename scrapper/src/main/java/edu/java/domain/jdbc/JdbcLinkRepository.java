@@ -1,4 +1,4 @@
-package edu.java.domain.repository;
+package edu.java.domain.jdbc;
 
 import edu.java.domain.dto.LinkDto;
 import java.net.URI;
@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class JdbcLinkRepository {
     private static final String JOIN_TABLES =
-        "SELECT link.id, link.url, link.last_update "
-            + "FROM link JOIN consists ON link.id = consists.link_id "
-            + "JOIN chat ON chat.id = consists.chat_id ";
+        """
+                SELECT link.id, link.url, link.last_update
+                FROM link JOIN consists ON link.id = consists.link_id
+                JOIN chat ON chat.id = consists.chat_id
+            """;
+
+    @Autowired
+    private JdbcConsistRepository jdbcConsistRepository;
+
+    @Autowired
+    private JdbcChatRepository jdbcChatRepository;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -35,17 +44,13 @@ public class JdbcLinkRepository {
             url.toString(),
             Timestamp.valueOf(lastUpdate.toLocalDateTime())
         );
-        Long chatId = findIdByTgChatId(tgChatId);
-        Long linkId = findAllTuplesByUrl(url).getLast().getId();
-        jdbcTemplate.update(
-            "INSERT INTO consists (chat_id, link_id) VALUES (?, ?)",
-            chatId,
-            linkId
-        );
+        Long chatId = jdbcChatRepository.findIdByTgChatId(tgChatId);
+        Long linkId = findAllByUrl(url).getLast().getId();
+        jdbcConsistRepository.add(chatId, linkId);
     }
 
     @Transactional
-    public List<LinkDto> findAllTuplesByUrl(URI url) {
+    public List<LinkDto> findAllByUrl(URI url) {
         return jdbcTemplate.query(
             "SELECT * FROM link WHERE url=?",
             (rs, rowNum) -> getLinkDto(rs),
@@ -54,18 +59,8 @@ public class JdbcLinkRepository {
     }
 
     @Transactional
-    public Long findIdByTgChatId(Long tgChatId) {
-        return jdbcTemplate.queryForObject(
-            "SELECT id FROM chat WHERE tg_chat_id=?",
-            Long.class,
-            tgChatId
-        );
-
-    }
-
-    @Transactional
     public void remove(Long tgChatId, URI url) {
-        Long linkId = findLinkIdByChatIdAndUrl(tgChatId, url).getId();
+        Long linkId = findLinkByChatIdAndUrl(tgChatId, url).getId();
         jdbcTemplate.update(
             "DELETE FROM link WHERE url=? and id=?",
             url.toString(),
@@ -74,25 +69,11 @@ public class JdbcLinkRepository {
     }
 
     @Transactional
-    public LinkDto findLinkIdByChatIdAndUrl(Long tgChatId, URI url) {
+    public LinkDto findLinkByChatIdAndUrl(Long tgChatId, URI url) {
         return jdbcTemplate.queryForObject(
             JOIN_TABLES + " WHERE chat.tg_chat_id = ? AND url=?",
             (rs, rowNum) -> getLinkDto(rs),
             tgChatId,
-            url.toString()
-        );
-    }
-
-    @Transactional
-    public List<Long> findAllTgChatIdsByUrl(URI url) {
-        return jdbcTemplate.queryForList(
-            """
-                SELECT tg_chat_id
-                FROM link
-                JOIN consists ON link.id = consists.link_id
-                JOIN chat ON chat.id = consists.chat_id
-                WHERE link.url=?""",
-            Long.class,
             url.toString()
         );
     }
@@ -111,6 +92,29 @@ public class JdbcLinkRepository {
             JOIN_TABLES + " WHERE chat.tg_chat_id = ?",
             (rs, rowNum) -> getLinkDto(rs),
             tgChatId
+        );
+    }
+
+    @Transactional
+    public List<Long> findAllTgChatIdsByUrl(URI url) {
+        return jdbcTemplate.queryForList(
+            """
+                SELECT tg_chat_id
+                FROM link
+                JOIN consists ON link.id = consists.link_id
+                JOIN chat ON chat.id = consists.chat_id
+                WHERE link.url=?""",
+            Long.class,
+            url.toString()
+        );
+    }
+
+    @Transactional
+    public URI findUrlByLinkId(Long linkId) {
+        return jdbcTemplate.queryForObject(
+            "SELECT url FROM link WHERE id=?",
+            URI.class,
+            linkId
         );
     }
 

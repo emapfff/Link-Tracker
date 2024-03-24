@@ -1,4 +1,4 @@
-package edu.java.domain.repository;
+package edu.java.domain.jdbc;
 
 import edu.java.domain.dto.ChatDto;
 import edu.java.scrapper.IntegrationTest;

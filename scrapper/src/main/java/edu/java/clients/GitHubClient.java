@@ -1,10 +1,12 @@
 package edu.java.clients;
 
+import edu.java.responses.BranchResponse;
 import edu.java.responses.GitHubUserResponse;
 import edu.java.responses.RepositoryResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -28,4 +30,11 @@ public class GitHubClient {
             .bodyToMono(RepositoryResponse.class);
     }
 
+    public Flux<BranchResponse> fetchBranch(String user, String repo) {
+        return this.githubClient
+            .get()
+            .uri("/repos/{user}/{repo}/branches", user, repo)
+            .retrieve()
+            .bodyToFlux(BranchResponse.class);
+    }
 }

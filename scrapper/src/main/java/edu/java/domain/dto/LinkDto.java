@@ -13,4 +13,5 @@ public class LinkDto {
     Long id;
     URI url;
     OffsetDateTime lastUpdate;
+    Integer countBranch;
 }

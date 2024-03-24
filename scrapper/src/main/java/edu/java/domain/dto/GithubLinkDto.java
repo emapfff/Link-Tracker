@@ -7,7 +7,8 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-public class ConsistDto {
-    Long chatId;
+public class GithubLinkDto {
+    Long id;
     Long linkId;
+    Integer countBranches;
 }

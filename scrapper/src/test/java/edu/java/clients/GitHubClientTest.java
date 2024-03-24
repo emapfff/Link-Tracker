@@ -3,12 +3,17 @@ package edu.java.clients;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import edu.java.responses.BranchResponse;
 import edu.java.responses.GitHubUserResponse;
 import edu.java.responses.RepositoryResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -52,7 +57,7 @@ class GitHubClientTest {
     }
 
     @Test
-    void fetchRepositoryTest(){
+    void fetchRepositoryTest() {
         stubFor(get(urlEqualTo("/repos/owner/repo"))
             .willReturn(
                 aResponse()
@@ -69,6 +74,30 @@ class GitHubClientTest {
         assertNotNull(repositoryResponse);
         assertEquals(repositoryResponse.repoName(), "repo_name");
         assertEquals(repositoryResponse.lastUpdate().toString(), "2024-02-09T17:47:19Z");
+    }
+
+    @Test
+    void fetchBranchTest() throws IOException {
+        String branchesJson = FileUtils.readFileToString(
+            new File("src/test/java/edu/java/json/Branches.json"),
+            "UTF-8"
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(branchesJson)
+            )
+        );
+        GitHubClient gitHubClient = new GitHubClient(WebClient.create("http://localhost:" + wireMockServer.port()));
+
+        List<BranchResponse> branchResponses = gitHubClient.fetchBranch("user", "repo").collectList().block();
+
+        assertNotNull(branchResponses);
+        assertEquals(branchResponses.size(), 2);
+        assertEquals(branchResponses.getFirst().name(), "hw1");
+        assertEquals(branchResponses.getLast().name(), "hw2");
     }
 }
 

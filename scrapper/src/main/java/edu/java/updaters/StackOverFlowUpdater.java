@@ -21,10 +21,6 @@ public class StackOverFlowUpdater implements LinkUpdater {
         String numOfQuestion = pathSegments[2];
         long id = Long.parseLong(numOfQuestion);
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(id).block();
-        if (questionResponse == null) {
-            log.info("question response is null");
-            throw new RuntimeException();
-        }
         if (questionResponse.items().getLast().lastActivity().isAfter(linkDto.getLastUpdate())) {
             return 1;
         }

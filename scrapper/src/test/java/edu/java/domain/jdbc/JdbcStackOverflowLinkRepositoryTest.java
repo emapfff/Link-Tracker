@@ -3,6 +3,7 @@ package edu.java.domain.jdbc;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
+import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +15,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
-class JdbcStackOverflowLinkRepositoryTest {
+class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     @Autowired
     private JdbcStackOverflowLinkRepository stackOverflowLinkRepository;
 

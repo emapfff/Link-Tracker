@@ -37,7 +37,6 @@ class GithubUpdaterTest {
                 "java-backend-2024",
                 OffsetDateTime.parse("2024-02-09T17:47:19Z")
             )));
-
         int result = githubUpdater.update(link);
 
         assertEquals(result, 0);

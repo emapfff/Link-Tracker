@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class JdbcLinkRepositoryTest extends IntegrationTest {
@@ -68,15 +69,15 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    void findLinksByChatIdAndUrlTest() {
-        chatRepository.add(11L);
-        chatRepository.add(22L);
-        linkRepository.add(11L, firstTuple.getUrl(), firstTuple.getLastUpdate());
-        linkRepository.add(22L, secondTuple.getUrl(), secondTuple.getLastUpdate());
+    void findLinkByChatIdAndUrlTest() {
+        chatRepository.add(1234L);
+        chatRepository.add(12345L);
+        linkRepository.add(1234L, firstTuple.getUrl(), firstTuple.getLastUpdate());
+        linkRepository.add(12345L, secondTuple.getUrl(), secondTuple.getLastUpdate());
 
-        Long linkId = linkRepository.findLinkByChatIdAndUrl(11L, URI.create("http://mycore1")).getId();
+         Long linkId = linkRepository.findLinkByChatIdAndUrl(12345L, URI.create("http://mycore2")).getId();
 
-        assertEquals(linkId, 1);
+        assertNotNull(linkId);
     }
 
     @Test

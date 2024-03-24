@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 class StackOverFlowUpdaterTest {
@@ -24,7 +22,6 @@ class StackOverFlowUpdaterTest {
         this.link.setId(1L);
         this.link.setUrl(URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"));
         this.link.setLastUpdate(OffsetDateTime.now());
-
     }
 
 }

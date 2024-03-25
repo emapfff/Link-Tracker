@@ -1,6 +1,7 @@
 package edu.java.domain.jdbc;
 
 import edu.java.domain.dto.GithubLinkDto;
+import edu.java.domain.dto.LinkDto;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,11 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class JdbcGithubLinkRepository {
     private JdbcTemplate jdbcTemplate;
 
-    private JdbcLinkRepository jdbcLinkRepository;
+    private JdbcLinkRepository linkRepository;
 
     @Transactional
     public void add(Long tgChatId, URI url, Integer countBranches) {
-        Long linkId = jdbcLinkRepository.findLinkByChatIdAndUrl(tgChatId, url).getId();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(tgChatId, url).getId();
         jdbcTemplate.update(
             "INSERT INTO github_links (link_id, count_branches) VALUES (?, ?)",
             linkId,
@@ -62,6 +63,15 @@ public class JdbcGithubLinkRepository {
         return jdbcTemplate.query(
             "SELECT * FROM github_links",
             (rs, rowNum) -> getGithubLink(rs)
+        );
+    }
+
+    @Transactional
+    public void setCountBranches(LinkDto link, Integer countBranches) {
+        jdbcTemplate.update(
+            "UPDATE github_links SET count_branches=? WHERE link_id=?",
+            countBranches,
+            link.getId()
         );
     }
 

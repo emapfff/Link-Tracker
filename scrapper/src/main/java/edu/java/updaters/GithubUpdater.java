@@ -4,6 +4,7 @@ import edu.java.clients.GitHubClient;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.jdbc.JdbcGithubLinkRepository;
+import edu.java.domain.jdbc.JdbcLinkRepository;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.RepositoryResponse;
 import edu.java.tools.LinkParse;
@@ -26,6 +27,9 @@ public class GithubUpdater implements LinkUpdater {
     @Autowired
     private JdbcGithubLinkRepository githubLinkRepository;
 
+    @Autowired
+    private JdbcLinkRepository linkRepository;
+
     @Override
     public int update(LinkDto linkDto) {
         URI link = linkDto.getUrl();
@@ -36,6 +40,7 @@ public class GithubUpdater implements LinkUpdater {
         OffsetDateTime lastUpdate = repositoryResponse.lastUpdate();
         if (lastUpdate.isAfter(linkDto.getLastUpdate())) {
             log.info("Нужно обновить");
+            linkRepository.setLastUpdate(linkDto, lastUpdate);
             return 1;
         }
         log.info("Не требует обновлений");
@@ -49,8 +54,13 @@ public class GithubUpdater implements LinkUpdater {
         String repo = linkParse.getGithubRepo(link);
         List<BranchResponse> branches = gitHubClient.fetchBranch(user, repo).collectList().block();
         log.info("Получил инфу о ветках репы");
-        Integer bdCountBranches = githubLinkDto.getCountBranches();
-        Integer newCountBranches = branches.size();
-        return bdCountBranches > newCountBranches ? 1 : 0;
+        int bdCountBranches = githubLinkDto.getCountBranches();
+        int newCountBranches = branches.size();
+        if (newCountBranches > bdCountBranches) {
+            log.info("Нужно обновить инфу о ветка репы");
+            githubLinkRepository.setCountBranches(linkDto, newCountBranches);
+            return 1;
+        }
+        return 0;
     }
 }

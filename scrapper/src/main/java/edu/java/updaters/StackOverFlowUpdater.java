@@ -3,6 +3,7 @@ package edu.java.updaters;
 import edu.java.clients.StackOverflowClient;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
+import edu.java.domain.jdbc.JdbcLinkRepository;
 import edu.java.domain.jdbc.JdbcStackOverflowLinkRepository;
 import edu.java.responses.QuestionResponse;
 import edu.java.tools.LinkParse;
@@ -23,12 +24,16 @@ public class StackOverFlowUpdater implements LinkUpdater {
     @Autowired
     private LinkParse linkParse;
 
+    @Autowired
+    private JdbcLinkRepository linkRepository;
+
     @Override
     public int update(LinkDto linkDto) {
         URI link = linkDto.getUrl();
         Long id = linkParse.getStackOverFlowId(link);
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(id).block();
         if (questionResponse.items().getLast().lastActivity().isAfter(linkDto.getLastUpdate())) {
+            linkRepository.setLastUpdate(linkDto, questionResponse.items().getLast().lastActivity());
             return 1;
         }
         return 0;
@@ -41,6 +46,10 @@ public class StackOverFlowUpdater implements LinkUpdater {
         StackOverflowDto stackOverflowDto = stackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkDto.getId());
         Integer oldAnswerCount = stackOverflowDto.getAnswerCount();
         Integer newAnswerCount = questionResponse.items().getLast().answerCount();
-        return newAnswerCount > oldAnswerCount ? 1 : 0;
+        if (newAnswerCount > oldAnswerCount) {
+            stackOverflowLinkRepository.setAnswersCount(linkDto, newAnswerCount);
+            return 1;
+        }
+        return 0;
     }
 }

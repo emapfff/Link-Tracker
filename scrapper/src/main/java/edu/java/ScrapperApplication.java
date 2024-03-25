@@ -10,7 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(ApplicationConfigScrapper.class)
 @AllArgsConstructor
 public class ScrapperApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ScrapperApplication.class, args);
     }

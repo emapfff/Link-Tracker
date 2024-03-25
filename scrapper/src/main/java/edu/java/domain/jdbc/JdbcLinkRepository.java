@@ -5,12 +5,8 @@ import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +38,7 @@ public class JdbcLinkRepository {
         jdbcTemplate.update(
             "INSERT INTO link (url, last_update) VALUES (?, ?)",
             url.toString(),
-            Timestamp.valueOf(lastUpdate.toLocalDateTime())
+            Timestamp.from(lastUpdate.toInstant())
         );
         Long chatId = jdbcChatRepository.findIdByTgChatId(tgChatId);
         Long linkId = findAllByUrl(url).getLast().getId();
@@ -118,14 +114,24 @@ public class JdbcLinkRepository {
         );
     }
 
+    @Transactional
+    public void setLastUpdate(LinkDto link, OffsetDateTime lastUpdate) {
+        jdbcTemplate.update(
+            "UPDATE link SET last_update=? WHERE id=? AND url=?",
+            lastUpdate,
+            link.getId(),
+            link.getUrl().toString()
+        );
+    }
+
     @NotNull
     private LinkDto getLinkDto(ResultSet rs) throws SQLException {
         LinkDto linkDto = new LinkDto();
         linkDto.setId(rs.getLong("id"));
         linkDto.setUrl(URI.create(rs.getString("url")));
-        LocalDateTime localDateTime = rs.getTimestamp("last_update").toLocalDateTime();
-        ZoneOffset systemZoneOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
-        linkDto.setLastUpdate((localDateTime.atOffset(systemZoneOffset)).truncatedTo(ChronoUnit.SECONDS));
+        linkDto.setLastUpdate(
+            OffsetDateTime.ofInstant(rs.getTimestamp("last_update").toInstant(), ZoneOffset.ofHours(0))
+        );
         return linkDto;
     }
 }

@@ -6,16 +6,21 @@ package edu.java.domain.jooq;
 
 import edu.java.domain.jooq.tables.Chat;
 import edu.java.domain.jooq.tables.Consists;
+import edu.java.domain.jooq.tables.GithubLinks;
 import edu.java.domain.jooq.tables.Link;
+import edu.java.domain.jooq.tables.StackoverflowLink;
 import edu.java.domain.jooq.tables.records.ChatRecord;
 import edu.java.domain.jooq.tables.records.ConsistsRecord;
+import edu.java.domain.jooq.tables.records.GithubLinksRecord;
 import edu.java.domain.jooq.tables.records.LinkRecord;
+import edu.java.domain.jooq.tables.records.StackoverflowLinkRecord;
 import javax.annotation.processing.Generated;
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
+
 
 /**
  * A class modelling foreign key relationships and constraints of tables in the
@@ -37,13 +42,26 @@ public class Keys {
 
     public static final UniqueKey<ChatRecord> CONSTRAINT_1 =
         Internal.createUniqueKey(Chat.CHAT, DSL.name("CONSTRAINT_1"), new TableField[] {Chat.CHAT.ID}, true);
-    public static final UniqueKey<ConsistsRecord> CONSTRAINT_C = Internal.createUniqueKey(Consists.CONSISTS,
+    public static final UniqueKey<ConsistsRecord> CONSTRAINT_C = Internal.createUniqueKey(
+        Consists.CONSISTS,
         DSL.name("CONSTRAINT_C"),
         new TableField[] {Consists.CONSISTS.CHAT_ID, Consists.CONSISTS.LINK_ID},
         true
     );
+    public static final UniqueKey<GithubLinksRecord> CONSTRAINT_3 = Internal.createUniqueKey(
+        GithubLinks.GITHUB_LINKS,
+        DSL.name("CONSTRAINT_3"),
+        new TableField[] {GithubLinks.GITHUB_LINKS.ID},
+        true
+    );
     public static final UniqueKey<LinkRecord> CONSTRAINT_2 =
         Internal.createUniqueKey(Link.LINK, DSL.name("CONSTRAINT_2"), new TableField[] {Link.LINK.ID}, true);
+    public static final UniqueKey<StackoverflowLinkRecord> CONSTRAINT_9 =
+        Internal.createUniqueKey(StackoverflowLink.STACKOVERFLOW_LINK,
+            DSL.name("CONSTRAINT_9"),
+            new TableField[] {StackoverflowLink.STACKOVERFLOW_LINK.ID},
+            true
+        );
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -65,4 +83,20 @@ public class Keys {
             new TableField[] {Link.LINK.ID},
             true
         );
+    public static final ForeignKey<GithubLinksRecord, LinkRecord> CONSTRAINT_3A =
+        Internal.createForeignKey(GithubLinks.GITHUB_LINKS,
+            DSL.name("CONSTRAINT_3A"),
+            new TableField[] {GithubLinks.GITHUB_LINKS.LINK_ID},
+            Keys.CONSTRAINT_2,
+            new TableField[] {Link.LINK.ID},
+            true
+        );
+    public static final ForeignKey<StackoverflowLinkRecord, LinkRecord> CONSTRAINT_93 = Internal.createForeignKey(
+        StackoverflowLink.STACKOVERFLOW_LINK,
+        DSL.name("CONSTRAINT_93"),
+        new TableField[] {StackoverflowLink.STACKOVERFLOW_LINK.LINK_ID},
+        Keys.CONSTRAINT_2,
+        new TableField[] {Link.LINK.ID},
+        true
+    );
 }

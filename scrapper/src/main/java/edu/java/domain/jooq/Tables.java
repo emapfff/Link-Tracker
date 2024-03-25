@@ -6,8 +6,11 @@ package edu.java.domain.jooq;
 
 import edu.java.domain.jooq.tables.Chat;
 import edu.java.domain.jooq.tables.Consists;
+import edu.java.domain.jooq.tables.GithubLinks;
 import edu.java.domain.jooq.tables.Link;
+import edu.java.domain.jooq.tables.StackoverflowLink;
 import javax.annotation.processing.Generated;
+
 
 /**
  * Convenience access to all tables in the default schema.
@@ -33,7 +36,17 @@ public class Tables {
     public static final Consists CONSISTS = Consists.CONSISTS;
 
     /**
+     * The table <code>GITHUB_LINKS</code>.
+     */
+    public static final GithubLinks GITHUB_LINKS = GithubLinks.GITHUB_LINKS;
+
+    /**
      * The table <code>LINK</code>.
      */
     public static final Link LINK = Link.LINK;
+
+    /**
+     * The table <code>STACKOVERFLOW_LINK</code>.
+     */
+    public static final StackoverflowLink STACKOVERFLOW_LINK = StackoverflowLink.STACKOVERFLOW_LINK;
 }

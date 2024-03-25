@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 public class JdbcLinkService implements LinkService {
     private final static String CHAT_NOT_FOUND = "Чат не был добавлен";
     private final static String LINK_NOT_FOUND = "Ссылка не найдена";
-
     private final static String INCORRECT_LINK = "Неверна указана ссылка";
     private final JdbcLinkRepository jdbcLinkRepository;
     private final JdbcChatRepository jdbcChatRepository;

@@ -1,5 +1,6 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
 import java.net.URI;
 import java.sql.ResultSet;
@@ -15,11 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class JdbcStackOverflowLinkRepository {
     private JdbcTemplate jdbcTemplate;
 
-    private JdbcLinkRepository jdbcLinkRepository;
+    private JdbcLinkRepository linkRepository;
 
     @Transactional
     public void add(Long tgChatId, URI url, Integer answerCount) {
-        Long linkId = jdbcLinkRepository.findLinkByChatIdAndUrl(tgChatId, url).getId();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(tgChatId, url).getId();
         jdbcTemplate.update(
             "INSERT INTO stackoverflow_link (link_id, answer_count) VALUES (?, ?)",
             linkId,
@@ -62,6 +63,15 @@ public class JdbcStackOverflowLinkRepository {
         return jdbcTemplate.query(
             "SELECT * FROM stackoverflow_link",
             (rs, rowNum) -> getGithubLink(rs)
+        );
+    }
+
+    @Transactional
+    public void setAnswersCount(LinkDto link, Integer answerCount) {
+        jdbcTemplate.update(
+            "UPDATE stackoverflow_link SET answer_count=? WHERE link_id=?",
+            answerCount,
+            link.getId()
         );
     }
 

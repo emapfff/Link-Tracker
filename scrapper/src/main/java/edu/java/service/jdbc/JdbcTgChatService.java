@@ -6,6 +6,7 @@ import edu.java.exceptions.IncorrectParametersException;
 import edu.java.service.TgChatService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -14,21 +15,23 @@ public class JdbcTgChatService implements TgChatService {
     private final JdbcChatRepository jdbcChatRepository;
 
     @Override
-    public void register(long tgChatId) {
+    @Transactional
+    public void register(Long tgChatId) {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_ID);
         }
-        if (jdbcChatRepository.findCountIdByTgChatId(tgChatId) == 0) {
+        if (jdbcChatRepository.existIdByTgChatId(tgChatId) == 0) {
             jdbcChatRepository.add(tgChatId);
         }
     }
 
     @Override
-    public void unregister(long tgChatId) {
+    @Transactional
+    public void unregister(Long tgChatId) {
         if (tgChatId < 0) {
             throw new IncorrectParametersException(INCORRECT_ID);
         }
-        if (jdbcChatRepository.findCountIdByTgChatId(tgChatId) == 0) {
+        if (jdbcChatRepository.existIdByTgChatId(tgChatId) == 0) {
             throw new AbsentChatException("Чат не существует");
         }
         jdbcChatRepository.remove(tgChatId);

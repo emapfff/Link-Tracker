@@ -4,14 +4,15 @@ import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.jdbc.JdbcLinkRepository;
+import edu.java.exceptions.IncorrectParametersException;
 import edu.java.tools.LinkParse;
-import edu.java.tools.Urls;
 import edu.java.updaters.GithubUpdater;
 import edu.java.updaters.StackOverFlowUpdater;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -31,44 +32,49 @@ public class LinkUpdaterService {
     @Autowired
     private LinkParse linkParse;
 
+    @Transactional
     public void checkUpdates() {
         List<LinkDto> links = jdbcLinkRepository.findAll();
         log.info("Получил ссылки из бд");
         for (var link : links) {
-            if (linkParse.parse(link.getUrl()).equals(Urls.GITHUB)) {
-                if (githubUpdater.update(link) == 1) {
-                    botClient.sendUpdate(new LinkUpdateRequest(
-                        link.getId(),
-                        link.getUrl(),
-                        "Пришло обновление с github!",
-                        jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
-                    ));
+            switch (linkParse.parse(link.url())) {
+                case GITHUB -> {
+                    if (githubUpdater.update(link)) {
+                        botClient.sendUpdate(new LinkUpdateRequest(
+                            link.id(),
+                            link.url(),
+                            "Пришло обновление с github!",
+                            jdbcLinkRepository.findAllTgChatIdsByUrl(link.url())
+                        ));
+                    }
+                    if (githubUpdater.checkBranches(link)) {
+                        botClient.sendUpdate(new LinkUpdateRequest(
+                            link.id(),
+                            link.url(),
+                            "Добавлена новая ветка!",
+                            jdbcLinkRepository.findAllTgChatIdsByUrl(link.url())
+                        ));
+                    }
                 }
-                if (githubUpdater.checkBranches(link) == 1) {
-                    botClient.sendUpdate(new LinkUpdateRequest(
-                        link.getId(),
-                        link.getUrl(),
-                        "Добавлена новая ветка!",
-                        jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
-                    ));
+                case STACKOVERFLOW -> {
+                    if (stackOverFlowUpdater.update(link)) {
+                        botClient.sendUpdate(new LinkUpdateRequest(
+                            link.id(),
+                            link.url(),
+                            "Пришло уведомление со stackoverflow!",
+                            jdbcLinkRepository.findAllTgChatIdsByUrl(link.url())
+                        ));
+                    }
+                    if (stackOverFlowUpdater.checkAnswers(link)) {
+                        botClient.sendUpdate(new LinkUpdateRequest(
+                            link.id(),
+                            link.url(),
+                            "Пришел новый ответ!",
+                            jdbcLinkRepository.findAllTgChatIdsByUrl(link.url())
+                        ));
+                    }
                 }
-            } else {
-                if (stackOverFlowUpdater.update(link) == 1) {
-                    botClient.sendUpdate(new LinkUpdateRequest(
-                        link.getId(),
-                        link.getUrl(),
-                        "Пришло уведомление со stackoverflow!",
-                        jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
-                    ));
-                }
-                if (stackOverFlowUpdater.checkAnswers(link) == 1) {
-                    botClient.sendUpdate(new LinkUpdateRequest(
-                        link.getId(),
-                        link.getUrl(),
-                        "Пришел новый ответ!",
-                        jdbcLinkRepository.findAllTgChatIdsByUrl(link.getUrl())
-                    ));
-                }
+                default -> throw new IncorrectParametersException("Неверная ссылка");
             }
         }
     }

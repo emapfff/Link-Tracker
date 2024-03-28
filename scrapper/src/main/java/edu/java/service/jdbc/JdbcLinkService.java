@@ -20,6 +20,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -37,53 +38,57 @@ public class JdbcLinkService implements LinkService {
     private final JdbcStackOverflowLinkRepository stackOverflowLinkRepository;
 
     @Override
-    public LinkDto add(long tgChatId, URI url) {
-        if (jdbcChatRepository.findCountIdByTgChatId(tgChatId) == 0) {
+    @Transactional
+    public LinkDto add(Long tgChatId, URI url) {
+        if (jdbcChatRepository.existIdByTgChatId(tgChatId) == 0) {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);
         }
         Urls typeOfLink = linkParse.parse(url);
-        if (typeOfLink.equals(Urls.INCORRECT_URL)) {
-            throw new IncorrectParametersException(INCORRECT_LINK);
-        } else if (typeOfLink.equals(Urls.GITHUB)) {
-            RepositoryResponse repResponse = gitHubClient.fetchRepository(
+        switch (typeOfLink) {
+            case GITHUB -> {
+                RepositoryResponse repResponse = gitHubClient.fetchRepository(
                     linkParse.getGithubUser(url),
                     linkParse.getGithubRepo(url)
-            ).block();
-            List<BranchResponse> branchResponse = gitHubClient.fetchBranch(
-                linkParse.getGithubUser(url),
-                linkParse.getGithubRepo(url)
-            ).collectList().block();
-            jdbcLinkRepository.add(tgChatId, url, repResponse.lastUpdate());
-            githubLinkRepository.add(tgChatId, url, branchResponse.size());
-
-        } else {
-            QuestionResponse question = stackOverflowClient.fetchQuestion(linkParse.getStackOverFlowId(url)).block();
-            jdbcLinkRepository.add(tgChatId, url, question.items().getLast().lastActivity());
-            stackOverflowLinkRepository.add(tgChatId, url, question.items().getLast().answerCount());
+                ).block();
+                List<BranchResponse> branchResponse = gitHubClient.fetchBranch(
+                    linkParse.getGithubUser(url),
+                    linkParse.getGithubRepo(url)
+                ).block();
+                jdbcLinkRepository.add(tgChatId, url, repResponse.lastUpdate());
+                githubLinkRepository.add(tgChatId, url, branchResponse.size());
+            }
+            case STACKOVERFLOW -> {
+                QuestionResponse question =
+                    stackOverflowClient.fetchQuestion(linkParse.getStackOverFlowId(url)).block();
+                jdbcLinkRepository.add(tgChatId, url, question.items().getLast().lastActivity());
+                stackOverflowLinkRepository.add(tgChatId, url, question.items().getLast().answerCount());
+            }
+            default -> throw new IncorrectParametersException(INCORRECT_LINK);
         }
         return jdbcLinkRepository.findAllByUrl(url).getLast();
     }
 
     @Override
-    public LinkDto remove(long tgChatId, URI url) {
-        if (jdbcChatRepository.findCountIdByTgChatId(tgChatId) == 0) {
+    @Transactional
+    public LinkDto remove(Long tgChatId, URI url) {
+        if (jdbcChatRepository.existIdByTgChatId(tgChatId) == 0) {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);
         }
-        try {
+        if (jdbcLinkRepository.existLinkByUriAndTgChatId(tgChatId, url) == 0) {
+            throw new IncorrectParametersException(LINK_NOT_FOUND);
+        } else {
             LinkDto removingLink = jdbcLinkRepository.findLinkByChatIdAndUrl(tgChatId, url);
             jdbcLinkRepository.remove(tgChatId, url);
             return removingLink;
-        } catch (Exception exception) {
-            throw new IncorrectParametersException(LINK_NOT_FOUND);
         }
     }
 
+    @Transactional
     @Override
-    public Collection<LinkDto> listAll(long tgChatId) {
-        List<LinkDto> dtoList = jdbcLinkRepository.findAllByTgChatId(tgChatId);
-        if (dtoList.isEmpty()) {
+    public Collection<LinkDto> listAll(Long tgChatId) {
+        if (jdbcChatRepository.existIdByTgChatId(tgChatId) == 0) {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);
         }
-        return dtoList;
+        return jdbcLinkRepository.findAllByTgChatId(tgChatId);
     }
 }

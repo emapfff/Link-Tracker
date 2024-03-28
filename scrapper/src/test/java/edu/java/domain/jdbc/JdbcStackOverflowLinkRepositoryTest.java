@@ -1,5 +1,8 @@
 package edu.java.domain.jdbc;
 
+import edu.java.configuration.DataSourceConfig;
+import edu.java.configuration.JdbcTemplateConfig;
+import edu.java.configuration.TransactionManagerConfig;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
@@ -8,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
@@ -15,7 +19,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {JdbcChatRepository.class, JdbcLinkRepository.class, JdbcConsistsRepository.class, JdbcStackOverflowLinkRepository.class}    )
+@ContextConfiguration(classes = {JdbcTemplateConfig.class, DataSourceConfig.class, TransactionManagerConfig.class})
+@Transactional
+@Rollback
 class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     @Autowired
     private JdbcStackOverflowLinkRepository stackOverflowLinkRepository;
@@ -31,8 +38,6 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     private static final URI URI_STACKOVERFLOW2 = URI.create("http://stackoverflow2");
 
     @Test
-    @Transactional
-    @Rollback
     void addTest() {
         chatRepository.add(1234L);
         chatRepository.add(123L);
@@ -44,13 +49,11 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
 
         List<StackOverflowDto> stackOverflowDtos = stackOverflowLinkRepository.findAll();
         LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW);
-        assertEquals(stackOverflowDtos.getLast().getLinkId(), linkDto.getId());
-        assertEquals(stackOverflowDtos.getLast().getAnswerCount(), 5);
+        assertEquals(stackOverflowDtos.getLast().linkId(), linkDto.id());
+        assertEquals(stackOverflowDtos.getLast().answerCount(), 5);
     }
 
     @Test
-    @Transactional
-    @Rollback
     void findAllByTgChatIdTest() {
         chatRepository.add(1234L);
         chatRepository.add(123L);
@@ -67,12 +70,10 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
         );
 
         assertEquals(1, stackOverflowDtos.size());
-        assertEquals(10, stackOverflowDtos.getLast().getAnswerCount());
+        assertEquals(10, stackOverflowDtos.getLast().answerCount());
     }
 
     @Test
-    @Transactional
-    @Rollback
     void findStackOverflowLinkIdByLinkIdTest() {
         chatRepository.add(1234L);
         chatRepository.add(123L);
@@ -83,16 +84,14 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
         stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
         stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
 
-        Long linkId = linkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW1).getId();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW1).id();
 
         StackOverflowDto stackOverflowDto = stackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkId);
-        assertEquals(stackOverflowDto.getAnswerCount(), 5);
-        assertEquals(stackOverflowDto.getLinkId(), linkId);
+        assertEquals(stackOverflowDto.answerCount(), 5);
+        assertEquals(stackOverflowDto.linkId(), linkId);
     }
 
     @Test
-    @Transactional
-    @Rollback
     void checkRemove() {
         chatRepository.add(1234L);
         chatRepository.add(123L);
@@ -111,8 +110,6 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void setAnswersCountTest() {
         chatRepository.add(1234L);
         chatRepository.add(123L);
@@ -129,6 +126,6 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
         List<StackOverflowDto> stackOverflowDtoList = stackOverflowLinkRepository
             .findAllByTgChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
         assertEquals(stackOverflowDtoList.size(), 1);
-        assertEquals(stackOverflowDtoList.getLast().getAnswerCount(), 5);
+        assertEquals(stackOverflowDtoList.getLast().answerCount(), 5);
     }
 }

@@ -42,14 +42,12 @@ public class Keys {
 
     public static final UniqueKey<ChatRecord> CONSTRAINT_1 =
         Internal.createUniqueKey(Chat.CHAT, DSL.name("CONSTRAINT_1"), new TableField[] {Chat.CHAT.ID}, true);
-    public static final UniqueKey<ConsistsRecord> CONSTRAINT_C = Internal.createUniqueKey(
-        Consists.CONSISTS,
+    public static final UniqueKey<ConsistsRecord> CONSTRAINT_C = Internal.createUniqueKey(Consists.CONSISTS,
         DSL.name("CONSTRAINT_C"),
         new TableField[] {Consists.CONSISTS.CHAT_ID, Consists.CONSISTS.LINK_ID},
         true
     );
-    public static final UniqueKey<GithubLinksRecord> CONSTRAINT_3 = Internal.createUniqueKey(
-        GithubLinks.GITHUB_LINKS,
+    public static final UniqueKey<GithubLinksRecord> CONSTRAINT_3 = Internal.createUniqueKey(GithubLinks.GITHUB_LINKS,
         DSL.name("CONSTRAINT_3"),
         new TableField[] {GithubLinks.GITHUB_LINKS.ID},
         true

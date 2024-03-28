@@ -8,48 +8,42 @@ import edu.java.domain.jdbc.JdbcStackOverflowLinkRepository;
 import edu.java.responses.QuestionResponse;
 import edu.java.tools.LinkParse;
 import java.net.URI;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class StackOverFlowUpdater implements LinkUpdater {
-    @Autowired
     private StackOverflowClient stackOverflowClient;
-
-    @Autowired
     private JdbcStackOverflowLinkRepository stackOverflowLinkRepository;
-
-    @Autowired
     private LinkParse linkParse;
-
-    @Autowired
     private JdbcLinkRepository linkRepository;
 
     @Override
-    public int update(LinkDto linkDto) {
-        URI link = linkDto.getUrl();
+    public boolean update(LinkDto linkDto) {
+        URI link = linkDto.url();
         Long id = linkParse.getStackOverFlowId(link);
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(id).block();
-        if (questionResponse.items().getLast().lastActivity().isAfter(linkDto.getLastUpdate())) {
+        if (questionResponse.items().getLast().lastActivity().isAfter(linkDto.lastUpdate())) {
             linkRepository.setLastUpdate(linkDto, questionResponse.items().getLast().lastActivity());
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
-    public int checkAnswers(LinkDto linkDto) {
-        URI link = linkDto.getUrl();
+    public boolean checkAnswers(LinkDto linkDto) {
+        URI link = linkDto.url();
         Long id = linkParse.getStackOverFlowId(link);
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(id).block();
-        StackOverflowDto stackOverflowDto = stackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkDto.getId());
-        Integer oldAnswerCount = stackOverflowDto.getAnswerCount();
+        StackOverflowDto stackOverflowDto = stackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkDto.id());
+        Integer oldAnswerCount = stackOverflowDto.answerCount();
         Integer newAnswerCount = questionResponse.items().getLast().answerCount();
         if (newAnswerCount > oldAnswerCount) {
             stackOverflowLinkRepository.setAnswersCount(linkDto, newAnswerCount);
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 }

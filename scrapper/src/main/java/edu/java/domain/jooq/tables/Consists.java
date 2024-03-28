@@ -50,6 +50,7 @@ public class Consists extends TableImpl<ConsistsRecord> {
      * The reference instance of <code>CONSISTS</code>
      */
     public static final Consists CONSISTS = new Consists();
+
     private transient Chat _chat;
 
     /**
@@ -115,8 +116,6 @@ public class Consists extends TableImpl<ConsistsRecord> {
         return Arrays.asList(Keys.CONSTRAINT_CC, Keys.CONSTRAINT_CC9);
     }
 
-    private transient Link _link;
-
     /**
      * The class holding records for this type
      */
@@ -125,6 +124,7 @@ public class Consists extends TableImpl<ConsistsRecord> {
     public Class<ConsistsRecord> getRecordType() {
         return ConsistsRecord.class;
     }
+    private transient Link _link;
 
     /**
      * Get the implicit join path to the <code>PUBLIC.CHAT</code> table.

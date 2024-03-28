@@ -75,10 +75,7 @@ class ScrapperControllerTest {
     @Test
     void getLinksWithStatus200() throws Exception {
         List<LinkDto> linkDtoList = new ArrayList<>();
-        LinkDto link1 = new LinkDto();
-        link1.setId(1L);
-        link1.setUrl(URI.create("http://mycore"));
-        link1.setLastUpdate(OffsetDateTime.now());
+        LinkDto link1 = new LinkDto(1L, URI.create("http://mycore"), OffsetDateTime.now() );
         linkDtoList.add(link1);
         when(jdbcLinkService.listAll(anyLong())).thenReturn(linkDtoList);
 
@@ -94,10 +91,7 @@ class ScrapperControllerTest {
     @Test
     void addLinkWithStatus200() throws Exception {
         AddLinkRequest addLinkRequest = new AddLinkRequest(new URI("https://link"));
-        LinkDto link1 = new LinkDto();
-        link1.setId(1L);
-        link1.setUrl(URI.create("https://link"));
-        link1.setLastUpdate(OffsetDateTime.now());
+        LinkDto link1 = new LinkDto(1L, URI.create("http://link"), OffsetDateTime.now());
         when(jdbcLinkService.add(anyLong(), any())).thenReturn(link1);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/links")
@@ -113,11 +107,7 @@ class ScrapperControllerTest {
     @Test
     void deleteLinkWithStatus200() throws Exception {
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(new URI("https://link"));
-        LinkDto link1 = new LinkDto();
-        link1.setId(1L);
-        link1.setUrl(URI.create("https://link"));
-        link1.setLastUpdate(OffsetDateTime.now());
-
+        LinkDto link1 = new LinkDto(1L, URI.create("https://link"), OffsetDateTime.now());
         when(jdbcLinkService.remove(anyLong(), any())).thenReturn(link1);
         mockMvc.perform(MockMvcRequestBuilders.delete("/links?")
                 .header("Tg-Chat-Id", 1L)

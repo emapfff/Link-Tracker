@@ -155,19 +155,6 @@ public class ChatRecord extends UpdatableRecordImpl<ChatRecord> implements Recor
     // -------------------------------------------------------------------------
 
     /**
-     * Create a detached, initialised ChatRecord
-     */
-    public ChatRecord(edu.java.domain.jooq.tables.pojos.Chat value) {
-        super(Chat.CHAT);
-
-        if (value != null) {
-            setId(value.getId());
-            setTgChatId(value.getTgChatId());
-            resetChangedOnNotNull();
-        }
-    }
-
-    /**
      * Setter for <code>CHAT.ID</code>.
      */
     public void setId(@Nullable Long value) {
@@ -179,5 +166,18 @@ public class ChatRecord extends UpdatableRecordImpl<ChatRecord> implements Recor
      */
     public void setTgChatId(@Nullable Long value) {
         set(1, value);
+    }
+
+    /**
+     * Create a detached, initialised ChatRecord
+     */
+    public ChatRecord(edu.java.domain.jooq.tables.pojos.Chat value) {
+        super(Chat.CHAT);
+
+        if (value != null) {
+            setId(value.getId());
+            setTgChatId(value.getTgChatId());
+            resetChangedOnNotNull();
+        }
     }
 }

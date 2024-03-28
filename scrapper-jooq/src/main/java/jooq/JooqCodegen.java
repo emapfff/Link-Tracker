@@ -49,7 +49,6 @@ public class JooqCodegen {
                     .withGenerate(options)
                     .withTarget(target)
             );
-
         GenerationTool.generate(configuration);
     }
 }

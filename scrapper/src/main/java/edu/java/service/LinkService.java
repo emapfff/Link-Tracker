@@ -5,9 +5,9 @@ import java.net.URI;
 import java.util.Collection;
 
 public interface LinkService {
-    LinkDto add(long tgChatId, URI url);
+    LinkDto add(Long tgChatId, URI url);
 
-    LinkDto remove(long tgChatId, URI url);
+    LinkDto remove(Long tgChatId, URI url);
 
-    Collection<LinkDto> listAll(long tgChatId);
+    Collection<LinkDto> listAll(Long tgChatId);
 }

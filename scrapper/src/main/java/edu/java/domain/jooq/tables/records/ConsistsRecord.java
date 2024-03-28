@@ -4,7 +4,7 @@
 
 package edu.java.domain.jooq.tables.records;
 
-import edu.java.domain.jooq.tables.pojos.Consists;
+import edu.java.domain.jooq.tables.Consists;
 import java.beans.ConstructorProperties;
 import javax.annotation.processing.Generated;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class ConsistsRecord extends UpdatableRecordImpl<ConsistsRecord> implemen
      * Create a detached ConsistsRecord
      */
     public ConsistsRecord() {
-        super(edu.java.domain.jooq.tables.Consists.CONSISTS);
+        super(Consists.CONSISTS);
     }
 
     /**
@@ -50,7 +50,7 @@ public class ConsistsRecord extends UpdatableRecordImpl<ConsistsRecord> implemen
      */
     @ConstructorProperties({"chatId", "linkId"})
     public ConsistsRecord(@NotNull Long chatId, @NotNull Long linkId) {
-        super(edu.java.domain.jooq.tables.Consists.CONSISTS);
+        super(Consists.CONSISTS);
 
         setChatId(chatId);
         setLinkId(linkId);
@@ -95,8 +95,8 @@ public class ConsistsRecord extends UpdatableRecordImpl<ConsistsRecord> implemen
     /**
      * Create a detached, initialised ConsistsRecord
      */
-    public ConsistsRecord(Consists value) {
-        super(edu.java.domain.jooq.tables.Consists.CONSISTS);
+    public ConsistsRecord(edu.java.domain.jooq.tables.pojos.Consists value) {
+        super(Consists.CONSISTS);
 
         if (value != null) {
             setChatId(value.getChatId());
@@ -172,12 +172,12 @@ public class ConsistsRecord extends UpdatableRecordImpl<ConsistsRecord> implemen
     @Override
     @NotNull
     public Field<Long> field1() {
-        return edu.java.domain.jooq.tables.Consists.CONSISTS.CHAT_ID;
+        return Consists.CONSISTS.CHAT_ID;
     }
 
     @Override
     @NotNull
     public Field<Long> field2() {
-        return edu.java.domain.jooq.tables.Consists.CONSISTS.LINK_ID;
+        return Consists.CONSISTS.LINK_ID;
     }
 }

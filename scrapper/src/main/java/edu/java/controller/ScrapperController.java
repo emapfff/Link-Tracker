@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
 @AllArgsConstructor
@@ -40,31 +39,31 @@ public class ScrapperController {
 
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     @GetMapping("/links")
-    public Mono<ListLinksResponse> getLinks(@RequestHeader("Tg-Chat-Id") Long tgChatId) {
+    public ListLinksResponse getLinks(@RequestHeader("Tg-Chat-Id") Long tgChatId) {
         Collection<LinkDto> links = linkService.listAll(tgChatId);
         List<LinkResponse> linkResponses = links.stream()
-            .map(link -> new LinkResponse(link.getId(), link.getUrl()))
+            .map(link -> new LinkResponse(link.id(), link.url()))
             .toList();
-        return Mono.just(new ListLinksResponse(linkResponses, linkResponses.size()));
+        return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылка успешно добавлена")
     @PostMapping("/links")
-    public Mono<LinkResponse> addLink(
+    public LinkResponse addLink(
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
         @RequestBody AddLinkRequest addLinkRequest
     ) {
         LinkDto addLink = linkService.add(tgChatId, addLinkRequest.link());
-        return Mono.just(new LinkResponse(addLink.getId(), addLink.getUrl()));
+        return new LinkResponse(addLink.id(), addLink.url());
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылка успешно убрана")
     @DeleteMapping("/links")
-    public Mono<LinkResponse> deleteLink(
+    public LinkResponse deleteLink(
         @RequestHeader("Tg-Chat-Id") Long tgChatId,
         @RequestBody RemoveLinkRequest removeLinkRequest
     ) {
         LinkDto deleteLink = linkService.remove(tgChatId, removeLinkRequest.link());
-        return Mono.just(new LinkResponse(deleteLink.getId(), deleteLink.getUrl()));
+        return new LinkResponse(deleteLink.id(), deleteLink.url());
     }
 }

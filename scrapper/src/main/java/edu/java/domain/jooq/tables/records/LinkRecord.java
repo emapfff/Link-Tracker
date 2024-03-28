@@ -4,7 +4,7 @@
 
 package edu.java.domain.jooq.tables.records;
 
-import edu.java.domain.jooq.tables.pojos.Link;
+import edu.java.domain.jooq.tables.Link;
 import jakarta.validation.constraints.Size;
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
@@ -37,7 +37,7 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> implements Recor
      * Create a detached LinkRecord
      */
     public LinkRecord() {
-        super(edu.java.domain.jooq.tables.Link.LINK);
+        super(Link.LINK);
     }
 
     /**
@@ -53,7 +53,7 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> implements Recor
      */
     @ConstructorProperties({"id", "url", "lastUpdate"})
     public LinkRecord(@Nullable Long id, @NotNull String url, @NotNull LocalDateTime lastUpdate) {
-        super(edu.java.domain.jooq.tables.Link.LINK);
+        super(Link.LINK);
 
         setId(id);
         setUrl(url);
@@ -74,8 +74,8 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> implements Recor
     /**
      * Create a detached, initialised LinkRecord
      */
-    public LinkRecord(Link value) {
-        super(edu.java.domain.jooq.tables.Link.LINK);
+    public LinkRecord(edu.java.domain.jooq.tables.pojos.Link value) {
+        super(Link.LINK);
 
         if (value != null) {
             setId(value.getId());
@@ -214,18 +214,18 @@ public class LinkRecord extends UpdatableRecordImpl<LinkRecord> implements Recor
     @Override
     @NotNull
     public Field<Long> field1() {
-        return edu.java.domain.jooq.tables.Link.LINK.ID;
+        return Link.LINK.ID;
     }
 
     @Override
     @NotNull
     public Field<String> field2() {
-        return edu.java.domain.jooq.tables.Link.LINK.URL;
+        return Link.LINK.URL;
     }
 
     @Override
     @NotNull
     public Field<LocalDateTime> field3() {
-        return edu.java.domain.jooq.tables.Link.LINK.LAST_UPDATE;
+        return Link.LINK.LAST_UPDATE;
     }
 }

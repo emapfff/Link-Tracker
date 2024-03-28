@@ -3,24 +3,21 @@ package edu.java.domain.jdbc;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
 import java.net.URI;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @AllArgsConstructor
 public class JdbcStackOverflowLinkRepository {
-    private JdbcTemplate jdbcTemplate;
 
+    private JdbcTemplate jdbcTemplate;
     private JdbcLinkRepository linkRepository;
 
-    @Transactional
     public void add(Long tgChatId, URI url, Integer answerCount) {
-        Long linkId = linkRepository.findLinkByChatIdAndUrl(tgChatId, url).getId();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(tgChatId, url).id();
         jdbcTemplate.update(
             "INSERT INTO stackoverflow_link (link_id, answer_count) VALUES (?, ?)",
             linkId,
@@ -28,7 +25,6 @@ public class JdbcStackOverflowLinkRepository {
         );
     }
 
-    @Transactional
     public List<StackOverflowDto> findAllByTgChatIdAndUrl(Long tgChatId, URI url) {
         return jdbcTemplate.query(
             """
@@ -43,44 +39,33 @@ public class JdbcStackOverflowLinkRepository {
                 ) l ON sl.link_id = l.id
                 WHERE c.tg_chat_id = ?;
                 """,
-            (rs, rowNum) -> getGithubLink(rs),
+            new DataClassRowMapper<>(StackOverflowDto.class),
             url.toString(),
             tgChatId
         );
     }
 
-    @Transactional
     public StackOverflowDto findStackOverflowLinkByLinkId(Long linkId) {
         return jdbcTemplate.queryForObject(
             "SELECT * FROM stackoverflow_link WHERE link_id=?",
-            (rs, rowNum) -> getGithubLink(rs),
+            new DataClassRowMapper<>(StackOverflowDto.class),
             linkId
         );
     }
 
-    @Transactional
     public List<StackOverflowDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM stackoverflow_link",
-            (rs, rowNum) -> getGithubLink(rs)
+            new DataClassRowMapper<>(StackOverflowDto.class)
         );
     }
 
-    @Transactional
     public void setAnswersCount(LinkDto link, Integer answerCount) {
         jdbcTemplate.update(
             "UPDATE stackoverflow_link SET answer_count=? WHERE link_id=?",
             answerCount,
-            link.getId()
+            link.id()
         );
-    }
-
-    private StackOverflowDto getGithubLink(ResultSet rs) throws SQLException {
-        StackOverflowDto stackOverflowDto = new StackOverflowDto();
-        stackOverflowDto.setLinkId(rs.getLong("link_id"));
-        stackOverflowDto.setId(rs.getLong("id"));
-        stackOverflowDto.setAnswerCount(rs.getInt("answer_count"));
-        return stackOverflowDto;
     }
 
 }

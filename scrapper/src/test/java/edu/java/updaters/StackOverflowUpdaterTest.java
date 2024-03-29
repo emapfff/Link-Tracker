@@ -1,7 +1,6 @@
 package edu.java.updaters;
 
 import edu.java.clients.StackOverflowClient;
-import edu.java.domain.GithubLinkRepository;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
@@ -10,19 +9,15 @@ import edu.java.responses.QuestionResponse;
 import edu.java.responses.QuestionResponse.ItemResponse;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.StackOverflowUpdater;
+import edu.java.tools.LinkParse;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import edu.java.tools.LinkParse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,7 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class StackOverflowUpdaterTest extends IntegrationTest{
+class StackOverflowUpdaterTest extends IntegrationTest {
     private final LinkDto link = new LinkDto(
         1L,
         URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"),
@@ -70,7 +65,6 @@ class StackOverflowUpdaterTest extends IntegrationTest{
         assertTrue(result);
     }
 
-
     @Test
     void updateNoNeededTest() {
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(new QuestionResponse(itemsMinusDay)));
@@ -80,6 +74,7 @@ class StackOverflowUpdaterTest extends IntegrationTest{
 
         assertFalse(result);
     }
+
     @Test
     void checkAnswersTrue() {
         StackOverflowDto stackOverflowDto = new StackOverflowDto(1L, link.id(), 19);

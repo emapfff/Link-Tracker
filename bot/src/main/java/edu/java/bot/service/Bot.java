@@ -11,6 +11,9 @@ import edu.java.bot.commands.Command;
 import edu.java.bot.configuration.ApplicationConfig;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
@@ -20,11 +23,13 @@ import org.springframework.stereotype.Service;
 public class Bot {
     private final TelegramBot telegramBot;
     private final List<Command> commands;
+    private final Map<String, Command> commandMap;
 
     @Autowired
-    public Bot(ApplicationConfig applicationConfig, List<Command> commands) {
+    public Bot(@NotNull ApplicationConfig applicationConfig, @NotNull List<Command> commands) {
         this.telegramBot = new TelegramBot(applicationConfig.telegramToken());
         this.commands = commands;
+        this.commandMap = commands.stream().collect(Collectors.toMap(Command::name, c -> c));
     }
 
     /**
@@ -44,28 +49,23 @@ public class Bot {
         this.telegramBot.setUpdatesListener(this::process);
     }
 
-    public int process(List<Update> list) {
+    public int process(@NotNull List<Update> list) {
         Update lastUpdate = list.getLast();
         if (lastUpdate != null && lastUpdate.message().text() != null) {
-            boolean foundCommand = false;
             String message = lastUpdate.message().text();
-            for (Command command : commands) {
-                if (message.equals(command.command())) {
-                    if (command.supports(lastUpdate)) {
-                        executeCommand(new SendMessage(
-                                lastUpdate.message().chat().id(),
-                                "Укажите, пожалуйста, ссылку"
-                            )
-                        );
-                        lastUpdate = waitingNewMessage(lastUpdate);
-                        executeCommand(command.handle(lastUpdate));
-                    }
-                    foundCommand = true;
+            if (commandMap.containsKey(message)) {
+                Command command = commandMap.get(message);
+                if (command.supports(lastUpdate)) {
+                    executeCommand(new SendMessage(
+                            lastUpdate.message().chat().id(),
+                            "Укажите, пожалуйста, ссылку"
+                        )
+                    );
+                    lastUpdate = waitingNewMessage(lastUpdate);
                     executeCommand(command.handle(lastUpdate));
-                    break;
                 }
-            }
-            if (!foundCommand) {
+                executeCommand(command.handle(lastUpdate));
+            } else {
                 long chatId = lastUpdate.message().chat().id();
                 this.executeCommand(new SendMessage(chatId, "Команда не найдена."));
             }

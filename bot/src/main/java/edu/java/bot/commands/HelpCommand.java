@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class HelpCommand implements Command {
 
     @Override
-    public String command() {
+    public String name() {
         return "/help";
     }
 

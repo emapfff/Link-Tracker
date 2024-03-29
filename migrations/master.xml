@@ -11,4 +11,5 @@
     <include file="sql/createTableLink.sql" relativeToChangelogFile="true"/>
     <include file="sql/relationLinkChat.sql" relativeToChangelogFile="true"/>
     <include file="sql/createTableGithubLink.sql" relativeToChangelogFile="true"/>
+    <include file="sql/createTableStackOverflowLink.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

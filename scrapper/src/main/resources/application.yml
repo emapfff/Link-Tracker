@@ -1,9 +1,9 @@
 app:
   scheduler:
     enable: true
-    interval: 10s
-    force-check-delay: 10s
-
+    interval: 60s
+    force-check-delay: 120s
+  database-access-type: jdbc
 spring:
   application:
     name: scrapper

@@ -1,56 +1,49 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
 import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@AllArgsConstructor
-public class JdbcLinkRepository {
+@RequiredArgsConstructor
+public class JdbcLinkRepository implements LinkRepository {
     private static final String JOIN_TABLES =
         """
                 SELECT link.id, link.url, link.last_update
-                FROM link JOIN consists ON link.id = consists.link_id
+                FROM link
+                JOIN consists ON link.id = consists.link_id
                 JOIN chat ON chat.id = consists.chat_id
             """;
 
-    @Autowired
-    private JdbcConsistRepository jdbcConsistRepository;
+    private final JdbcConsistsRepository jdbcConsistsRepository;
+    private final JdbcChatRepository jdbcChatRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private JdbcChatRepository jdbcChatRepository;
-
-    private JdbcTemplate jdbcTemplate;
-
-    @Transactional
-    public void add(Long tgChatId, URI url, OffsetDateTime lastUpdate) {
+    @Override
+    public void add(Long tgChatId, @NotNull URI url, @NotNull OffsetDateTime lastUpdate) {
         jdbcTemplate.update(
             "INSERT INTO link (url, last_update) VALUES (?, ?)",
             url.toString(),
-            Timestamp.valueOf(lastUpdate.toLocalDateTime())
+            Timestamp.from(lastUpdate.toInstant())
         );
         Long chatId = jdbcChatRepository.findIdByTgChatId(tgChatId);
-        Long linkId = findAllByUrl(url).getLast().getId();
-        jdbcConsistRepository.add(chatId, linkId);
+        Long linkId = findAllByUrl(url).getLast().id();
+        jdbcConsistsRepository.add(chatId, linkId);
     }
 
-    @Transactional
-    public List<LinkDto> findAllByUrl(URI url) {
+    @Override
+    public List<LinkDto> findAllByUrl(@NotNull URI url) {
         return jdbcTemplate.query(
             "SELECT * FROM link WHERE url=?",
             (rs, rowNum) -> getLinkDto(rs),
@@ -58,9 +51,9 @@ public class JdbcLinkRepository {
         );
     }
 
-    @Transactional
+    @Override
     public void remove(Long tgChatId, URI url) {
-        Long linkId = findLinkByChatIdAndUrl(tgChatId, url).getId();
+        Long linkId = findLinkByChatIdAndUrl(tgChatId, url).id();
         jdbcTemplate.update(
             "DELETE FROM link WHERE url=? and id=?",
             url.toString(),
@@ -68,8 +61,8 @@ public class JdbcLinkRepository {
         );
     }
 
-    @Transactional
-    public LinkDto findLinkByChatIdAndUrl(Long tgChatId, URI url) {
+    @Override
+    public LinkDto findLinkByChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         return jdbcTemplate.queryForObject(
             JOIN_TABLES + " WHERE chat.tg_chat_id = ? AND url=?",
             (rs, rowNum) -> getLinkDto(rs),
@@ -78,7 +71,22 @@ public class JdbcLinkRepository {
         );
     }
 
-    @Transactional
+    @Override
+    public Integer existLinkByUriAndTgChatId(Long tgChatId, @NotNull URI url) {
+        return jdbcTemplate.queryForObject(
+            """
+                SELECT COUNT(*)
+                FROM link
+                JOIN consists ON link.id = consists.link_id
+                JOIN chat ON chat.id = consists.chat_id
+                WHERE chat.tg_chat_id=? AND link.url=?""",
+            Integer.class,
+            tgChatId,
+            url.toString()
+        );
+    }
+
+    @Override
     public List<LinkDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM link",
@@ -86,7 +94,7 @@ public class JdbcLinkRepository {
         );
     }
 
-    @Transactional
+    @Override
     public List<LinkDto> findAllByTgChatId(Long tgChatId) {
         return jdbcTemplate.query(
             JOIN_TABLES + " WHERE chat.tg_chat_id = ?",
@@ -95,8 +103,8 @@ public class JdbcLinkRepository {
         );
     }
 
-    @Transactional
-    public List<Long> findAllTgChatIdsByUrl(URI url) {
+    @Override
+    public List<Long> findAllTgChatIdsByUrl(@NotNull URI url) {
         return jdbcTemplate.queryForList(
             """
                 SELECT tg_chat_id
@@ -109,23 +117,22 @@ public class JdbcLinkRepository {
         );
     }
 
-    @Transactional
-    public URI findUrlByLinkId(Long linkId) {
-        return jdbcTemplate.queryForObject(
-            "SELECT url FROM link WHERE id=?",
-            URI.class,
-            linkId
+    @Override
+    public void setLastUpdate(@NotNull LinkDto link, OffsetDateTime lastUpdate) {
+        jdbcTemplate.update(
+            "UPDATE link SET last_update=? WHERE id=? AND url=?",
+            lastUpdate,
+            link.id(),
+            link.url().toString()
         );
     }
 
-    @NotNull
+    @Contract("_ -> new") @NotNull
     private LinkDto getLinkDto(ResultSet rs) throws SQLException {
-        LinkDto linkDto = new LinkDto();
-        linkDto.setId(rs.getLong("id"));
-        linkDto.setUrl(URI.create(rs.getString("url")));
-        LocalDateTime localDateTime = rs.getTimestamp("last_update").toLocalDateTime();
-        ZoneOffset systemZoneOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
-        linkDto.setLastUpdate((localDateTime.atOffset(systemZoneOffset)).truncatedTo(ChronoUnit.SECONDS));
-        return linkDto;
+        return new LinkDto(
+            rs.getLong("id"),
+            URI.create(rs.getString("url")),
+            OffsetDateTime.ofInstant(rs.getTimestamp("last_update").toInstant(), ZoneOffset.ofHours(0))
+        );
     }
 }

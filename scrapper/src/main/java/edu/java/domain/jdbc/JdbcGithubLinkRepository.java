@@ -1,25 +1,26 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.GithubLinkRepository;
 import edu.java.domain.dto.GithubLinkDto;
+import edu.java.domain.dto.LinkDto;
 import java.net.URI;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@AllArgsConstructor
-public class JdbcGithubLinkRepository {
-    private JdbcTemplate jdbcTemplate;
+@RequiredArgsConstructor
+public class JdbcGithubLinkRepository implements GithubLinkRepository {
+    private final JdbcTemplate jdbcTemplate;
 
-    private JdbcLinkRepository jdbcLinkRepository;
+    private final JdbcLinkRepository linkRepository;
 
-    @Transactional
+    @Override
     public void add(Long tgChatId, URI url, Integer countBranches) {
-        Long linkId = jdbcLinkRepository.findLinkByChatIdAndUrl(tgChatId, url).getId();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(tgChatId, url).id();
         jdbcTemplate.update(
             "INSERT INTO github_links (link_id, count_branches) VALUES (?, ?)",
             linkId,
@@ -27,8 +28,8 @@ public class JdbcGithubLinkRepository {
         );
     }
 
-    @Transactional
-    public List<GithubLinkDto> findAllByTgChatIdAndUrl(Long tgChatId, URI url) {
+    @Override
+    public List<GithubLinkDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         return jdbcTemplate.query(
             """
                 SELECT gl.link_id, gl.count_branches, gl.id
@@ -42,34 +43,35 @@ public class JdbcGithubLinkRepository {
                 ) l ON gl.link_id = l.id
                 WHERE c.tg_chat_id = ?;
                 """,
-            (rs, rowNum) -> getGithubLink(rs),
+            new DataClassRowMapper<>(GithubLinkDto.class),
             url.toString(),
             tgChatId
         );
     }
 
-    @Transactional
+    @Override
     public GithubLinkDto findGithubLinkByLinkId(Long linkId) {
         return jdbcTemplate.queryForObject(
             "SELECT * FROM github_links WHERE link_id=?",
-            (rs, rowNum) -> getGithubLink(rs),
+            new DataClassRowMapper<>(GithubLinkDto.class),
             linkId
         );
     }
 
-    @Transactional
+    @Override
     public List<GithubLinkDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM github_links",
-            (rs, rowNum) -> getGithubLink(rs)
+            new DataClassRowMapper<>(GithubLinkDto.class)
         );
     }
 
-    private GithubLinkDto getGithubLink(ResultSet rs) throws SQLException {
-        GithubLinkDto githubLinkDto = new GithubLinkDto();
-        githubLinkDto.setLinkId(rs.getLong("link_id"));
-        githubLinkDto.setId(rs.getLong("id"));
-        githubLinkDto.setCountBranches(rs.getInt("count_branches"));
-        return githubLinkDto;
+    @Override
+    public void setCountBranches(@NotNull LinkDto link, Integer countBranches) {
+        jdbcTemplate.update(
+            "UPDATE github_links SET count_branches=? WHERE link_id=?",
+            countBranches,
+            link.id()
+        );
     }
 }

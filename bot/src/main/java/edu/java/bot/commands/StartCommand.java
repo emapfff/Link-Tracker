@@ -12,7 +12,7 @@ public class StartCommand implements Command {
     private ScrapperClient scrapperClient;
 
     @Override
-    public String command() {
+    public String name() {
         return "/start";
     }
 

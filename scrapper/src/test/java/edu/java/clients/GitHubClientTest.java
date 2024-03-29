@@ -92,7 +92,7 @@ class GitHubClientTest {
         );
         GitHubClient gitHubClient = new GitHubClient(WebClient.create("http://localhost:" + wireMockServer.port()));
 
-        List<BranchResponse> branchResponses = gitHubClient.fetchBranch("user", "repo").collectList().block();
+        List<BranchResponse> branchResponses = gitHubClient.fetchBranch("user", "repo").block();
 
         assertNotNull(branchResponses);
         assertEquals(branchResponses.size(), 2);

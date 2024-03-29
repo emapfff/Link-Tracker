@@ -10,8 +10,9 @@ import org.springframework.stereotype.Component;
 public class ListCommand implements Command {
     @Autowired
     private ScrapperClient scrapperClient;
+
     @Override
-    public String command() {
+    public String name() {
         return "/list";
     }
 

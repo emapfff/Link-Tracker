@@ -1,105 +1,122 @@
 package edu.java.domain.jdbc;
 
-import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
-
+import edu.java.scrapper.IntegrationTest;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
-@SpringBootTest
-class JdbcStackOverflowLinkRepositoryTest {
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest(properties = "app.database-access-type=jdbc")
+@Transactional
+class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcStackOverflowLinkRepository stackOverflowLinkRepository;
+    private JdbcStackOverflowLinkRepository jdbcStackOverflowLinkRepository;
 
     @Autowired
-    private JdbcLinkRepository linkRepository;
+    private JdbcLinkRepository jdbcLinkRepository;
     @Autowired
-    private JdbcChatRepository chatRepository;
+    private JdbcChatRepository jdbcChatRepository;
+
+    private static final URI URI_GITHUB = URI.create("http://github");
+    private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
+    private static final URI URI_STACKOVERFLOW1 = URI.create("http://stackoverflow1");
+    private static final URI URI_STACKOVERFLOW2 = URI.create("http://stackoverflow2");
 
     @Test
-    @Transactional
-    @Rollback
     void addTest() {
-        chatRepository.add(1234L);
-        chatRepository.add(123L);
-        linkRepository.add(1234L, URI.create("http://github"), OffsetDateTime.now());
-        linkRepository.add(1234L, URI.create("http://stackoverflow"), OffsetDateTime.now());
-        linkRepository.add(123L, URI.create("http://github"), OffsetDateTime.now());
+        jdbcChatRepository.add(1234L);
+        jdbcChatRepository.add(123L);
+        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
 
-        stackOverflowLinkRepository.add(1234L, URI.create("http://stackoverflow"), 5);
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW, 5);
 
-        List<StackOverflowDto> stackOverflowDtos = stackOverflowLinkRepository.findAll();
-        LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1234L, URI.create("http://stackoverflow"));
-        assertEquals(stackOverflowDtos.getLast().getLinkId(), linkDto.getId());
-        assertEquals(stackOverflowDtos.getLast().getAnswerCount(), 5);
+        List<StackOverflowDto> stackOverflowDtos = jdbcStackOverflowLinkRepository.findAll();
+        LinkDto linkDto = jdbcLinkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW);
+        assertEquals(stackOverflowDtos.getLast().linkId(), linkDto.id());
+        assertEquals(stackOverflowDtos.getLast().answerCount(), 5);
     }
 
     @Test
-    @Transactional
-    @Rollback
     void findAllByTgChatIdTest() {
-        chatRepository.add(1234L);
-        chatRepository.add(123L);
-        linkRepository.add(1234L, URI.create("http://github"), OffsetDateTime.now());
-        linkRepository.add(1234L, URI.create("http://stackoverflow1"), OffsetDateTime.now());
-        linkRepository.add(1234L, URI.create("http://stackoverflow2"), OffsetDateTime.now());
-        linkRepository.add(123L, URI.create("http://github"), OffsetDateTime.now());
-        stackOverflowLinkRepository.add(1234L, URI.create("http://stackoverflow1"), 5);
-        stackOverflowLinkRepository.add(1234L, URI.create("http://stackoverflow2"), 10);
+        jdbcChatRepository.add(1234L);
+        jdbcChatRepository.add(123L);
+        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
+        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
 
-        List<StackOverflowDto> stackOverflowDtos = stackOverflowLinkRepository.findAllByTgChatIdAndUrl(
+        List<StackOverflowDto> stackOverflowDtos = jdbcStackOverflowLinkRepository.findAllByTgChatIdAndUrl(
             1234L,
-            URI.create("http://stackoverflow2")
+            URI_STACKOVERFLOW2
         );
 
         assertEquals(1, stackOverflowDtos.size());
-        assertEquals(10, stackOverflowDtos.getLast().getAnswerCount());
+        assertEquals(10, stackOverflowDtos.getLast().answerCount());
     }
 
     @Test
-    @Transactional
-    @Rollback
     void findStackOverflowLinkIdByLinkIdTest() {
-        chatRepository.add(1234L);
-        chatRepository.add(123L);
-        linkRepository.add(1234L, URI.create("http://github"), OffsetDateTime.now());
-        linkRepository.add(1234L, URI.create("http://stackoverflow1"), OffsetDateTime.now());
-        linkRepository.add(1234L, URI.create("http://stackoverflow2"), OffsetDateTime.now());
-        linkRepository.add(123L, URI.create("http://github"), OffsetDateTime.now());
-        stackOverflowLinkRepository.add(1234L, URI.create("http://stackoverflow1"), 5);
-        stackOverflowLinkRepository.add(1234L, URI.create("http://stackoverflow2"), 10);
+        jdbcChatRepository.add(1234L);
+        jdbcChatRepository.add(123L);
+        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
+        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
 
-        Long linkId = linkRepository.findLinkByChatIdAndUrl(1234L, URI.create("http://stackoverflow1")).getId();
+        Long linkId = jdbcLinkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW1).id();
 
-        StackOverflowDto stackOverflowDto = stackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkId);
-        assertEquals(stackOverflowDto.getAnswerCount(), 5);
-        assertEquals(stackOverflowDto.getLinkId(), linkId);
+        StackOverflowDto stackOverflowDto = jdbcStackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkId);
+        assertEquals(stackOverflowDto.answerCount(), 5);
+        assertEquals(stackOverflowDto.linkId(), linkId);
     }
 
     @Test
-    @Transactional
-    @Rollback
     void checkRemove() {
-        chatRepository.add(1234L);
-        chatRepository.add(123L);
-        linkRepository.add(1234L, URI.create("http://github"), OffsetDateTime.now());
-        linkRepository.add(1234L, URI.create("http://stackoverflow"), OffsetDateTime.now());
-        linkRepository.add(123L, URI.create("http://github"), OffsetDateTime.now());
-        stackOverflowLinkRepository.add(1234L, URI.create("http://stackoverflow"), 5);
+        jdbcChatRepository.add(1234L);
+        jdbcChatRepository.add(123L);
+        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW, 5);
 
-        linkRepository.remove(1234L, URI.create("http://stackoverflow"));
+        jdbcLinkRepository.remove(1234L, URI_STACKOVERFLOW);
 
-        List<StackOverflowDto> stackOverflowDtos = stackOverflowLinkRepository.findAllByTgChatIdAndUrl(
+        List<StackOverflowDto> stackOverflowDtos = jdbcStackOverflowLinkRepository.findAllByTgChatIdAndUrl(
             1234L,
-            URI.create("http://stackoverflow"));
+            URI_STACKOVERFLOW);
 
         assertEquals(stackOverflowDtos.size(), 0);
+    }
+
+    @Test
+    void setAnswersCountTest() {
+        jdbcChatRepository.add(1234L);
+        jdbcChatRepository.add(123L);
+        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
+        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
+        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
+        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
+        LinkDto link = jdbcLinkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
+
+        jdbcStackOverflowLinkRepository.setAnswersCount(link, 5);
+
+        List<StackOverflowDto> stackOverflowDtoList = jdbcStackOverflowLinkRepository
+            .findAllByTgChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
+        assertEquals(stackOverflowDtoList.size(), 1);
+        assertEquals(stackOverflowDtoList.getLast().answerCount(), 5);
     }
 }

@@ -13,9 +13,15 @@ public record ApplicationConfigScrapper(
     @NestedConfigurationProperty
         @Bean
         @NotNull
-    Scheduler scheduler
-
+    Scheduler scheduler,
+    AccessType databaseAccessType
 ) {
+    public enum AccessType {
+        JDBC,
+        JPA,
+        JOOQ
+    }
+
     public record Scheduler(
         boolean enable,
         Duration interval,

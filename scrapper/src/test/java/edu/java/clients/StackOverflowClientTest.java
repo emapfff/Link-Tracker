@@ -42,7 +42,7 @@ class StackOverflowClientTest {
                     .withBody("{ \"items\" : [ { \"is_answered\" : true," +
                         "\"answer_count\" : 23," +
                         "\"question_id\" : \"123\"," +
-                        "\"last_activity_date\" : \"2024-02-09T17:47:19Z\"}]}"
+                        "\"last_activity_date\" : \"1709846695\"}]}"
                     )));
         StackOverflowClient stackOverflowClient = new StackOverflowClient(
             WebClient.create("http://localhost:" + wireMockServer.port()));
@@ -53,6 +53,6 @@ class StackOverflowClientTest {
         assertTrue(questionResponse.items().getFirst().isAnswered());
         assertEquals(questionResponse.items().getFirst().answerCount(), 23);
         assertEquals(questionResponse.items().getFirst().questionId(), 123);
-        assertEquals(questionResponse.items().getFirst().lastActivity().toString(), "2024-02-09T17:47:19Z");
+        assertEquals(questionResponse.items().getFirst().lastActivity().toString(), "2024-03-07T21:24:55Z");
     }
 }

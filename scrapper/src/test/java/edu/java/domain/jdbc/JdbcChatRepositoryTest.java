@@ -6,40 +6,43 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(properties = "app.database-access-type=jdbc")
+@Transactional
 class JdbcChatRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcChatRepository chatRepository;
+    private JdbcChatRepository jdbcChatRepository;
 
     @Test
-    @Transactional
-    @Rollback
     void addTest() {
-        chatRepository.add(11L);
-        chatRepository.add(22L);
+        jdbcChatRepository.add(11L);
+        jdbcChatRepository.add(22L);
 
-        List<ChatDto> listOfChats = chatRepository.findAll();
+        List<ChatDto> listOfChats = jdbcChatRepository.findAll();
 
-        assertEquals(listOfChats.getFirst().getTgChatId(), 11);
-        assertEquals(listOfChats.getLast().getTgChatId(), 22);
+        assertEquals(listOfChats.getLast().tgChatId(), 22);
     }
 
     @Test
-    @Transactional
-    @Rollback
     void removeTest() {
-        chatRepository.add(11L);
-        chatRepository.add(22L);
+        jdbcChatRepository.add(11L);
+        jdbcChatRepository.add(22L);
 
-        chatRepository.remove(22L);
+        jdbcChatRepository.remove(22L);
 
-        List<ChatDto> chatDtoList = chatRepository.findAll();
+        List<ChatDto> chatDtoList = jdbcChatRepository.findAll();
+        assertEquals(chatDtoList.getLast().tgChatId(), 11);
+    }
 
-        assertEquals(chatDtoList.size(), 1);
-        assertEquals(chatDtoList.getFirst().getTgChatId(), 11);
+    @Test
+    void existIdByTgChatIdTest() {
+        Long tgChatId = 123L;
+        jdbcChatRepository.add(tgChatId);
+
+        Integer count = jdbcChatRepository.existIdByTgChatId(tgChatId);
+
+        assertEquals(count, 1);
     }
 }

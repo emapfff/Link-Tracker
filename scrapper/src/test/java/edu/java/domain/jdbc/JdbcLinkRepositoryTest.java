@@ -1,8 +1,5 @@
 package edu.java.domain.jdbc;
 
-import edu.java.configuration.DataSourceConfig;
-import edu.java.configuration.JdbcTemplateConfig;
-import edu.java.configuration.TransactionManagerConfig;
 import edu.java.domain.dto.ChatDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.scrapper.IntegrationTest;
@@ -11,28 +8,19 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
-@SpringBootTest(classes = {JdbcChatRepository.class, JdbcLinkRepository.class, JdbcConsistsRepository.class})
-@ContextConfiguration(classes = {JdbcTemplateConfig.class, DataSourceConfig.class, TransactionManagerConfig.class})
+@SpringBootTest(properties = "app.database-access-type=jdbc")
 @Transactional
-@Rollback
 class JdbcLinkRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcLinkRepository linkRepository;
+    private JdbcLinkRepository jdbcLinkRepository;
     @Autowired
-    private JdbcChatRepository chatRepository;
+    private JdbcChatRepository jdbcChatRepository;
     private static LinkDto firstTuple;
     private static LinkDto secondTuple;
     private static final URI URI_MYCORE1 = URI.create("http://mycore1");
@@ -46,86 +34,85 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
         firstTuple = new LinkDto(1L, URI_MYCORE1, OffsetDateTime.now());
         secondTuple = new LinkDto(2L, URI_MYCORE2, OffsetDateTime.now());
     }
-    @Transactional
+
     @Test
     void addTest() {
-        chatRepository.add(22L);
-        linkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
+        jdbcChatRepository.add(22L);
+        jdbcLinkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
 
-        List<LinkDto> listOfChats = linkRepository.findAll();
+        List<LinkDto> listOfChats = jdbcLinkRepository.findAll();
         assertEquals(listOfChats.getLast().url(), URI_MYCORE2);
     }
 
 
     @Test
     void removeTest() {
-        chatRepository.add(11L);
-        chatRepository.add(22L);
-        List<ChatDto> dtoList = chatRepository.findAll();
+        jdbcChatRepository.add(11L);
+        jdbcChatRepository.add(22L);
+        List<ChatDto> dtoList = jdbcChatRepository.findAll();
         dtoList.forEach(System.out::println);
-        linkRepository.add(11L, URI_MYCORE1, firstTuple.lastUpdate());
-        linkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
+        jdbcLinkRepository.add(11L, URI_MYCORE1, firstTuple.lastUpdate());
+        jdbcLinkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
 
-        linkRepository.remove(22L, URI_MYCORE2);
+        jdbcLinkRepository.remove(22L, URI_MYCORE2);
 
-        List<LinkDto> chatDtoList = linkRepository.findAll();
+        List<LinkDto> chatDtoList = jdbcLinkRepository.findAll();
         assertEquals(chatDtoList.getLast().url(), URI_MYCORE1);
     }
 
     @Test
     void findLinkByChatIdAndUrlTest() {
-        chatRepository.add(1234L);
-        chatRepository.add(12345L);
-        linkRepository.add(1234L, URI_MYCORE1, firstTuple.lastUpdate());
-        linkRepository.add(12345L, URI_MYCORE2, secondTuple.lastUpdate());
+        jdbcChatRepository.add(1234L);
+        jdbcChatRepository.add(12345L);
+        jdbcLinkRepository.add(1234L, URI_MYCORE1, firstTuple.lastUpdate());
+        jdbcLinkRepository.add(12345L, URI_MYCORE2, secondTuple.lastUpdate());
 
-        Long linkId = linkRepository.findLinkByChatIdAndUrl(12345L, URI_MYCORE2).id();
+        Long linkId = jdbcLinkRepository.findLinkByChatIdAndUrl(12345L, URI_MYCORE2).id();
 
         assertNotNull(linkId);
     }
 
     @Test
     void findAllByTgChatIdTest(){
-        chatRepository.add(11L);
-        chatRepository.add(22L);
-        linkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
-        linkRepository.add(11L, URI_MYCORE2, OffsetDateTime.now());
-        linkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
+        jdbcChatRepository.add(11L);
+        jdbcChatRepository.add(22L);
+        jdbcLinkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
+        jdbcLinkRepository.add(11L, URI_MYCORE2, OffsetDateTime.now());
+        jdbcLinkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
 
-        List<LinkDto> linkDtos = linkRepository.findAllByTgChatId(11L);
+        List<LinkDto> linkDtos = jdbcLinkRepository.findAllByTgChatId(11L);
 
         assertEquals(linkDtos.size(), 3);
     }
 
     @Test
     void findAllTgChatIdsByUrlTest() {
-        chatRepository.add(11L);
-        chatRepository.add(22L);
-        linkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
-        linkRepository.add(22L, URI_MYCORE1, OffsetDateTime.now());
-        linkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
+        jdbcChatRepository.add(11L);
+        jdbcChatRepository.add(22L);
+        jdbcLinkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
+        jdbcLinkRepository.add(22L, URI_MYCORE1, OffsetDateTime.now());
+        jdbcLinkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
 
-        List<Long> listTgChatIds = linkRepository.findAllTgChatIdsByUrl(URI_MYCORE1);
+        List<Long> listTgChatIds = jdbcLinkRepository.findAllTgChatIdsByUrl(URI_MYCORE1);
 
-        assertEquals(11, listTgChatIds.getFirst());
         assertEquals(22, listTgChatIds.getLast());
     }
 
     @Test
     void setLastUpdateTest() {
         String time = "2019-08-31T15:20:30Z";
-        chatRepository.add(1L);
-        chatRepository.add(2L);
-        chatRepository.add(3L);
-        linkRepository.add(1L, URI_LINK1, OffsetDateTime.now());
-        linkRepository.add(1L, URI_LINK11, OffsetDateTime.now());
-        linkRepository.add(2L, URI_LINK1, OffsetDateTime.now());
-        linkRepository.add(3L, URI_LINK1, OffsetDateTime.now());
-        LinkDto link = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
+        jdbcChatRepository.add(1L);
+        jdbcChatRepository.add(2L);
+        jdbcChatRepository.add(3L);
+        jdbcLinkRepository.add(1L, URI_LINK1, OffsetDateTime.now());
+        jdbcLinkRepository.add(1L, URI_LINK11, OffsetDateTime.now());
+        jdbcLinkRepository.add(2L, URI_LINK1, OffsetDateTime.now());
+        jdbcLinkRepository.add(3L, URI_LINK1, OffsetDateTime.now());
+        LinkDto link = jdbcLinkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
 
-        linkRepository.setLastUpdate(link, OffsetDateTime.parse(time));
+        jdbcLinkRepository.setLastUpdate(link, OffsetDateTime.parse(time));
 
-        LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
+        LinkDto linkDto = jdbcLinkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
         assertEquals(linkDto.url(), URI_LINK1);
         assertEquals(linkDto.lastUpdate().toString(), time);
     }

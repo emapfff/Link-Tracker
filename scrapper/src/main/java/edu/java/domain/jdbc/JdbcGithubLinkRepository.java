@@ -1,23 +1,24 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.GithubLinkRepository;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import java.net.URI;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
-@AllArgsConstructor
-public class JdbcGithubLinkRepository {
-    private JdbcTemplate jdbcTemplate;
+@RequiredArgsConstructor
+public class JdbcGithubLinkRepository implements GithubLinkRepository {
+    private final JdbcTemplate jdbcTemplate;
 
-    private JdbcLinkRepository linkRepository;
+    private final JdbcLinkRepository linkRepository;
 
+    @Override
     public void add(Long tgChatId, URI url, Integer countBranches) {
         Long linkId = linkRepository.findLinkByChatIdAndUrl(tgChatId, url).id();
         jdbcTemplate.update(
@@ -27,6 +28,7 @@ public class JdbcGithubLinkRepository {
         );
     }
 
+    @Override
     public List<GithubLinkDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         return jdbcTemplate.query(
             """
@@ -47,6 +49,7 @@ public class JdbcGithubLinkRepository {
         );
     }
 
+    @Override
     public GithubLinkDto findGithubLinkByLinkId(Long linkId) {
         return jdbcTemplate.queryForObject(
             "SELECT * FROM github_links WHERE link_id=?",
@@ -55,6 +58,7 @@ public class JdbcGithubLinkRepository {
         );
     }
 
+    @Override
     public List<GithubLinkDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM github_links",
@@ -62,6 +66,7 @@ public class JdbcGithubLinkRepository {
         );
     }
 
+    @Override
     public void setCountBranches(@NotNull LinkDto link, Integer countBranches) {
         jdbcTemplate.update(
             "UPDATE github_links SET count_branches=? WHERE link_id=?",

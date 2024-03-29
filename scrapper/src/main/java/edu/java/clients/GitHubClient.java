@@ -36,7 +36,6 @@ public class GitHubClient {
             .get()
             .uri("/repos/{user}/{repo}/branches", user, repo)
             .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<List<BranchResponse>>() {
-            });
+            .bodyToMono(new ParameterizedTypeReference<>() {});
     }
 }

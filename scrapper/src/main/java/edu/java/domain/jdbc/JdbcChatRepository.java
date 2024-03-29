@@ -1,17 +1,19 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.ChatRepository;
 import edu.java.domain.dto.ChatDto;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@AllArgsConstructor
-public class JdbcChatRepository {
-    private JdbcTemplate jdbcTemplate;
+@RequiredArgsConstructor
+public class JdbcChatRepository implements ChatRepository {
+    private final JdbcTemplate jdbcTemplate;
 
+    @Override
     public void add(Long tgChatId) {
         jdbcTemplate.update(
             "INSERT INTO chat (tg_chat_id) VALUES (?)",
@@ -19,6 +21,7 @@ public class JdbcChatRepository {
         );
     }
 
+    @Override
     public void remove(Long tgChatId) {
         jdbcTemplate.update(
             "DELETE FROM chat WHERE tg_chat_id=?",
@@ -26,6 +29,7 @@ public class JdbcChatRepository {
         );
     }
 
+    @Override
     public Integer existIdByTgChatId(Long tgChatId) {
         return jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM chat WHERE tg_chat_id = ?",
@@ -34,6 +38,7 @@ public class JdbcChatRepository {
         );
     }
 
+    @Override
     public Long findIdByTgChatId(Long tgChatId) {
         return jdbcTemplate.queryForObject(
             "SELECT id FROM chat WHERE tg_chat_id=?",
@@ -42,6 +47,7 @@ public class JdbcChatRepository {
         );
     }
 
+    @Override
     public List<ChatDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM chat",

@@ -1,21 +1,23 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
 import java.net.URI;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@AllArgsConstructor
-public class JdbcStackOverflowLinkRepository {
+@RequiredArgsConstructor
+public class JdbcStackOverflowLinkRepository implements StackOverflowLinkRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final JdbcLinkRepository linkRepository;
 
-    private JdbcTemplate jdbcTemplate;
-    private JdbcLinkRepository linkRepository;
-
+    @Override
     public void add(Long tgChatId, URI url, Integer answerCount) {
         Long linkId = linkRepository.findLinkByChatIdAndUrl(tgChatId, url).id();
         jdbcTemplate.update(
@@ -25,7 +27,8 @@ public class JdbcStackOverflowLinkRepository {
         );
     }
 
-    public List<StackOverflowDto> findAllByTgChatIdAndUrl(Long tgChatId, URI url) {
+    @Override
+    public List<StackOverflowDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         return jdbcTemplate.query(
             """
                 SELECT sl.link_id, sl.answer_count, sl.id
@@ -45,6 +48,7 @@ public class JdbcStackOverflowLinkRepository {
         );
     }
 
+    @Override
     public StackOverflowDto findStackOverflowLinkByLinkId(Long linkId) {
         return jdbcTemplate.queryForObject(
             "SELECT * FROM stackoverflow_link WHERE link_id=?",
@@ -53,6 +57,7 @@ public class JdbcStackOverflowLinkRepository {
         );
     }
 
+    @Override
     public List<StackOverflowDto> findAll() {
         return jdbcTemplate.query(
             "SELECT * FROM stackoverflow_link",
@@ -60,6 +65,7 @@ public class JdbcStackOverflowLinkRepository {
         );
     }
 
+    @Override
     public void setAnswersCount(LinkDto link, Integer answerCount) {
         jdbcTemplate.update(
             "UPDATE stackoverflow_link SET answer_count=? WHERE link_id=?",

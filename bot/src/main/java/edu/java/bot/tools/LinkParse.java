@@ -1,4 +1,4 @@
-package edu.java.tools;
+package edu.java.bot.tools;
 
 import java.net.URI;
 import java.util.Arrays;

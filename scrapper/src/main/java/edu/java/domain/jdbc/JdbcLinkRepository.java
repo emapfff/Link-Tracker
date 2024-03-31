@@ -128,7 +128,7 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Contract("_ -> new") @NotNull
-    private LinkDto getLinkDto(ResultSet rs) throws SQLException {
+    private LinkDto getLinkDto(@NotNull ResultSet rs) throws SQLException {
         return new LinkDto(
             rs.getLong("id"),
             URI.create(rs.getString("url")),

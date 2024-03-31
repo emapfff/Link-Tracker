@@ -11,6 +11,7 @@ import java.net.URI;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StackOverflowUpdater {
@@ -23,6 +24,7 @@ public class StackOverflowUpdater {
     @Autowired
     private LinkRepository linkRepository;
 
+    @Transactional
     public boolean update(@NotNull LinkDto linkDto) {
         URI link = linkDto.url();
         Long id = linkParse.getStackOverFlowId(link);
@@ -34,6 +36,7 @@ public class StackOverflowUpdater {
         return false;
     }
 
+    @Transactional
     public boolean checkAnswers(@NotNull LinkDto linkDto) {
         URI link = linkDto.url();
         Long id = linkParse.getStackOverFlowId(link);

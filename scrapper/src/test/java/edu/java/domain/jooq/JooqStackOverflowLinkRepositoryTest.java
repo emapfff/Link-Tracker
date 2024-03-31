@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(properties = "app.database-access-type=jooq")
 @Transactional
-public class JooqStackOverflowLinkTest extends IntegrationTest {
+public class JooqStackOverflowLinkRepositoryTest extends IntegrationTest {
     private static final URI URI_GITHUB = URI.create("http://github");
     private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
     private static final URI URI_STACKOVERFLOW1 = URI.create("http://stackoverflow1");

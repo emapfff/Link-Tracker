@@ -1,6 +1,7 @@
 package edu.java.bot.clients;
 
 import dto.AddLinkRequest;
+import dto.ApiErrorResponse;
 import dto.LinkResponse;
 import dto.ListLinksResponse;
 import dto.RemoveLinkRequest;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,24 +33,32 @@ public class ScrapperClient {
         this.chatIdHeader = properties.header().chatId();
     }
 
-    public void registrationChat(Long id) {
+    public Mono<Void> registrationChat(Long id) {
         log.info("chat registration");
-        this.scrapperWebClient
+        return this.scrapperWebClient
             .post()
             .uri(tgChatPath + id)
             .retrieve()
-            .bodyToMono(Void.class)
-            .block();
+            .onStatus(
+                httpStatusCode -> httpStatusCode.equals(HttpStatus.BAD_REQUEST),
+                response -> response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
+            )
+            .bodyToMono(Void.class);
     }
 
-    public void removeChat(Long id) {
+    public Mono<Void> removeChat(Long id) {
         log.info("removing chat");
-        this.scrapperWebClient
+        return this.scrapperWebClient
             .post()
             .uri(tgChatPath + id)
             .retrieve()
-            .bodyToMono(Void.class)
-            .block();
+            .onStatus(
+                httpStatusCode -> httpStatusCode.equals(HttpStatus.NOT_FOUND),
+                response -> response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
+            )
+            .bodyToMono(Void.class);
     }
 
     public Mono<ListLinksResponse> getLinks(Long tgChatId) {
@@ -58,6 +68,11 @@ public class ScrapperClient {
             .uri(linkPath)
             .header(chatIdHeader, Long.toString(tgChatId))
             .retrieve()
+            .onStatus(
+                httpStatusCode -> httpStatusCode.equals(HttpStatus.BAD_REQUEST),
+                response -> response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
+            )
             .bodyToMono(ListLinksResponse.class);
     }
 
@@ -69,6 +84,11 @@ public class ScrapperClient {
             .header(chatIdHeader, Long.toString(tgChatId))
             .body(BodyInserters.fromValue(addLinkRequest))
             .retrieve()
+            .onStatus(
+                httpStatusCode -> httpStatusCode.equals(HttpStatus.BAD_REQUEST),
+                response -> response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
+            )
             .bodyToMono(LinkResponse.class);
     }
 
@@ -80,6 +100,16 @@ public class ScrapperClient {
             .header(chatIdHeader, Long.toString(tgChatId))
             .body(BodyInserters.fromValue(removeLinkRequest))
             .retrieve()
+            .onStatus(
+                httpStatusCode -> httpStatusCode.equals(HttpStatus.BAD_REQUEST),
+                response -> response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
+            )
+            .onStatus(
+                httpStatusCode -> httpStatusCode.equals(HttpStatus.NOT_FOUND),
+                response -> response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
+            )
             .bodyToMono(LinkResponse.class);
     }
  }

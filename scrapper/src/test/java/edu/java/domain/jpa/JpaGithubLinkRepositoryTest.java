@@ -3,13 +3,13 @@ package edu.java.domain.jpa;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.scrapper.IntegrationTest;
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -36,14 +36,6 @@ class JpaGithubLinkRepositoryTest extends IntegrationTest {
         jpaLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
 
         jpaGithubLinkRepository.add(1234L, URI_GITHUB, 5);
-
-        jpaGithubLinkRepository.getGithubLinks().forEach(
-            githubLink -> {
-                System.out.println(githubLink.getId());
-                System.out.println(githubLink.getLink().getId() + " " + githubLink.getLink().getUrl());
-                System.out.println(githubLink.getCountBranches());
-            }
-        );
 
         List<GithubLinkDto> githubLinks = jpaGithubLinkRepository.findAll();
         LinkDto linkDto = jpaLinkRepository.findLinkByChatIdAndUrl(1234L, URI_GITHUB);

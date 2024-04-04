@@ -6,7 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.URI;
 import static org.junit.jupiter.api.Assertions.*;
-@SpringBootTest
+
+@SpringBootTest(classes = LinkParse.class)
 class LinkParseTest {
     @Autowired
     private LinkParse linkParse;

@@ -46,7 +46,7 @@ class ScrapperClientTest {
             )
         );
 
-        scrapperClient.registrationChat(123L);
+        StepVerifier.create(scrapperClient.registrationChat(123L)).verifyComplete();
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }
@@ -59,7 +59,7 @@ class ScrapperClientTest {
                     .withStatus(200)
             ));
 
-        scrapperClient.removeChat(123L);
+        StepVerifier.create(scrapperClient.removeChat(123L)).verifyComplete();
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }

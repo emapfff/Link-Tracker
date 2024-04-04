@@ -58,7 +58,6 @@ class JpaLinkRepositoryTest extends IntegrationTest {
         jpaLinkRepository.remove(22L, URI_MYCORE2);
 
         List<LinkDto> linkDtos = jpaLinkRepository.findAll();
-        linkDtos.forEach(System.out::println);
         assertEquals(linkDtos.getLast().url(), URI_MYCORE3);
     }
 

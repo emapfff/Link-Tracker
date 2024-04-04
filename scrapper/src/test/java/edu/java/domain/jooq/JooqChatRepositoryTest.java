@@ -23,7 +23,6 @@ class JooqChatRepositoryTest extends IntegrationTest {
         jooqChatRepository.add(22L);
 
         List<ChatDto> listChats = jooqChatRepository.findAll();
-        System.out.println(listChats);
         assertEquals(listChats.getLast().tgChatId(), 22);
     }
 

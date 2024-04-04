@@ -109,7 +109,6 @@ class JooqLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(2L, URI_LINK1, OffsetDateTime.now());
         linkRepository.add(3L, URI_LINK1, OffsetDateTime.now());
         LinkDto link = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
-        System.out.println(OffsetDateTime.parse(time));
         linkRepository.setLastUpdate(link, OffsetDateTime.parse(time));
 
         LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);

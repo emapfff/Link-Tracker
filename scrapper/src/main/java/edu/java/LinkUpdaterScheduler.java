@@ -16,7 +16,7 @@ public class LinkUpdaterScheduler {
 
     @Scheduled(fixedDelayString = "#{@scheduler.interval()}")
     public void update() {
-        //linkUpdaterService.checkUpdates();
+        linkUpdaterService.checkUpdates();
         log.info("Update");
     }
 }

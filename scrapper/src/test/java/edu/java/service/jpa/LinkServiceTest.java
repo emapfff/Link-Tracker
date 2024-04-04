@@ -16,8 +16,10 @@ import edu.java.service.LinkService;
 import edu.java.tools.LinkParse;
 import edu.java.tools.Urls;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Mono;
 import java.net.URI;
@@ -39,6 +41,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = "app.database-access-type=jpa")
+@ExtendWith(MockitoExtension.class)
 public class LinkServiceTest {
     @Mock
     private LinkRepository linkRepository;

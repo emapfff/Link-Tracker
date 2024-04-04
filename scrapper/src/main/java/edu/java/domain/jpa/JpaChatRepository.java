@@ -2,17 +2,18 @@ package edu.java.domain.jpa;
 
 import edu.java.domain.ChatRepository;
 import edu.java.domain.dto.ChatDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import edu.java.domain.entity.Chat;
+import edu.java.domain.jpa.bases.BaseJpaChatRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class JpaChatRepository implements ChatRepository {
-    @Autowired
-    private BaseJpaChatRepository baseJpaChatRepository;
+
+    private final BaseJpaChatRepository baseJpaChatRepository;
 
     @Override
     public void add(Long tgChatId) {
@@ -32,6 +33,10 @@ public class JpaChatRepository implements ChatRepository {
     @Override
     public Long findIdByTgChatId(Long tgChatId) {
         return baseJpaChatRepository.findIdByTgChatId(tgChatId);
+    }
+
+    public List<Chat> getChat() {
+        return baseJpaChatRepository.findAll();
     }
 
     @Override

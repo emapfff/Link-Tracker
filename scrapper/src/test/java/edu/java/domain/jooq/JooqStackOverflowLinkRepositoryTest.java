@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(properties = "app.database-access-type=jooq")
 @Transactional
@@ -43,7 +45,7 @@ public class JooqStackOverflowLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    void findAllByTgChatIdTest() {
+    void findStackOverflowLinkByTgChatIdAndUrlTest() {
         chatRepository.add(1234L);
         chatRepository.add(123L);
         linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
@@ -53,13 +55,13 @@ public class JooqStackOverflowLinkRepositoryTest extends IntegrationTest {
         stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
         stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
 
-        List<StackOverflowDto> stackOverflowDtos = stackOverflowLinkRepository.findAllByTgChatIdAndUrl(
+        StackOverflowDto stackOverflowLink = stackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
             1234L,
             URI_STACKOVERFLOW2
         );
 
-        assertEquals(1, stackOverflowDtos.size());
-        assertEquals(10, stackOverflowDtos.getLast().answerCount());
+        assertNotNull(stackOverflowLink);
+        assertEquals(10, stackOverflowLink.answerCount());
     }
 
     @Test
@@ -91,12 +93,11 @@ public class JooqStackOverflowLinkRepositoryTest extends IntegrationTest {
 
         linkRepository.remove(1234L, URI_STACKOVERFLOW);
 
-        List<StackOverflowDto> stackOverflowDtos = stackOverflowLinkRepository.findAllByTgChatIdAndUrl(
+        StackOverflowDto stackOverflowLink = stackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
             1234L,
-            URI_STACKOVERFLOW
-        );
+            URI_STACKOVERFLOW);
 
-        assertEquals(stackOverflowDtos.size(), 0);
+        assertNull(stackOverflowLink);
     }
 
     @Test
@@ -113,9 +114,9 @@ public class JooqStackOverflowLinkRepositoryTest extends IntegrationTest {
 
         stackOverflowLinkRepository.setAnswersCount(link, 5);
 
-        List<StackOverflowDto> stackOverflowDtoList = stackOverflowLinkRepository
-            .findAllByTgChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
-        assertEquals(stackOverflowDtoList.size(), 1);
-        assertEquals(stackOverflowDtoList.getLast().answerCount(), 5);
+        StackOverflowDto stackOverflowLink = stackOverflowLinkRepository
+            .findStackOverflowLinkByTgChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
+        assertNotNull(stackOverflowLink);
+        assertEquals(stackOverflowLink.answerCount(), 5);
     }
 }

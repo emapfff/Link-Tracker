@@ -63,7 +63,7 @@ public class Bot {
                     );
                     lastUpdate = waitingNewMessage(lastUpdate);
                     executeCommand(command.handle(lastUpdate));
-                }else {
+                } else {
                     executeCommand(command.handle(lastUpdate));
                 }
             } else {

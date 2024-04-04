@@ -5,30 +5,31 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @Entity
 @Table(name = "github_links")
+@Getter
 public class GithubLink {
-    @OneToOne
-    Link links;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "link_id")
-    private Long linkId;
     @Column(name = "count_branches")
+    @Setter
     private Integer countBranches;
+    @ManyToOne
+    @JoinColumn(name = "link_id", referencedColumnName = "id", nullable = false)
+    private Link link;
 
-    public GithubLink(Long linkId, Integer countBranches) {
-        this.linkId = linkId;
+    public GithubLink(Link link, Integer countBranches) {
+        this.link = link;
         this.countBranches = countBranches;
     }
 
     public GithubLink() {
-
     }
 }

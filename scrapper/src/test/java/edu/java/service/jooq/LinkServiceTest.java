@@ -8,6 +8,7 @@ import edu.java.domain.LinkRepository;
 import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
+import edu.java.exceptions.LinkNotFoundException;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
@@ -155,7 +156,7 @@ class LinkServiceTest {
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
         when(linkRepository.existLinkByUriAndTgChatId(tgChatId, url)).thenReturn(0);
 
-        assertThrows(IncorrectParametersException.class, () -> linkService.remove(tgChatId, url));
+        assertThrows(LinkNotFoundException.class, () -> linkService.remove(tgChatId, url));
     }
 
     @Test

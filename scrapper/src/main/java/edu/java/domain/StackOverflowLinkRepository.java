@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public interface StackOverflowLinkRepository {
     void add(Long tgChatId, URI url, Integer answerCount);
 
-    List<StackOverflowDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url);
+    StackOverflowDto findStackOverflowLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url);
 
     StackOverflowDto findStackOverflowLinkByLinkId(Long linkId);
 

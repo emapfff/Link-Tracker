@@ -2,7 +2,7 @@ package edu.java.service.jooq;
 
 import edu.java.domain.ChatRepository;
 import edu.java.exceptions.AbsentChatException;
-import edu.java.exceptions.IncorrectParametersException;
+import edu.java.exceptions.RepeatRegistrationException;
 import edu.java.service.TgChatService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,19 +34,12 @@ public class TgChatServiceTest {
 
     @Test
     void registerInvalidIdTest() {
-        Long tgChatId = -1L;
-        assertThrows(IncorrectParametersException.class, () -> tgChatService.register(tgChatId));
+        Long tgChatId = 1L;
+        when(chatRepository.existIdByTgChatId(anyLong())).thenReturn(1);
+        assertThrows(RepeatRegistrationException.class, () -> tgChatService.register(tgChatId));
         verify(chatRepository, never()).add(tgChatId);
     }
 
-    @Test
-    void registerExistingChatTest() {
-        Long tgChatId = 123456L;
-        when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
-
-        assertDoesNotThrow(() -> tgChatService.register(tgChatId));
-        verify(chatRepository, never()).add(tgChatId);
-    }
 
     @Test
     void unregisterValidIdTest() {
@@ -56,12 +50,6 @@ public class TgChatServiceTest {
         verify(chatRepository, times(1)).remove(tgChatId);
     }
 
-    @Test
-    void unregisterInvalidIdTest() {
-        Long tgChatId = -1L;
-        assertThrows(IncorrectParametersException.class, () -> tgChatService.unregister(tgChatId));
-        verify(chatRepository, never()).remove(tgChatId);
-    }
 
     @Test
     void unregisterNonExistingChatTest() {

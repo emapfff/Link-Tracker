@@ -2,7 +2,6 @@ package edu.java.service;
 
 import edu.java.domain.ChatRepository;
 import edu.java.exceptions.AbsentChatException;
-import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.RepeatRegistrationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -31,7 +31,7 @@ public class JooqGithubLinkRepository implements GithubLinkRepository {
     }
 
     @Override
-    public List<GithubLinkDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
+    public GithubLinkDto findGithubLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         return dslContext
             .select(GITHUB_LINKS.ID, GITHUB_LINKS.LINK_ID, GITHUB_LINKS.COUNT_BRANCHES)
             .from(CHAT)
@@ -39,7 +39,7 @@ public class JooqGithubLinkRepository implements GithubLinkRepository {
             .join(GITHUB_LINKS).on(CONSISTS.LINK_ID.eq(GITHUB_LINKS.LINK_ID))
             .join(LINK).on(LINK.ID.eq(GITHUB_LINKS.LINK_ID))
             .where(LINK.URL.eq(url.toString()).and(CHAT.TG_CHAT_ID.eq(tgChatId)))
-            .fetchInto(GithubLinkDto.class);
+            .fetchOneInto(GithubLinkDto.class);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class JooqGithubLinkRepository implements GithubLinkRepository {
     }
 
     @Override
-    public void setCountBranches(LinkDto link, Integer countBranches) {
+    public void setCountBranches(@NotNull LinkDto link, Integer countBranches) {
         dslContext
             .update(GITHUB_LINKS)
             .set(GITHUB_LINKS.COUNT_BRANCHES, countBranches)

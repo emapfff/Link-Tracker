@@ -8,20 +8,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @Entity
 @Table(name = "link")
+@Getter
 public class Link {
-    @ManyToMany
-    Set<Chat> chats;
+    @Getter
+    @ManyToMany(mappedBy = "links")
+    Set<Chat> chats = new HashSet<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "url")
     private String url;
+    @Setter
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
@@ -31,6 +35,6 @@ public class Link {
     }
 
     public Link() {
-
     }
+
 }

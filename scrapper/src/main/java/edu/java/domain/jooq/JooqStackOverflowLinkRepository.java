@@ -31,7 +31,7 @@ public class JooqStackOverflowLinkRepository implements StackOverflowLinkReposit
     }
 
     @Override
-    public List<StackOverflowDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
+    public StackOverflowDto findStackOverflowLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         return dslContext
             .select(STACKOVERFLOW_LINK.ID, STACKOVERFLOW_LINK.LINK_ID, STACKOVERFLOW_LINK.ANSWER_COUNT)
             .from(CHAT)
@@ -39,7 +39,7 @@ public class JooqStackOverflowLinkRepository implements StackOverflowLinkReposit
             .join(STACKOVERFLOW_LINK).on(CONSISTS.LINK_ID.eq(STACKOVERFLOW_LINK.LINK_ID))
             .join(LINK).on(LINK.ID.eq(STACKOVERFLOW_LINK.LINK_ID))
             .where(LINK.URL.eq(url.toString()).and(CHAT.TG_CHAT_ID.eq(tgChatId)))
-            .fetchInto(StackOverflowDto.class);
+            .fetchOneInto(StackOverflowDto.class);
     }
 
     @Override

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BotController {
     @Autowired
     private Bot bot;
+
     @PostMapping("/updates")
     @Operation(summary = "Отправить обновление", description = "Обновление обработано")
     @ApiResponse(responseCode = "200", description = "Обновление обработано")

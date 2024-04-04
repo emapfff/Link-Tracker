@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(properties = "app.database-access-type=jdbc")
 @Transactional
@@ -45,7 +47,7 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    void findAllByTgChatIdTest() {
+    void findStackOverflowLinkByTgChatIdAndUrlTest() {
         jdbcChatRepository.add(1234L);
         jdbcChatRepository.add(123L);
         jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
@@ -55,13 +57,13 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
         jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
         jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
 
-        List<StackOverflowDto> stackOverflowDtos = jdbcStackOverflowLinkRepository.findAllByTgChatIdAndUrl(
+        StackOverflowDto stackOverflowLink = jdbcStackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
             1234L,
             URI_STACKOVERFLOW2
         );
 
-        assertEquals(1, stackOverflowDtos.size());
-        assertEquals(10, stackOverflowDtos.getLast().answerCount());
+        assertNotNull(stackOverflowLink);
+        assertEquals(10, stackOverflowLink.answerCount());
     }
 
     @Test
@@ -93,11 +95,11 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
 
         jdbcLinkRepository.remove(1234L, URI_STACKOVERFLOW);
 
-        List<StackOverflowDto> stackOverflowDtos = jdbcStackOverflowLinkRepository.findAllByTgChatIdAndUrl(
+        StackOverflowDto stackOverflowLink = jdbcStackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
             1234L,
             URI_STACKOVERFLOW);
 
-        assertEquals(stackOverflowDtos.size(), 0);
+        assertNull(stackOverflowLink);
     }
 
     @Test
@@ -114,9 +116,9 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
 
         jdbcStackOverflowLinkRepository.setAnswersCount(link, 5);
 
-        List<StackOverflowDto> stackOverflowDtoList = jdbcStackOverflowLinkRepository
-            .findAllByTgChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
-        assertEquals(stackOverflowDtoList.size(), 1);
-        assertEquals(stackOverflowDtoList.getLast().answerCount(), 5);
+        StackOverflowDto stackOverflowLink = jdbcStackOverflowLinkRepository
+            .findStackOverflowLinkByTgChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
+        assertNotNull(stackOverflowLink);
+        assertEquals(stackOverflowLink.answerCount(), 5);
     }
 }

@@ -3,14 +3,15 @@ package edu.java.bot.commands;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.clients.ScrapperClient;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
+
 public class StartCommand implements Command {
-    @Autowired
-    private ScrapperClient scrapperClient;
+    private final ScrapperClient scrapperClient;
 
     @Override
     public String name() {

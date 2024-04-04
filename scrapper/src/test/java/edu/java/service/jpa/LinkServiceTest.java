@@ -1,4 +1,4 @@
-package edu.java.service.jdbc;
+package edu.java.service.jpa;
 
 import edu.java.clients.GitHubClient;
 import edu.java.clients.StackOverflowClient;
@@ -15,15 +15,15 @@ import edu.java.responses.RepositoryResponse;
 import edu.java.service.LinkService;
 import edu.java.tools.LinkParse;
 import edu.java.tools.Urls;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Mono;
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,8 +38,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(properties = "app.database-access-type=jdbc")
-class LinkServiceTest {
+@SpringBootTest(properties = "app.database-access-type=jpa")
+public class LinkServiceTest {
     @Mock
     private LinkRepository linkRepository;
     @Mock

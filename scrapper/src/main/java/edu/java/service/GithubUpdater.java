@@ -40,6 +40,7 @@ public class GithubUpdater {
         }
         return false;
     }
+
     @Transactional
     public boolean checkBranches(@NotNull LinkDto linkDto) {
         GithubLinkDto githubLinkDto = githubLinkRepository.findGithubLinkByLinkId(linkDto.id());

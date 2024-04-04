@@ -3,19 +3,18 @@ package edu.java.bot.commands;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import dto.LinkResponse;
-import dto.ListLinksResponse;
 import edu.java.bot.clients.ScrapperClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
 public class ListCommand implements Command {
-    @Autowired
-    private ScrapperClient scrapperClient;
+    private final ScrapperClient scrapperClient;
 
     @Override
     public String name() {

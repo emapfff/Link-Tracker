@@ -1,8 +1,7 @@
-package edu.java.service.jdbc;
+package edu.java.service.jpa;
 
 import edu.java.domain.ChatRepository;
 import edu.java.exceptions.AbsentChatException;
-import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.RepeatRegistrationException;
 import edu.java.service.TgChatService;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest("app.database-access-type=jdbc")
+@SpringBootTest(properties = "app.database-access-type=jpa")
 public class TgChatServiceTest {
     @Mock
     private ChatRepository chatRepository;

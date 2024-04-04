@@ -12,6 +12,7 @@ import edu.java.exceptions.LinkNotFoundException;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
+import edu.java.scrapper.IntegrationTest;
 import edu.java.service.LinkService;
 import edu.java.tools.LinkParse;
 import edu.java.tools.Urls;
@@ -42,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = "app.database-access-type=jpa")
 @ExtendWith(MockitoExtension.class)
-public class LinkServiceTest {
+public class LinkServiceTest extends IntegrationTest {
     @Mock
     private LinkRepository linkRepository;
     @Mock

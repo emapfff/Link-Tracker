@@ -4,6 +4,7 @@ import edu.java.domain.ChatRepository;
 import edu.java.exceptions.AbsentChatException;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.RepeatRegistrationException;
+import edu.java.scrapper.IntegrationTest;
 import edu.java.service.TgChatService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest("app.database-access-type=jdbc")
 @ExtendWith(MockitoExtension.class)
-public class TgChatServiceTest {
+public class TgChatServiceTest extends IntegrationTest {
     @Mock
     private ChatRepository chatRepository;
     @InjectMocks

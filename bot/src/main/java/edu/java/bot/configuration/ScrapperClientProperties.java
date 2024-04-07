@@ -17,11 +17,9 @@ public record ScrapperClientProperties(
     public record Path(
         String link,
         String tgChat
-    ) {
-    }
+    ) {}
 
     public record Header(
         String chatId
-    ) {
-    }
+    ) {}
 }

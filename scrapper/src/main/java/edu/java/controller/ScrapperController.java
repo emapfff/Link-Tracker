@@ -4,85 +4,68 @@ import dto.AddLinkRequest;
 import dto.LinkResponse;
 import dto.ListLinksResponse;
 import dto.RemoveLinkRequest;
-import edu.java.exceptions.AbsentChatException;
-import edu.java.exceptions.IncorrectParametersException;
-import edu.java.exceptions.LinkNotFoundException;
+import edu.java.domain.dto.LinkDto;
+import edu.java.service.LinkService;
+import edu.java.service.TgChatService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.net.URI;
-import java.net.URISyntaxException;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
+import java.util.Collection;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
 public class ScrapperController {
-    private static final String INCORRECT_PARAMETERS = "Некорректные параметры запроса";
-    private static final String ABSENT_CHAT = "Чат не существует";
-    private static final String LINK_NOT_FOUND = "Ссылка не найдена";
+    @Autowired
+    private TgChatService tgChatService;
+    @Autowired
+    private LinkService linkService;
 
     @ApiResponse(responseCode = "200", description = "Чат зарегистрирован")
     @PostMapping("/tg-chat/{id}")
-    public Mono<Void> registrationChat(@PathVariable(value = "id") Integer id) {
-        if (id < 0) {
-            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
-        }
-        return Mono.empty();
+    public void registrationChat(@PathVariable(value = "id") Long id) {
+        tgChatService.register(id);
     }
 
     @ApiResponse(responseCode = "200", description = "Чат успешно удалён")
     @DeleteMapping("/tg-chat/{id}")
-    public Mono<Void> removeChat(@PathVariable(value = "id") Integer id) {
-        if (id < 0) {
-            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
-        } else if (id == 0) { // тут будет проверка на отсутствия чата в бд
-            throw new AbsentChatException(ABSENT_CHAT);
-        }
-        return Mono.empty();
+    public void removeChat(@PathVariable(value = "id") Long id) {
+        tgChatService.unregister(id);
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылки успешно получены")
     @GetMapping("/links")
-    public Mono<ListLinksResponse> getLinks(@Required Integer tgChatId) {
-        if (tgChatId < 0) {
-            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
-        }
-        ListLinksResponse listLinksResponse = new ListLinksResponse(null, 0);
-        return Mono.just(listLinksResponse);
+    public ListLinksResponse getLinks(@RequestHeader("Tg-Chat-Id") Long tgChatId) {
+        Collection<LinkDto> links = linkService.listAll(tgChatId);
+        List<LinkResponse> linkResponses = links.stream()
+            .map(link -> new LinkResponse(link.id(), link.url()))
+            .toList();
+        return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылка успешно добавлена")
     @PostMapping("/links")
-    public Mono<LinkResponse> addLink(
-        @Required Integer tgChatId,
-        @RequestBody AddLinkRequest addLinkRequest
-    )
-        throws URISyntaxException {
-        if (tgChatId < 0) {
-            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
-        } else if (addLinkRequest.link() == null) { //потом будет проверка на валидность линки
-            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
-        }
-        LinkResponse linkResponse = new LinkResponse(0, new URI(""));
-        return Mono.just(linkResponse);
+    public LinkResponse addLink(
+        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @RequestBody @NotNull AddLinkRequest addLinkRequest
+    ) {
+        LinkDto addLink = linkService.add(tgChatId, addLinkRequest.link());
+        return new LinkResponse(addLink.id(), addLink.url());
     }
 
     @ApiResponse(responseCode = "200", description = "Ссылка успешно убрана")
     @DeleteMapping("/links")
-    public Mono<LinkResponse> deleteLink(
-        @Required Integer tgChatId,
-        @RequestBody RemoveLinkRequest removeLinkRequest
-    ) throws URISyntaxException {
-        if (tgChatId < 0) {
-            throw new IncorrectParametersException(INCORRECT_PARAMETERS);
-        } else if (removeLinkRequest.link() == null) { // тут будет проверка на то, что есть линк в чате в бд или нет
-            throw new LinkNotFoundException(LINK_NOT_FOUND);
-        }
-        LinkResponse linkResponse = new LinkResponse(0, new URI(""));
-        return Mono.just(linkResponse);
+    public LinkResponse deleteLink(
+        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @RequestBody @NotNull RemoveLinkRequest removeLinkRequest
+    ) {
+        LinkDto deleteLink = linkService.remove(tgChatId, removeLinkRequest.link());
+        return new LinkResponse(deleteLink.id(), deleteLink.url());
     }
 }

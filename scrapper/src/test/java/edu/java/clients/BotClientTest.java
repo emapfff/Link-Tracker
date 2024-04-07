@@ -34,10 +34,10 @@ class BotClientTest {
                     .withStatus(200)
             ));
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
-            123,
+            123L,
             new URI("http://mycore"),
             "updating link",
-            Arrays.asList(1, 2, 3)
+            Arrays.asList(1L, 2L, 3L)
         );
         String expectedRequest = "{\"id\": 123, " +
             "\"url\": \"http://mycore\"," +

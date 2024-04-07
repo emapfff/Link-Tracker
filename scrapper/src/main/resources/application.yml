@@ -1,9 +1,9 @@
 app:
   scheduler:
     enable: true
-    interval: 10s
-    force-check-delay: 10s
-
+    interval: 60s
+    force-check-delay: 120s
+  database-access-type: jdbc
 spring:
   application:
     name: scrapper
@@ -18,8 +18,7 @@ spring:
 clients:
   github_base_url: https://api.github.com
   stackoverflow_base_url: https://api.stackexchange.com/2.3
-  bot_base_url: https://localhost:8080
-
+  bot_base_url: https://localhost:8090
 
 server:
   port: 8080

@@ -15,8 +15,10 @@ import edu.java.responses.RepositoryResponse;
 import edu.java.tools.LinkParser;
 import edu.java.tools.Resource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Mono;
 
@@ -29,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(properties = "app.database-access-type=jdbc")
+@ExtendWith(MockitoExtension.class)
 class LinkServiceTest {
     @Mock
     private LinkRepository linkRepository;

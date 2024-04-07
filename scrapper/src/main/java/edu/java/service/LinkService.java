@@ -11,7 +11,7 @@ import edu.java.exceptions.IncorrectParametersException;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -26,7 +26,7 @@ public class LinkService {
     private final static String INCORRECT_LINK = "Неверна указана ссылка";
     private final static String LINK_EXIST = "Ссылка уже была добавлена";
     @Autowired
-    private LinkParse linkParse;
+    private LinkParser linkParse;
     @Autowired
     private GitHubClient gitHubClient;
     @Autowired

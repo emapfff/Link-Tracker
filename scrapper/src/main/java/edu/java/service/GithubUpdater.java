@@ -7,7 +7,7 @@ import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.RepositoryResponse;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -20,7 +20,7 @@ public class GithubUpdater {
     @Autowired
     private GitHubClient githubClient;
     @Autowired
-    private LinkParse linkParse;
+    private LinkParser linkParse;
     @Autowired
     private GithubLinkRepository githubLinkRepository;
     @Autowired

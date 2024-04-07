@@ -6,7 +6,7 @@ import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
 import edu.java.responses.QuestionResponse;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import java.net.URI;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class StackOverflowUpdater {
     @Autowired
     private StackOverflowLinkRepository stackOverflowLinkRepository;
     @Autowired
-    private LinkParse linkParse;
+    private LinkParser linkParse;
     @Autowired
     private LinkRepository linkRepository;
 

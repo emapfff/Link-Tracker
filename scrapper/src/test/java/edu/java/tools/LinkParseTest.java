@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class LinkParseTest {
     @Autowired
-    private LinkParse linkParse;
+    private LinkParser linkParse;
 
     @Test
     void parseGithub() {

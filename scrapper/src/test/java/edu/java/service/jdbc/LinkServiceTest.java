@@ -12,7 +12,7 @@ import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
 import edu.java.service.LinkService;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import edu.java.tools.Urls;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -52,7 +52,7 @@ class LinkServiceTest {
     @Mock
     private StackOverflowClient stackOverflowClient;
     @Mock
-    private LinkParse linkParse;
+    private LinkParser linkParse;
     @InjectMocks
     private LinkService linkService;
 

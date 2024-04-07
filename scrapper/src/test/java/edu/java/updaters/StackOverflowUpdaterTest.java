@@ -1,7 +1,6 @@
 package edu.java.updaters;
 
 import edu.java.clients.StackOverflowClient;
-import edu.java.domain.GithubLinkRepository;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
@@ -13,16 +12,12 @@ import edu.java.service.StackOverflowUpdater;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,7 +47,7 @@ class StackOverflowUpdaterTest extends IntegrationTest{
     private LinkRepository linkRepository;
 
     @Mock
-    private LinkParse linkParse;
+    private LinkParser linkParse;
 
     @Mock
     private StackOverflowLinkRepository stackOverflowLinkRepository;

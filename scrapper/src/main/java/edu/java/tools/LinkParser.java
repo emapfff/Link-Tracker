@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LinkParse {
+public class LinkParser {
     private static final String GITHUB_PATTERN = "^https?:\\/\\/github\\.com\\/([a-zA-Z0-9-]+)\\/([a-zA-Z0-9-]+)\\/?$";
     private static final String STACKOVERFLOW_PATTERN =
         "^https?:\\/\\/stackoverflow\\.com\\/questions\\/([0-9]+)\\/([a-zA-Z0-9-]+)\\/?$";

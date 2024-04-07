@@ -4,7 +4,7 @@ import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import edu.java.tools.Urls;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,6 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -33,7 +32,7 @@ class LinkUpdaterServiceTest {
     @Mock
     private StackOverflowUpdater stackOverflowUpdater;
     @Mock
-    private LinkParse linkParse;
+    private LinkParser linkParse;
     @InjectMocks
     private LinkUpdaterService linkUpdaterService;
 

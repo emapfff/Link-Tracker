@@ -1,4 +1,4 @@
-package edu.java.service.jpa;
+package edu.java.service;
 
 import edu.java.clients.GitHubClient;
 import edu.java.clients.StackOverflowClient;
@@ -13,20 +13,18 @@ import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
 import edu.java.scrapper.IntegrationTest;
-import edu.java.service.LinkService;
 import edu.java.tools.LinkParse;
 import edu.java.tools.Urls;
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Mono;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,9 +39,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(properties = "app.database-access-type=jpa")
 @ExtendWith(MockitoExtension.class)
-public class LinkServiceTest extends IntegrationTest {
+class LinkServiceTest extends IntegrationTest {
     @Mock
     private LinkRepository linkRepository;
     @Mock

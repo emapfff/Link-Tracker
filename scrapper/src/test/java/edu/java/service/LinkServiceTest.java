@@ -8,39 +8,28 @@ import edu.java.domain.LinkRepository;
 import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
-import edu.java.exceptions.LinkNotFoundException;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
-import edu.java.scrapper.IntegrationTest;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import edu.java.tools.Resource;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import reactor.core.publisher.Mono;
+
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-class LinkServiceTest extends IntegrationTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest(properties = "app.database-access-type=jdbc")
+class LinkServiceTest {
     @Mock
     private LinkRepository linkRepository;
     @Mock
@@ -54,7 +43,7 @@ class LinkServiceTest extends IntegrationTest {
     @Mock
     private StackOverflowClient stackOverflowClient;
     @Mock
-    private LinkParse linkParse;
+    private LinkParser linkParser;
     @InjectMocks
     private LinkService linkService;
 
@@ -66,11 +55,11 @@ class LinkServiceTest extends IntegrationTest {
         List<BranchResponse> branchResponses = List.of(
             new BranchResponse("branch1", new BranchResponse.Commit("sha1", "url1"), false));
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
-        when(linkParse.parse(url)).thenReturn(Resource.GITHUB);
+        when(linkParser.parse(url)).thenReturn(Resource.GITHUB);
         when(gitHubClient.fetchRepository(anyString(), anyString())).thenReturn(Mono.just(repositoryResponse));
         when(gitHubClient.fetchBranch(anyString(), anyString())).thenReturn(Mono.just(branchResponses));
-        when(linkParse.getGithubUser(url)).thenReturn("user");
-        when(linkParse.getGithubRepo(url)).thenReturn("repo");
+        when(linkParser.getGithubUser(url)).thenReturn("user");
+        when(linkParser.getGithubRepo(url)).thenReturn("repo");
         when(linkRepository.findAllByUrl(url)).thenReturn(List.of(new LinkDto(1L, url, OffsetDateTime.now())));
 
         LinkDto addedLink = linkService.add(tgChatId, url);
@@ -95,9 +84,9 @@ class LinkServiceTest extends IntegrationTest {
         Long tgChatId = 123456L;
         QuestionResponse questionResponse = new QuestionResponse(itemsMinusDay);
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
-        when(linkParse.parse(url)).thenReturn(Resource.STACKOVERFLOW);
+        when(linkParser.parse(url)).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(questionResponse));
-        when(linkParse.getStackOverFlowId(url)).thenReturn(123456L);
+        when(linkParser.getStackOverFlowId(url)).thenReturn(123456L);
         when(linkRepository.findAllByUrl(url)).thenReturn(List.of(new LinkDto(1L, url, OffsetDateTime.now())));
         doNothing().when(linkRepository).add(anyLong(), any(), any());
 
@@ -125,7 +114,7 @@ class LinkServiceTest extends IntegrationTest {
         URI url = URI.create("https://invalid.url");
         Long tgChatId = 123456L;
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
-        when(linkParse.parse(url)).thenReturn(Resource.INCORRECT_URL);
+        when(linkParser.parse(url)).thenReturn(Resource.INCORRECT_URL);
 
         assertThrows(IncorrectParametersException.class, () -> linkService.add(tgChatId, url));
         verifyNoInteractions(linkRepository);
@@ -157,7 +146,7 @@ class LinkServiceTest extends IntegrationTest {
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
         when(linkRepository.existLinkByUriAndTgChatId(tgChatId, url)).thenReturn(0);
 
-        assertThrows(LinkNotFoundException.class, () -> linkService.remove(tgChatId, url));
+        assertThrows(IncorrectParametersException.class, () -> linkService.remove(tgChatId, url));
     }
 
     @Test

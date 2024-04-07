@@ -5,7 +5,7 @@ import edu.java.clients.BotClient;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class LinkUpdaterService {
     @Autowired
     private StackOverflowUpdater stackOverflowUpdater;
     @Autowired
-    private LinkParse linkParse;
+    private LinkParser linkParse;
 
     @Transactional
     public void checkUpdates() {

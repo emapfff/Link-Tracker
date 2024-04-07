@@ -4,18 +4,17 @@ import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
-import edu.java.tools.LinkParse;
+import edu.java.tools.LinkParser;
 import edu.java.tools.Resource;
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -32,7 +31,7 @@ class LinkUpdaterServiceTest {
     @Mock
     private StackOverflowUpdater stackOverflowUpdater;
     @Mock
-    private LinkParse linkParse;
+    private LinkParser linkParser;
     @InjectMocks
     private LinkUpdaterService linkUpdaterService;
 
@@ -42,7 +41,7 @@ class LinkUpdaterServiceTest {
         List<LinkDto> links = new ArrayList<>();
         links.add(link);
         when(linkRepository.findAll()).thenReturn(links);
-        when(linkParse.parse(link.url())).thenReturn(Resource.GITHUB);
+        when(linkParser.parse(link.url())).thenReturn(Resource.GITHUB);
         when(githubUpdater.update(link)).thenReturn(true);
 
         linkUpdaterService.checkUpdates();
@@ -56,7 +55,7 @@ class LinkUpdaterServiceTest {
         List<LinkDto> links = new ArrayList<>();
         links.add(link);
         when(linkRepository.findAll()).thenReturn(links);
-        when(linkParse.parse(link.url())).thenReturn(Resource.GITHUB);
+        when(linkParser.parse(link.url())).thenReturn(Resource.GITHUB);
         when(githubUpdater.update(link)).thenReturn(false);
         when(githubUpdater.checkBranches(link)).thenReturn(true);
 
@@ -71,7 +70,7 @@ class LinkUpdaterServiceTest {
         List<LinkDto> links = new ArrayList<>();
         links.add(link);
         when(linkRepository.findAll()).thenReturn(links);
-        when(linkParse.parse(link.url())).thenReturn(Resource.GITHUB);
+        when(linkParser.parse(link.url())).thenReturn(Resource.GITHUB);
         when(githubUpdater.update(link)).thenReturn(false);
         when(githubUpdater.checkBranches(link)).thenReturn(false);
 
@@ -86,7 +85,7 @@ class LinkUpdaterServiceTest {
         List<LinkDto> links = new ArrayList<>();
         links.add(link);
         when(linkRepository.findAll()).thenReturn(links);
-        when(linkParse.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
+        when(linkParser.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowUpdater.update(link)).thenReturn(true);
 
         linkUpdaterService.checkUpdates();
@@ -100,7 +99,7 @@ class LinkUpdaterServiceTest {
         List<LinkDto> links = new ArrayList<>();
         links.add(link);
         when(linkRepository.findAll()).thenReturn(links);
-        when(linkParse.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
+        when(linkParser.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowUpdater.update(link)).thenReturn(false);
         when(stackOverflowUpdater.checkAnswers(link)).thenReturn(true);
 
@@ -115,7 +114,7 @@ class LinkUpdaterServiceTest {
         List<LinkDto> links = new ArrayList<>();
         links.add(link);
         when(linkRepository.findAll()).thenReturn(links);
-        when(linkParse.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
+        when(linkParser.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowUpdater.update(link)).thenReturn(false);
         when(stackOverflowUpdater.checkAnswers(link)).thenReturn(false);
 

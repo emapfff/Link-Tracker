@@ -3,17 +3,15 @@ package edu.java.tools;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LinkParse {
-    private static final String GITHUB_PATTERN =
-        "^https?:\\/\\/github\\.com\\/([a-zA-Z0-9-]+)\\/([a-zA-Z0-9-]+)\\/?$";
+public class LinkParser {
+    private static final String GITHUB_PATTERN = "^https?:\\/\\/github\\.com\\/([a-zA-Z0-9-]+)\\/([a-zA-Z0-9-]+)\\/?$";
     private static final String STACKOVERFLOW_PATTERN =
         "^https?:\\/\\/stackoverflow\\.com\\/questions\\/([0-9]+)\\/([a-zA-Z0-9-]+)\\/?$";
 
-    public Resource parse(@NotNull URI uri) {
+    public Resource parse(URI uri) {
         Pattern githubPattern = Pattern.compile(GITHUB_PATTERN);
         Pattern stackoverflowPattern = Pattern.compile(STACKOVERFLOW_PATTERN);
         if (githubPattern.matcher(uri.toString()).matches()) {
@@ -24,15 +22,15 @@ public class LinkParse {
         return Resource.INCORRECT_URL;
     }
 
-    public String getGithubUser(@NotNull URI url) {
+    public String getGithubUser(URI url) {
         return Arrays.stream(url.getPath().split("/")).toList().get(1);
     }
 
-    public String getGithubRepo(@NotNull URI url) {
+    public String getGithubRepo(URI url) {
         return Arrays.stream(url.getPath().split("/")).toList().get(2);
     }
 
-    public Long getStackOverFlowId(@NotNull URI url) {
+    public Long getStackOverFlowId(URI url) {
         return Long.parseLong(Arrays.stream(url.getPath().split("/")).toList().get(2));
     }
 }

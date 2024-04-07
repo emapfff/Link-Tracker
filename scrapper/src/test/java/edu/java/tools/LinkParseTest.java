@@ -14,23 +14,23 @@ class LinkParseTest {
 
     @Test
     void parseGithub() {
-        Urls typeLink = linkParse.parse(URI.create("https://github.com/emapfff/java-backend-2024/"));
+        Resource typeLink = linkParse.parse(URI.create("https://github.com/emapfff/java-backend-2024/"));
 
-        assertEquals(typeLink, Urls.GITHUB);
+        assertEquals(typeLink, Resource.GITHUB);
     }
 
     @Test
     void parseStackOverFlow() {
-        Urls typeLink = linkParse.parse(URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"));
+        Resource typeLink = linkParse.parse(URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"));
 
-        assertEquals(typeLink, Urls.STACKOVERFLOW);
+        assertEquals(typeLink, Resource.STACKOVERFLOW);
     }
 
     @Test
     void parseIncorrect() {
-        Urls typeLink = linkParse.parse(URI.create("https://mycore"));
+        Resource typeLink = linkParse.parse(URI.create("https://mycore"));
 
-        assertEquals(typeLink, Urls.INCORRECT_URL);
+        assertEquals(typeLink, Resource.INCORRECT_URL);
     }
 
     @Test

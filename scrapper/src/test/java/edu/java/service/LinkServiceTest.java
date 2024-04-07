@@ -14,7 +14,7 @@ import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.tools.LinkParse;
-import edu.java.tools.Urls;
+import edu.java.tools.Resource;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -66,7 +66,7 @@ class LinkServiceTest extends IntegrationTest {
         List<BranchResponse> branchResponses = List.of(
             new BranchResponse("branch1", new BranchResponse.Commit("sha1", "url1"), false));
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
-        when(linkParse.parse(url)).thenReturn(Urls.GITHUB);
+        when(linkParse.parse(url)).thenReturn(Resource.GITHUB);
         when(gitHubClient.fetchRepository(anyString(), anyString())).thenReturn(Mono.just(repositoryResponse));
         when(gitHubClient.fetchBranch(anyString(), anyString())).thenReturn(Mono.just(branchResponses));
         when(linkParse.getGithubUser(url)).thenReturn("user");
@@ -95,7 +95,7 @@ class LinkServiceTest extends IntegrationTest {
         Long tgChatId = 123456L;
         QuestionResponse questionResponse = new QuestionResponse(itemsMinusDay);
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
-        when(linkParse.parse(url)).thenReturn(Urls.STACKOVERFLOW);
+        when(linkParse.parse(url)).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(questionResponse));
         when(linkParse.getStackOverFlowId(url)).thenReturn(123456L);
         when(linkRepository.findAllByUrl(url)).thenReturn(List.of(new LinkDto(1L, url, OffsetDateTime.now())));
@@ -125,7 +125,7 @@ class LinkServiceTest extends IntegrationTest {
         URI url = URI.create("https://invalid.url");
         Long tgChatId = 123456L;
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
-        when(linkParse.parse(url)).thenReturn(Urls.INCORRECT_URL);
+        when(linkParse.parse(url)).thenReturn(Resource.INCORRECT_URL);
 
         assertThrows(IncorrectParametersException.class, () -> linkService.add(tgChatId, url));
         verifyNoInteractions(linkRepository);

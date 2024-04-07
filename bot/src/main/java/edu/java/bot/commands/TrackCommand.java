@@ -4,8 +4,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import dto.AddLinkRequest;
 import edu.java.bot.clients.ScrapperClient;
-import edu.java.bot.tools.LinkParse;
-import edu.java.bot.tools.Urls;
+import edu.java.bot.tools.LinkParser;
+import edu.java.bot.tools.Resource;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class TrackCommand implements Command {
     private final ScrapperClient scrapperClient;
-    private final LinkParse linkParse;
+    private final LinkParser linkParser;
 
     @Override
     public String name() {
@@ -32,7 +32,7 @@ public class TrackCommand implements Command {
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
         URI url = URI.create(update.message().text());
-        if (linkParse.parse(url) == Urls.INCORRECT_URL) {
+        if (linkParser.parse(url) == Resource.INCORRECT_URL) {
             return new SendMessage(chatId, "Указана неверная ссылка.\n"
                 + "Требуются ссылки репозитория Github или вопроса из StackOverflow");
         }

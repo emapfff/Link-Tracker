@@ -1,4 +1,4 @@
-package edu.java.tools;
+package edu.java.tool;
 
 public enum Resource {
     GITHUB,

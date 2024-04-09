@@ -12,9 +12,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jooq.DefaultConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
+@Validated
 @ConditionalOnProperty(prefix = "app", name = "database-access-type", havingValue = "jooq")
 public class JooqConfig {
     @Bean
@@ -26,13 +27,11 @@ public class JooqConfig {
     }
 
     @Bean
-    @Primary
     public JooqChatRepository jooqChatRepository(DSLContext dslContext) {
         return new JooqChatRepository(dslContext);
     }
 
     @Bean
-    @Primary
     public JooqLinkRepository jooqLinkRepository(
         JooqConsistsRepository jooqConsistsRepository,
         JooqChatRepository jooqChatRepository,
@@ -42,13 +41,11 @@ public class JooqConfig {
     }
 
     @Bean
-    @Primary
     public JooqConsistsRepository jooqConsistsRepository(DSLContext dslContext) {
         return new JooqConsistsRepository(dslContext);
     }
 
     @Bean
-    @Primary
     public JooqGithubLinkRepository jooqGithubLinkRepository(
         DSLContext dslContext,
         JooqLinkRepository jooqLinkRepository
@@ -57,7 +54,6 @@ public class JooqConfig {
     }
 
     @Bean
-    @Primary
     public JooqStackOverflowLinkRepository jooqStackOverflowLinkRepository(
         DSLContext dslContext,
         JooqLinkRepository jooqLinkRepository

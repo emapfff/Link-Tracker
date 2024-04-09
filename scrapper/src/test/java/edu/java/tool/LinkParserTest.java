@@ -1,4 +1,4 @@
-package edu.java.tools;
+package edu.java.tool;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

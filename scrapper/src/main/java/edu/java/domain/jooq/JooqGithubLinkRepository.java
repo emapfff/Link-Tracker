@@ -8,13 +8,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
 import static edu.java.domain.jooq.generation.Tables.CHAT;
 import static edu.java.domain.jooq.generation.Tables.CONSISTS;
 import static edu.java.domain.jooq.generation.Tables.GITHUB_LINKS;
 import static edu.java.domain.jooq.generation.Tables.LINK;
 
-@Repository
 @RequiredArgsConstructor
 public class JooqGithubLinkRepository implements GithubLinkRepository {
     private final DSLContext dslContext;

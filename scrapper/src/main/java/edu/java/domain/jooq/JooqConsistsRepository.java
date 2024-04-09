@@ -5,10 +5,8 @@ import edu.java.domain.dto.ConsistDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
 import static edu.java.domain.jooq.generation.Tables.CONSISTS;
 
-@Repository
 @RequiredArgsConstructor
 public class JooqConsistsRepository implements ConsistsRepository {
     private final DSLContext dslContext;

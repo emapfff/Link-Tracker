@@ -3,32 +3,34 @@ package edu.java.configuration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-@EnableConfigurationProperties(ClientsConfig.class)
-public class ClientConfiguration {
+@Validated
+@EnableConfigurationProperties(BaseUrlConfig.class)
+public class ClientConfig {
     @Bean
-    public WebClient githubClient(ClientsConfig clientsConfig) {
+    public WebClient githubClient(BaseUrlConfig baseUrlConfig) {
         return WebClient
             .builder()
-            .baseUrl(clientsConfig.githubBaseUrl())
+            .baseUrl(baseUrlConfig.githubBaseUrl())
             .build();
     }
 
     @Bean
-    public WebClient stackoverflowClient(ClientsConfig clientsConfig) {
+    public WebClient stackoverflowClient(BaseUrlConfig baseUrlConfig) {
         return WebClient
             .builder()
-            .baseUrl(clientsConfig.stackoverflowBaseUrl())
+            .baseUrl(baseUrlConfig.stackoverflowBaseUrl())
             .build();
     }
 
     @Bean
-    public WebClient botWebClient(ClientsConfig clientsConfig) {
+    public WebClient botWebClient(BaseUrlConfig baseUrlConfig) {
         return WebClient
             .builder()
-            .baseUrl(clientsConfig.botBaseUrl())
+            .baseUrl(baseUrlConfig.botBaseUrl())
             .build();
     }
 

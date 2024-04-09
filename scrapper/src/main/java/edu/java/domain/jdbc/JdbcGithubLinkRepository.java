@@ -9,9 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
-@Repository
 @RequiredArgsConstructor
 public class JdbcGithubLinkRepository implements GithubLinkRepository {
     private final JdbcTemplate jdbcTemplate;

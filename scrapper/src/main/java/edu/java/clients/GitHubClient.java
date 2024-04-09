@@ -1,8 +1,8 @@
 package edu.java.clients;
 
-import edu.java.responses.BranchResponse;
-import edu.java.responses.GitHubUserResponse;
-import edu.java.responses.RepositoryResponse;
+import edu.java.response.BranchResponse;
+import edu.java.response.GitHubUserResponse;
+import edu.java.response.RepositoryResponse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;

@@ -3,14 +3,14 @@ package edu.java.service;
 import edu.java.domain.ChatRepository;
 import edu.java.exceptions.AbsentChatException;
 import edu.java.exceptions.RepeatRegistrationException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class TgChatService {
-    @Autowired
-    private ChatRepository chatRepository;
+    private final ChatRepository chatRepository;
 
     @Transactional
     public void register(Long tgChatId) {

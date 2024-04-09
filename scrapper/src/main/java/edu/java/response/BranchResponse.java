@@ -1,4 +1,4 @@
-package edu.java.responses;
+package edu.java.response;
 
 public record BranchResponse(
     String name,

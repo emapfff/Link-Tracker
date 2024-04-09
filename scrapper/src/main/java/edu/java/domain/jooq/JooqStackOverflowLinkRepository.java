@@ -8,13 +8,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
 import static edu.java.domain.jooq.generation.Tables.CHAT;
 import static edu.java.domain.jooq.generation.Tables.CONSISTS;
 import static edu.java.domain.jooq.generation.Tables.LINK;
 import static edu.java.domain.jooq.generation.Tables.STACKOVERFLOW_LINK;
 
-@Repository
 @RequiredArgsConstructor
 public class JooqStackOverflowLinkRepository implements StackOverflowLinkRepository {
     private final DSLContext dslContext;

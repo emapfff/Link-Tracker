@@ -1,6 +1,6 @@
 package edu.java.clients;
 
-import edu.java.responses.QuestionResponse;
+import edu.java.response.QuestionResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

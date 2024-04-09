@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "scrapper-client")
 public record ScrapperClientProperties(
     @NotEmpty
-
     String baseUrl,
     Path path,
     Header header

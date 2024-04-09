@@ -15,9 +15,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Repository;
 
-@Repository
 @RequiredArgsConstructor
 public class JpaGithubLinkRepository implements GithubLinkRepository {
     private final BaseJpaGithubLinkRepository baseJpaGithubLinkRepository;

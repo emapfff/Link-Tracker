@@ -7,9 +7,7 @@ import edu.java.domain.jpa.bases.BaseJpaChatRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
-@Repository
 @RequiredArgsConstructor
 public class JpaChatRepository implements ChatRepository {
 

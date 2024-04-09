@@ -12,12 +12,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.springframework.stereotype.Repository;
 import static edu.java.domain.jooq.generation.Tables.CHAT;
 import static edu.java.domain.jooq.generation.Tables.CONSISTS;
 import static edu.java.domain.jooq.generation.Tables.LINK;
 
-@Repository
 @RequiredArgsConstructor
 public class JooqLinkRepository implements LinkRepository {
     private final DSLContext dslContext;

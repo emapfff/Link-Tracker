@@ -5,27 +5,24 @@ import edu.java.domain.GithubLinkRepository;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
-import edu.java.responses.BranchResponse;
-import edu.java.responses.RepositoryResponse;
-import edu.java.tools.LinkParser;
+import edu.java.response.BranchResponse;
+import edu.java.response.RepositoryResponse;
+import edu.java.tool.LinkParser;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class GithubUpdater {
-    @Autowired
-    private GitHubClient githubClient;
-    @Autowired
-    private LinkParser linkParse;
-    @Autowired
-    private GithubLinkRepository githubLinkRepository;
-    @Autowired
-    private LinkRepository linkRepository;
+    private final GitHubClient githubClient;
+    private final LinkParser linkParse;
+    private final GithubLinkRepository githubLinkRepository;
+    private final LinkRepository linkRepository;
 
     @Transactional
     public boolean update(@NotNull LinkDto linkDto) {

@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
-@Repository
 @RequiredArgsConstructor
 public class JdbcLinkRepository implements LinkRepository {
     private static final String JOIN_TABLES =

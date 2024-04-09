@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "clients", ignoreUnknownFields = false)
-public record ClientsConfig(
+public record BaseUrlConfig(
     @Bean
     String githubBaseUrl,
     @Bean

@@ -4,6 +4,13 @@ app:
     interval: 60s
     force-check-delay: 120s
   database-access-type: jpa
+
+retry:
+  back-off-type: constant
+  max-attempts: 5
+  initial-interval: 1000
+  multiplier: 2
+
 spring:
   application:
     name: scrapper

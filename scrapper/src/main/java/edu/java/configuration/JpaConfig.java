@@ -11,19 +11,19 @@ import edu.java.domain.jpa.bases.BaseJpaStackOverflowLinkRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
+@Validated
 @ConditionalOnProperty(prefix = "app", name = "database-access-type", havingValue = "jpa")
 public class JpaConfig {
+
     @Bean
-    @Primary
     public JpaChatRepository jpaChatRepository(BaseJpaChatRepository baseJpaChatRepository) {
         return new JpaChatRepository(baseJpaChatRepository);
     }
 
     @Bean
-    @Primary
     public JpaLinkRepository jpaLinkRepository(
         BaseJpaLinkRepository baseJpaLinkRepository,
         BaseJpaChatRepository baseJpaChatRepository
@@ -32,7 +32,6 @@ public class JpaConfig {
     }
 
     @Bean
-    @Primary
     public JpaGithubLinkRepository jpaGithubLinkRepository(
         BaseJpaLinkRepository baseJpaLinkRepository,
         BaseJpaGithubLinkRepository baseJpaGithubLinkRepository, BaseJpaChatRepository baseJpaChatRepository
@@ -41,14 +40,12 @@ public class JpaConfig {
     }
 
     @Bean
-    @Primary
     public JpaStackOverflowLinkRepository jpaStackOverflowLinkRepository(
         BaseJpaChatRepository baseJpaChatRepository, BaseJpaLinkRepository baseJpaLinkRepository,
         BaseJpaStackOverflowLinkRepository baseJpaStackOverflowLinkRepository
     ) {
         return new JpaStackOverflowLinkRepository(baseJpaStackOverflowLinkRepository, baseJpaChatRepository,
-            baseJpaLinkRepository
-        );
+            baseJpaLinkRepository);
     }
 
 }

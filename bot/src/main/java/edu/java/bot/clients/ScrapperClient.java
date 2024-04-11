@@ -97,7 +97,7 @@ public class ScrapperClient {
                     .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
             )
             .bodyToMono(LinkResponse.class)
-            .retryWhen();
+            .retryWhen(retry);
     }
 
     public Mono<LinkResponse> deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {

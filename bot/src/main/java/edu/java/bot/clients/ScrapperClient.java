@@ -6,6 +6,7 @@ import dto.LinkResponse;
 import dto.ListLinksResponse;
 import dto.RemoveLinkRequest;
 import edu.java.bot.configuration.ScrapperClientProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,11 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
 @Slf4j
 @EnableConfigurationProperties(ScrapperClientProperties.class)
+@RequiredArgsConstructor
 public class ScrapperClient {
+    private Retry retry;
     private final WebClient scrapperWebClient;
     private final String linkPath;
     private final String tgChatPath;
@@ -44,7 +48,8 @@ public class ScrapperClient {
                 response -> response.bodyToMono(ApiErrorResponse.class)
                     .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
             )
-            .bodyToMono(Void.class);
+            .bodyToMono(Void.class)
+            .retryWhen(retry);
     }
 
     public Mono<Void> removeChat(Long id) {
@@ -58,7 +63,8 @@ public class ScrapperClient {
                 response -> response.bodyToMono(ApiErrorResponse.class)
                     .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
             )
-            .bodyToMono(Void.class);
+            .bodyToMono(Void.class)
+            .retryWhen(retry);
     }
 
     public Mono<ListLinksResponse> getLinks(Long tgChatId) {
@@ -73,7 +79,8 @@ public class ScrapperClient {
                 response -> response.bodyToMono(ApiErrorResponse.class)
                     .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
             )
-            .bodyToMono(ListLinksResponse.class);
+            .bodyToMono(ListLinksResponse.class)
+            .retryWhen(retry);
     }
 
     public Mono<LinkResponse> addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
@@ -89,7 +96,8 @@ public class ScrapperClient {
                 response -> response.bodyToMono(ApiErrorResponse.class)
                     .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
             )
-            .bodyToMono(LinkResponse.class);
+            .bodyToMono(LinkResponse.class)
+            .retryWhen();
     }
 
     public Mono<LinkResponse> deleteLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
@@ -110,6 +118,7 @@ public class ScrapperClient {
                 response -> response.bodyToMono(ApiErrorResponse.class)
                     .flatMap(error -> Mono.error(new Exception(error.exceptionMessage())))
             )
-            .bodyToMono(LinkResponse.class);
+            .bodyToMono(LinkResponse.class)
+            .retryWhen(retry);
     }
  }

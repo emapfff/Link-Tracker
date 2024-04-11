@@ -6,6 +6,7 @@ import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.response.BranchResponse;
+import edu.java.response.ListBranchesResponse;
 import edu.java.response.RepositoryResponse;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.GithubUpdater;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectReader;
 import reactor.core.publisher.Mono;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -76,9 +78,10 @@ class GithubUpdaterTest extends IntegrationTest{
             new BranchResponse("branch1", new BranchResponse.Commit("sha1", "url1"), false),
             new BranchResponse("branch2", new BranchResponse.Commit("sha2", "url2"), false)
         );
+        ListBranchesResponse listBranchesResponse = new ListBranchesResponse(branches);
         when(linkParse.getGithubUser(link.url())).thenReturn("emapfff");
         when(linkParse.getGithubRepo(link.url())).thenReturn("java-backend-2024");
-        when(githubClient.fetchBranch(any(), any())).thenReturn(Mono.just(branches));
+        when(githubClient.fetchBranch(any(), any())).thenReturn(Mono.just(listBranchesResponse));
         doNothing().when(githubLinkRepository).setCountBranches(any(), any());
 
         boolean result = githubUpdater.checkBranches(link);
@@ -94,9 +97,10 @@ class GithubUpdaterTest extends IntegrationTest{
             new BranchResponse("branch1", new BranchResponse.Commit("sha1", "url1"), false),
             new BranchResponse("branch2", new BranchResponse.Commit("sha2", "url2"), false)
         );
+        ListBranchesResponse listBranchesResponse = new ListBranchesResponse(branches);
         when(linkParse.getGithubUser(link.url())).thenReturn("emapfff");
         when(linkParse.getGithubRepo(link.url())).thenReturn("java-backend-2024");
-        when(githubClient.fetchBranch(any(), any())).thenReturn(Mono.just(branches));
+        when(githubClient.fetchBranch(any(), any())).thenReturn(Mono.just(listBranchesResponse));
 
         boolean result = githubUpdater.checkBranches(link);
 

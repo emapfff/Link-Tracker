@@ -1,6 +1,6 @@
-package edu.java.backoff;
+package edu.java.bot.backoff;
 
-import edu.java.configuration.BackOffProperties;
+import edu.java.bot.configuration.BackOffProperties;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +28,7 @@ public class LinearBackOff extends Retry {
     }
 
     @NotNull
-    Mono<Long> getRetry(Retry.@NotNull RetrySignal rs) {
+    Mono<Long> getRetry(@NotNull RetrySignal rs) {
         if (rs.totalRetries() < attempts) {
             Duration delay = duration();
             log.info("# attempt {} with backoff {}s", rs.totalRetries(), delay.toSeconds());

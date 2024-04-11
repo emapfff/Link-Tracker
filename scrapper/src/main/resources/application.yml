@@ -3,12 +3,12 @@ app:
     enable: true
     interval: 60s
     force-check-delay: 120s
-  database-access-type: jpa
+  database-access-type: jdbc
 
 retry:
   back-off-type: constant
   max-attempts: 5
-  initial-interval: 1000
+  initial-interval: 2000
   multiplier: 2
 
 spring:

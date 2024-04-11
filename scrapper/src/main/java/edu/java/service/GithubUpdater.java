@@ -5,12 +5,11 @@ import edu.java.domain.GithubLinkRepository;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
-import edu.java.response.BranchResponse;
+import edu.java.response.ListBranchesResponse;
 import edu.java.response.RepositoryResponse;
 import edu.java.tool.LinkParser;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -44,9 +43,9 @@ public class GithubUpdater {
         URI link = linkDto.url();
         String user = linkParse.getGithubUser(link);
         String repo = linkParse.getGithubRepo(link);
-        List<BranchResponse> branches = githubClient.fetchBranch(user, repo).block();
+        ListBranchesResponse listBranchesResponse = githubClient.fetchBranch(user, repo).block();
         int bdCountBranches = githubLinkDto.countBranches();
-        int newCountBranches = branches.size();
+        int newCountBranches = listBranchesResponse.listBranches().size();
         if (newCountBranches > bdCountBranches) {
             githubLinkRepository.setCountBranches(linkDto, newCountBranches);
             return true;

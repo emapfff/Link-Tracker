@@ -1,22 +1,25 @@
 package edu.java.clients;
 
 import edu.java.response.QuestionResponse;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StackOverflowClient {
     private final WebClient stackoverflowClient;
+    private final Retry retry;
 
     public Mono<QuestionResponse> fetchQuestion(long id) {
         return this.stackoverflowClient
             .get()
             .uri("/questions/{id}?site=stackoverflow", id)
             .retrieve()
-            .bodyToMono(QuestionResponse.class);
+            .bodyToMono(QuestionResponse.class)
+            .retryWhen(retry);
     }
 
 }

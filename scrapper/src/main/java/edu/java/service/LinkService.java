@@ -9,13 +9,12 @@ import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.LinkNotFoundException;
-import edu.java.response.BranchResponse;
+import edu.java.response.ListBranchesResponse;
 import edu.java.response.QuestionResponse;
 import edu.java.response.RepositoryResponse;
 import edu.java.tool.LinkParser;
 import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +50,12 @@ public class LinkService {
                     githubUser,
                     githubRepo
                 ).block();
-                List<BranchResponse> branchResponse = gitHubClient.fetchBranch(
+                ListBranchesResponse listBranchesResponse = gitHubClient.fetchBranch(
                     githubUser,
                     githubRepo
                 ).block();
                 linkRepository.add(tgChatId, url, repositoryResponse.lastUpdate());
-                githubLinkRepository.add(tgChatId, url, branchResponse.size());
+                githubLinkRepository.add(tgChatId, url, listBranchesResponse.listBranches().size());
             }
             case STACKOVERFLOW -> {
                 Long questionId = linkParse.getStackOverFlowId(url);

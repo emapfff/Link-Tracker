@@ -36,10 +36,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 class ScrapperClientTest {
     @Autowired
     private ExponentialBackOff exponentialBackOff;
-    @Autowired
-    private ConstantBackOff constantBackOff;
-    @Autowired
-    private LinearBackOff linearBackOff;
     private ScrapperClientProperties properties;
     private ScrapperClient scrapperClient;
     private Retry retry;

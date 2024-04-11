@@ -13,6 +13,13 @@ retry:
   initial-interval: 2000
   multiplier: 2
 
+rate-limiting:
+  capacity: 3
+  refill-rate: 100
+  refill-time-seconds: 3600
+  cache-size: 10_000
+  expire-after-access: 2h
+
 scrapper-client:
   base-url: http://localhost:8080
   path:

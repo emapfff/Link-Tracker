@@ -11,8 +11,8 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public record ApplicationConfig(
     @NestedConfigurationProperty
-        @Bean
-        @NotNull
+    @Bean
+    @NotNull
     Scheduler scheduler,
     AccessType databaseAccessType
 ) {

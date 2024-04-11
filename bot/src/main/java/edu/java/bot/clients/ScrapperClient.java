@@ -30,7 +30,8 @@ public class ScrapperClient {
     private final String chatIdHeader;
 
     @Autowired
-    public ScrapperClient(WebClient scrapperWebClient, ScrapperClientProperties properties) {
+    public ScrapperClient(Retry retry, WebClient scrapperWebClient, ScrapperClientProperties properties) {
+        this.retry = retry;
         this.scrapperWebClient = scrapperWebClient;
         this.linkPath = properties.path().link();
         this.tgChatPath = properties.path().tgChat();

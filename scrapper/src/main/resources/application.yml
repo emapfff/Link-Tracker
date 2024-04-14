@@ -5,6 +5,17 @@ app:
     force-check-delay: 120s
   database-access-type: jdbc
 
+kafka:
+  bootstrap-servers: localhost:29092
+  client-id: todolist-backend
+  acks-mode: all
+  delivery-timeout: 60s
+  linger-ms: 0
+  batch-size: 100_000
+  max-in-flight-per-connection: 5
+  enable-idempotence: true
+  schema-registry-url: 'http://localhost:28081'
+
 retry:
   back-off-type: constant
   max-attempts: 5

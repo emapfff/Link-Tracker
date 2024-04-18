@@ -46,7 +46,7 @@ class LinkUpdaterServiceTest {
 
         linkUpdaterService.checkUpdates();
 
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+        verify(botClient).send(any(LinkUpdateRequest.class));
     }
 
     @Test
@@ -61,7 +61,7 @@ class LinkUpdaterServiceTest {
 
         linkUpdaterService.checkUpdates();
 
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+        verify(botClient).send(any(LinkUpdateRequest.class));
     }
 
     @Test
@@ -90,7 +90,7 @@ class LinkUpdaterServiceTest {
 
         linkUpdaterService.checkUpdates();
 
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+        verify(botClient).send(any(LinkUpdateRequest.class));
     }
 
     @Test
@@ -105,7 +105,7 @@ class LinkUpdaterServiceTest {
 
         linkUpdaterService.checkUpdates();
 
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+        verify(botClient).send(any(LinkUpdateRequest.class));
     }
 
     @Test

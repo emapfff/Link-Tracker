@@ -33,7 +33,7 @@ public class UntrackCommand implements Command {
         URI url = URI.create(update.message().text());
         if (linkParser.parse(url) == Resource.INCORRECT_URL) {
             return new SendMessage(chatId, "Указана неверная ссылка."
-                + "\nТребуются ссылки репозитория Github или вопроса из StackOverflow");
+                + "\nТребуются ссылки репозиториев Github или вопросов из StackOverflow");
         }
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create(update.message().text()));
         return scrapperClient.deleteLink(chatId, removeLinkRequest)

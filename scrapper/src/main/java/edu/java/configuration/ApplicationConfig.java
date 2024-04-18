@@ -14,7 +14,8 @@ public record ApplicationConfig(
     @Bean
     @NotNull
     Scheduler scheduler,
-    AccessType databaseAccessType
+    AccessType databaseAccessType,
+    boolean useQueue
 ) {
     public enum AccessType {
         JDBC,

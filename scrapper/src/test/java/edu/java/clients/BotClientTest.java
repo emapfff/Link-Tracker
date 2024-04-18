@@ -93,7 +93,7 @@ class BotClientTest {
             "\"description\": \"updating link\"," +
             "\"tgChatIds\": [1, 2, 3]}";
 
-        botClient.sendUpdate(linkUpdateRequest);
+        botClient.send(linkUpdateRequest);
 
         verify(postRequestedFor(urlEqualTo("/updates"))
             .withRequestBody(equalToJson(expectedRequest)));
@@ -114,7 +114,7 @@ class BotClientTest {
             "\"description\": \"updating link\"," +
             "\"tgChatIds\": [1, 2, 3]}";
 
-        botClient.sendUpdate(linkUpdateRequest);
+        botClient.send(linkUpdateRequest);
 
         verify(postRequestedFor(urlEqualTo("/updates"))
             .withRequestBody(equalToJson(expectedRequest)));
@@ -135,7 +135,7 @@ class BotClientTest {
             "\"description\": \"updating link\"," +
             "\"tgChatIds\": [1, 2, 3]}";
 
-        botClient.sendUpdate(linkUpdateRequest);
+        botClient.send(linkUpdateRequest);
 
         verify(postRequestedFor(urlEqualTo("/updates"))
             .withRequestBody(equalToJson(expectedRequest)));

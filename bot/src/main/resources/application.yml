@@ -1,6 +1,16 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
 
+kafka:
+  consumer:
+    bootstrap-servers: localhost:29091, localhost:29092
+    client-id: bot
+    auto-offset-reset: latest
+    max-poll-interval: 300_000
+    enable-auto-commit: false
+    concurrency: 1
+    schema-registry-url: 'http://localhost:28081'
+
 spring:
   application:
     name: worker

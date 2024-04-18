@@ -4,17 +4,23 @@ app:
     interval: 60s
     force-check-delay: 120s
   database-access-type: jdbc
+  use-queue: true
 
 kafka:
-  bootstrap-servers: localhost:29092
-  client-id: todolist-backend
-  acks-mode: all
-  delivery-timeout: 60s
-  linger-ms: 0
-  batch-size: 100_000
-  max-in-flight-per-connection: 5
-  enable-idempotence: true
-  schema-registry-url: 'http://localhost:28081'
+  producer:
+    bootstrap-servers: localhost:9092, localhost:9093
+    client-id: scrapper
+    ack-mode: all
+    delivery-timeout: 60s
+    linger-ms: 0
+    batch-size: 100_000
+    max-in-flight-per-connection: 5
+    enable-idempotence: true
+  topic:
+    name: notification
+    partitions: 10
+    replicas: 1
+
 
 retry:
   back-off-type: constant

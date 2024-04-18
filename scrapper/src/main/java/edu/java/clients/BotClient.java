@@ -1,23 +1,20 @@
 package edu.java.clients;
 
 import dto.LinkUpdateRequest;
-import edu.java.exceptions.IncorrectParametersException;
+import edu.java.service.NotificationSender;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
-@Service
+
 @RequiredArgsConstructor
-public class BotClient {
+public class BotClient implements NotificationSender {
     private final WebClient botWebClient;
     private final Retry retry;
 
-    public void sendUpdate(LinkUpdateRequest linkUpdateRequest) {
-        if (linkUpdateRequest == null) {
-            throw new IncorrectParametersException("Некорректные параметры запроса");
-        }
+    @Override
+    public void send(LinkUpdateRequest linkUpdateRequest) {
         this.botWebClient
             .post()
             .uri("/updates")

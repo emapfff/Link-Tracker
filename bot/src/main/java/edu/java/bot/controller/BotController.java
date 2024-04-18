@@ -22,4 +22,6 @@ public class BotController {
     public void sendUpdates(@RequestBody LinkUpdateRequest linkUpdateRequest) {
         log.info("update");
     }
+
 }
+

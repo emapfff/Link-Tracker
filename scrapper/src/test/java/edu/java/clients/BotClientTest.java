@@ -1,8 +1,5 @@
 package edu.java.clients;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import dto.LinkUpdateRequest;
 import edu.java.backoff.ConstantBackOff;
@@ -10,10 +7,8 @@ import edu.java.backoff.ExponentialBackOff;
 import edu.java.backoff.LinearBackOff;
 import edu.java.configuration.BackOffProperties;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +17,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.resetAllScenarios;
@@ -79,7 +73,7 @@ class BotClientTest {
     }
 
     @Test
-    void sendUpdateExponentialBlackOff() {
+    void sendUpdateExponentialBackOff() {
         retry = exponentialBackOff;
         botClient = new BotClient(WebClient.create("http://localhost:8080"), retry);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
@@ -121,7 +115,7 @@ class BotClientTest {
     }
 
     @Test
-    void sendUpdateConstantBlackOff() {
+    void sendUpdateConstantBackOff() {
         retry = constantBackOff;
         botClient = new BotClient(WebClient.create("http://localhost:8080"), retry);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(

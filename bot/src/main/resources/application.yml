@@ -19,9 +19,9 @@ spring:
 
 retry:
   back-off-type: constant
-  max-attempts: 5
-  initial-interval: 2000
   multiplier: 2
+  initial-interval: 2000
+  max-attempts: 5
 
 rate-limiting:
   capacity: 3

@@ -4,6 +4,7 @@ import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
+import edu.java.tool.Changes;
 import edu.java.tool.LinkParser;
 import edu.java.tool.Resource;
 import java.net.URI;
@@ -43,7 +44,7 @@ class LinkUpdaterServiceTest {
         when(linkRepository.findAll()).thenReturn(links);
         when(linkParser.parse(link.url())).thenReturn(Resource.GITHUB);
         when(githubUpdater.update(link)).thenReturn(true);
-
+        when(githubUpdater.checkBranches(link)).thenReturn(Changes.NOTHING);
         linkUpdaterService.checkUpdates();
 
         verify(botClient).send(any(LinkUpdateRequest.class));
@@ -57,7 +58,7 @@ class LinkUpdaterServiceTest {
         when(linkRepository.findAll()).thenReturn(links);
         when(linkParser.parse(link.url())).thenReturn(Resource.GITHUB);
         when(githubUpdater.update(link)).thenReturn(false);
-        when(githubUpdater.checkBranches(link)).thenReturn(true);
+        when(githubUpdater.checkBranches(link)).thenReturn(Changes.ADD);
 
         linkUpdaterService.checkUpdates();
 
@@ -72,7 +73,7 @@ class LinkUpdaterServiceTest {
         when(linkRepository.findAll()).thenReturn(links);
         when(linkParser.parse(link.url())).thenReturn(Resource.GITHUB);
         when(githubUpdater.update(link)).thenReturn(false);
-        when(githubUpdater.checkBranches(link)).thenReturn(false);
+        when(githubUpdater.checkBranches(link)).thenReturn(Changes.NOTHING);
 
         linkUpdaterService.checkUpdates();
 
@@ -101,7 +102,7 @@ class LinkUpdaterServiceTest {
         when(linkRepository.findAll()).thenReturn(links);
         when(linkParser.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowUpdater.update(link)).thenReturn(false);
-        when(stackOverflowUpdater.checkAnswers(link)).thenReturn(true);
+        when(stackOverflowUpdater.checkAnswers(link)).thenReturn(Changes.ADD);
 
         linkUpdaterService.checkUpdates();
 
@@ -116,7 +117,7 @@ class LinkUpdaterServiceTest {
         when(linkRepository.findAll()).thenReturn(links);
         when(linkParser.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowUpdater.update(link)).thenReturn(false);
-        when(stackOverflowUpdater.checkAnswers(link)).thenReturn(false);
+        when(stackOverflowUpdater.checkAnswers(link)).thenReturn(Changes.NOTHING);
 
         linkUpdaterService.checkUpdates();
 

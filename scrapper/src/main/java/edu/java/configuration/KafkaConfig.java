@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,12 +25,11 @@ public class KafkaConfig {
         return TopicBuilder.name(topicProperties.name())
             .partitions(topicProperties.partitions())
             .replicas(topicProperties.replicas())
-            .compact()
             .build();
     }
 
     @Bean
-    public ProducerFactory<Integer, LinkUpdateRequest> producerFactory(KafkaProducerProperties properties) {
+    public ProducerFactory<String, LinkUpdateRequest> producerFactory(KafkaProducerProperties properties) {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.bootstrapServers());
         props.put(ProducerConfig.CLIENT_ID_CONFIG, properties.clientId());
@@ -48,14 +46,14 @@ public class KafkaConfig {
         );
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, properties.enableIdempotence());
         props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, String.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(props);
     }
 
     @Bean
-    public KafkaTemplate<Integer, LinkUpdateRequest> linkProducer(
-        ProducerFactory<Integer, LinkUpdateRequest> producerFactory
+    public KafkaTemplate<String, LinkUpdateRequest> linkProducer(
+        ProducerFactory<String, LinkUpdateRequest> producerFactory
     ) {
         return new KafkaTemplate<>(producerFactory);
     }

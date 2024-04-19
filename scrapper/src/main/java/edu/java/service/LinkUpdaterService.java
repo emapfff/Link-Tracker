@@ -37,40 +37,64 @@ public class LinkUpdaterService {
                         );
                         notificationSender.send(updatedRepo);
                     }
-                    if (githubUpdater.checkBranches(link)) {
-                        log.info("Требуются обновления для гитхаба по веткам");
-                        LinkUpdateRequest newBranch = new LinkUpdateRequest(
-                            link.id(),
-                            link.url(),
-                            "Добавлена новая ветка!",
-                            linkRepository.findAllTgChatIdsByUrl(link.url())
-                        );
-                        notificationSender.send(newBranch);
+                    switch (githubUpdater.checkBranches(link)) {
+                        case ADD -> {
+                            LinkUpdateRequest newBranch = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Добавлена новая ветка!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(newBranch.description());
+                            notificationSender.send(newBranch);
+                        }
+                        case DELETE -> {
+                            LinkUpdateRequest deleteBranch = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Удалена ветка!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(deleteBranch.description());
+                            notificationSender.send(deleteBranch);
+                        }
+                        default -> log.info("Нет изменений в ветках");
                     }
-                    log.info("Обновления не требуются для гитхаба");
                 }
                 case STACKOVERFLOW -> {
                     if (stackOverflowUpdater.update(link)) {
-                        log.info("Требуются обновления для стака");
                         LinkUpdateRequest newNotification = new LinkUpdateRequest(
                             link.id(),
                             link.url(),
                             "Пришло уведомление со stackoverflow!",
                             linkRepository.findAllTgChatIdsByUrl(link.url())
                         );
+                        log.info(newNotification.description());
                         notificationSender.send(newNotification);
                     }
-                    if (stackOverflowUpdater.checkAnswers(link)) {
-                        log.info("Требуются обновления для стака по ответам");
-                        LinkUpdateRequest newAnswer = new LinkUpdateRequest(
-                            link.id(),
-                            link.url(),
-                            "Пришел новый ответ!",
-                            linkRepository.findAllTgChatIdsByUrl(link.url())
-                        );
-                        notificationSender.send(newAnswer);
+                    switch (stackOverflowUpdater.checkAnswers(link)) {
+                        case ADD -> {
+                            LinkUpdateRequest newAnswer = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Пришел новый ответ!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(newAnswer.description());
+                            notificationSender.send(newAnswer);
+                        }
+                        case DELETE -> {
+                            LinkUpdateRequest deleteAnswer = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Ответ был удален!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(deleteAnswer.description());
+                            notificationSender.send(deleteAnswer);
+                        }
+                        default -> log.info("Нет изменений в вопросе");
                     }
-                    log.info("Обновления не требуются для стака");
                 }
                 default -> throw new IncorrectParametersException("Неверная ссылка");
             }

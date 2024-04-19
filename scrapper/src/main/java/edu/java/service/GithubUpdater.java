@@ -7,16 +7,22 @@ import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.response.ListBranchesResponse;
 import edu.java.response.RepositoryResponse;
+import edu.java.tool.Changes;
 import edu.java.tool.LinkParser;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static edu.java.tool.Changes.ADD;
+import static edu.java.tool.Changes.DELETE;
+import static edu.java.tool.Changes.NOTHING;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GithubUpdater {
     private final GitHubClient githubClient;
     private final LinkParser linkParse;
@@ -38,7 +44,7 @@ public class GithubUpdater {
     }
 
     @Transactional
-    public boolean checkBranches(@NotNull LinkDto linkDto) {
+    public Changes checkBranches(@NotNull LinkDto linkDto) {
         GithubLinkDto githubLinkDto = githubLinkRepository.findGithubLinkByLinkId(linkDto.id());
         URI link = linkDto.url();
         String user = linkParse.getGithubUser(link);
@@ -48,8 +54,11 @@ public class GithubUpdater {
         int newCountBranches = listBranchesResponse.listBranches().size();
         if (newCountBranches > bdCountBranches) {
             githubLinkRepository.setCountBranches(linkDto, newCountBranches);
-            return true;
+            return ADD;
+        } else if (newCountBranches < bdCountBranches) {
+            githubLinkRepository.setCountBranches(linkDto, newCountBranches);
+            return DELETE;
         }
-        return false;
+        return NOTHING;
     }
 }

@@ -9,6 +9,7 @@ import edu.java.response.QuestionResponse;
 import edu.java.response.QuestionResponse.ItemResponse;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.StackOverflowUpdater;
+import edu.java.tool.Changes;
 import edu.java.tool.LinkParser;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -83,9 +85,9 @@ class StackOverflowUpdaterTest extends IntegrationTest {
         when(linkParser.getStackOverFlowId(link.url())).thenReturn(1642028L);
         doNothing().when(stackOverflowLinkRepository).setAnswersCount(any(), any());
 
-        boolean result = stackOverflowUpdater.checkAnswers(link);
+        Changes result = stackOverflowUpdater.checkAnswers(link);
 
-        assertTrue(result);
+        assertEquals(result, Changes.ADD);
     }
 
     @Test
@@ -95,9 +97,9 @@ class StackOverflowUpdaterTest extends IntegrationTest {
         when(linkParser.getStackOverFlowId(link.url())).thenReturn(1642028L);
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(new QuestionResponse(itemsPlusDay)));
 
-        boolean result = stackOverflowUpdater.checkAnswers(link);
+        Changes result = stackOverflowUpdater.checkAnswers(link);
 
-        assertFalse(result);
+        assertEquals(result, Changes.NOTHING);
     }
 
 }

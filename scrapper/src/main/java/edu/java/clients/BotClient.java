@@ -7,7 +7,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.util.retry.Retry;
 
-
 @RequiredArgsConstructor
 public class BotClient implements NotificationSender {
     private final WebClient botWebClient;

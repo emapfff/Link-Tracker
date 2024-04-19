@@ -2,8 +2,6 @@ package edu.java.bot.controller;
 
 import dto.LinkUpdateRequest;
 import edu.java.bot.service.Bot;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +15,8 @@ public class BotController {
     private final Bot bot;
 
     @PostMapping("/updates")
-    @Operation(summary = "Отправить обновление", description = "Обновление обработано")
-    @ApiResponse(responseCode = "200", description = "Обновление обработано")
     public void sendUpdates(@RequestBody LinkUpdateRequest linkUpdateRequest) {
-        log.info("update");
+        log.info("{} {}", linkUpdateRequest.description(), linkUpdateRequest.url());
     }
 
 }

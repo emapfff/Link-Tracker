@@ -4,6 +4,7 @@ import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.service.NotificationSender;
 import edu.java.service.ScrapperQueueProducer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,19 +15,22 @@ import reactor.util.retry.Retry;
 
 @Configuration
 @Validated
+@Slf4j
 public class SenderConfig {
     @Bean
-    @ConditionalOnProperty(prefix = "app", name = "useQueue", havingValue = "true")
-    public NotificationSender queueSender(
-        KafkaTemplate<Integer, LinkUpdateRequest> linkProducer,
+    @ConditionalOnProperty(prefix = "app", name = "use-queue", havingValue = "true")
+    public NotificationSender queueProducer(
+        KafkaTemplate<String, LinkUpdateRequest> linkProducer,
         TopicProperties topicProperties
     ) {
+        log.info("kafka");
         return new ScrapperQueueProducer(linkProducer, topicProperties);
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "app", name = "useQueue", havingValue = "false")
+    @ConditionalOnProperty(prefix = "app", name = "use-queue", havingValue = "false")
     public NotificationSender httpSender(WebClient botWebClient, Retry retry) {
+        log.info("http");
         return new BotClient(botWebClient, retry);
     }
 

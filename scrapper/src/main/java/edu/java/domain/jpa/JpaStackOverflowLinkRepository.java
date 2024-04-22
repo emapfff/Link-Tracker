@@ -15,19 +15,25 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class JpaStackOverflowLinkRepository implements StackOverflowLinkRepository {
-    private final BaseJpaStackOverflowLinkRepository baseJpaStackOverflowLinkRepository;
+    @Autowired
+    private BaseJpaStackOverflowLinkRepository baseJpaStackOverflowLinkRepository;
 
-    private final BaseJpaChatRepository baseJpaChatRepository;
+    @Autowired
+    private BaseJpaChatRepository baseJpaChatRepository;
 
-    private final BaseJpaLinkRepository baseJpaLinkRepository;
+    @Autowired
+    private JpaLinkRepository jpaLinkRepository;
 
     @Override
     public void add(Long tgChatId, URI url, Integer answerCount) {
         Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-        Link link = baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString());
+        Link link = jpaLinkRepository.findLinkByChatAndUrl(chat, url.toString());
         StackOverflowLink stackOverflowLink = new StackOverflowLink(link, answerCount);
         baseJpaStackOverflowLinkRepository.save(stackOverflowLink);
     }
@@ -36,7 +42,7 @@ public class JpaStackOverflowLinkRepository implements StackOverflowLinkReposito
     public StackOverflowDto findStackOverflowLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         try {
             Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-            Link link = baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString());
+            Link link = jpaLinkRepository.findLinkByChatAndUrl(chat, url.toString());
             StackOverflowLink stackOverflowLink = baseJpaStackOverflowLinkRepository.findStackOverflowLinkByLink(link);
             return convertToStackOverflowDto(stackOverflowLink);
         } catch (Exception e) {

@@ -1,6 +1,5 @@
 package edu.java.backoff;
 
-import edu.java.configuration.BackOffProperties;
 import edu.java.configuration.RetryConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +8,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = {LinearBackOff.class, BackOffProperties.class}, properties = "retry.back-off-type=linear")
+@SpringBootTest(classes = {LinearBackOff.class, RetryPolicy.class}, properties = "retry.back-off-type=linear")
 class LinearBackOffTest {
     @Autowired
     LinearBackOff linearBackOff;

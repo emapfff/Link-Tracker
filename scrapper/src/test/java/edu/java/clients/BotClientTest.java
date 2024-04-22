@@ -1,19 +1,13 @@
 package edu.java.clients;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import dto.LinkUpdateRequest;
 import edu.java.backoff.ConstantBackOff;
 import edu.java.backoff.ExponentialBackOff;
 import edu.java.backoff.LinearBackOff;
-import edu.java.configuration.BackOffProperties;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 
 @SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class,
-    BackOffProperties.class})
+    RetryPolicy.class})
 @WireMockTest(httpPort = 8080)
 class BotClientTest {
     @Autowired

@@ -1,5 +1,9 @@
 package edu.java.configuration;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.GithubLinkRepository;
+import edu.java.domain.LinkRepository;
+import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.jpa.JpaChatRepository;
 import edu.java.domain.jpa.JpaGithubLinkRepository;
 import edu.java.domain.jpa.JpaLinkRepository;
@@ -19,33 +23,23 @@ import org.springframework.validation.annotation.Validated;
 public class JpaConfig {
 
     @Bean
-    public JpaChatRepository jpaChatRepository(BaseJpaChatRepository baseJpaChatRepository) {
-        return new JpaChatRepository(baseJpaChatRepository);
+    public ChatRepository chatRepository() {
+        return new JpaChatRepository();
     }
 
     @Bean
-    public JpaLinkRepository jpaLinkRepository(
-        BaseJpaLinkRepository baseJpaLinkRepository,
-        BaseJpaChatRepository baseJpaChatRepository
-    ) {
-        return new JpaLinkRepository(baseJpaLinkRepository, baseJpaChatRepository);
+    public LinkRepository linkRepository() {
+        return new JpaLinkRepository();
     }
 
     @Bean
-    public JpaGithubLinkRepository jpaGithubLinkRepository(
-        BaseJpaLinkRepository baseJpaLinkRepository,
-        BaseJpaGithubLinkRepository baseJpaGithubLinkRepository, BaseJpaChatRepository baseJpaChatRepository
-    ) {
-        return new JpaGithubLinkRepository(baseJpaGithubLinkRepository, baseJpaLinkRepository, baseJpaChatRepository);
+    public GithubLinkRepository githubLinkRepository() {
+        return new JpaGithubLinkRepository();
     }
 
     @Bean
-    public JpaStackOverflowLinkRepository jpaStackOverflowLinkRepository(
-        BaseJpaChatRepository baseJpaChatRepository, BaseJpaLinkRepository baseJpaLinkRepository,
-        BaseJpaStackOverflowLinkRepository baseJpaStackOverflowLinkRepository
-    ) {
-        return new JpaStackOverflowLinkRepository(baseJpaStackOverflowLinkRepository, baseJpaChatRepository,
-            baseJpaLinkRepository);
+    public StackOverflowLinkRepository stackOverflowLinkRepository() {
+        return new JpaStackOverflowLinkRepository();
     }
 
 }

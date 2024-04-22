@@ -1,11 +1,9 @@
 package edu.java.clients;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.backoff.ConstantBackOff;
 import edu.java.backoff.ExponentialBackOff;
 import edu.java.backoff.LinearBackOff;
-import edu.java.configuration.BackOffProperties;
 import edu.java.response.GitHubUserResponse;
 import edu.java.response.ListBranchesResponse;
 import edu.java.response.RepositoryResponse;
@@ -29,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class,
-    BackOffProperties.class})
+    RetryPolicy.class})
 @WireMockTest(httpPort = 8080)
 class GitHubClientTest {;
     @Autowired

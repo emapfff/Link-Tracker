@@ -1,37 +1,53 @@
 package edu.java.configuration;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Configuration
 @Validated
-@EnableConfigurationProperties(BaseUrlConfig.class)
-public class ClientConfig {
+@ConfigurationProperties(prefix = "clients", ignoreUnknownFields = false)
+public record ClientConfig(
+    @NestedConfigurationProperty
+        @NotNull
+    Github github,
+    Stackoverflow stackoverflow
+) {
+
     @Bean
-    public WebClient githubClient(BaseUrlConfig baseUrlConfig) {
+    public WebClient githubClient() {
         return WebClient
             .builder()
-            .baseUrl(baseUrlConfig.githubBaseUrl())
+            .baseUrl(github.baseUrl())
             .build();
     }
 
     @Bean
-    public WebClient stackoverflowClient(BaseUrlConfig baseUrlConfig) {
+    public WebClient stackoverflowClient() {
         return WebClient
             .builder()
-            .baseUrl(baseUrlConfig.stackoverflowBaseUrl())
+            .baseUrl(stackoverflow.baseUrl())
             .build();
     }
 
     @Bean
-    public WebClient botWebClient(BaseUrlConfig baseUrlConfig) {
+    public WebClient botWebClient() {
         return WebClient
             .builder()
-            .baseUrl(baseUrlConfig.botBaseUrl())
+            .baseUrl("")
             .build();
     }
 
+    public record Github(
+        String baseUrl,
+        RetryPolicy retryPolicy
+    ) {
+    }
+
+    public record Stackoverflow(
+        String baseUrl
+    ) {
+    }
 }

@@ -15,19 +15,25 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
+@Component
 public class JpaGithubLinkRepository implements GithubLinkRepository {
-    private final BaseJpaGithubLinkRepository baseJpaGithubLinkRepository;
+    @Autowired
+    private BaseJpaGithubLinkRepository baseJpaGithubLinkRepository;
 
-    private final BaseJpaLinkRepository baseJpaLinkRepository;
+    @Autowired
+    private BaseJpaChatRepository baseJpaChatRepository;
 
-    private final BaseJpaChatRepository baseJpaChatRepository;
+    @Autowired
+    private JpaLinkRepository jpaLinkRepository;
+
 
     @Override
     public void add(Long tgChatId, URI url, Integer countBranches) {
         Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-        Link link = baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString());
+        Link link = jpaLinkRepository.findLinkByChatAndUrl(chat, url.toString());
         GithubLink githubLink = new GithubLink(link, countBranches);
         baseJpaGithubLinkRepository.save(githubLink);
     }
@@ -36,7 +42,7 @@ public class JpaGithubLinkRepository implements GithubLinkRepository {
     public GithubLinkDto findGithubLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         try {
             Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-            Link link = baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString());
+            Link link = jpaLinkRepository.findLinkByChatAndUrl(chat, url.toString());
             GithubLink githubLink = baseJpaGithubLinkRepository.findGithubLinkByLink(link);
             return convertToGithubDto(githubLink);
         } catch (Exception e) {

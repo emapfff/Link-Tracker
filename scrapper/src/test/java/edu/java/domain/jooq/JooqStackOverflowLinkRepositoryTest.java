@@ -1,5 +1,8 @@
 package edu.java.domain.jooq;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.LinkRepository;
+import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
 import edu.java.scrapper.IntegrationTest;
@@ -17,16 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest(properties = "app.database-access-type=jooq")
 @Transactional
 public class JooqStackOverflowLinkRepositoryTest extends IntegrationTest {
+    @Autowired
+    private StackOverflowLinkRepository stackOverflowLinkRepository;
+    @Autowired
+    private LinkRepository linkRepository;
+    @Autowired
+    private ChatRepository chatRepository;
+
     private static final URI URI_GITHUB = URI.create("http://github");
     private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
     private static final URI URI_STACKOVERFLOW1 = URI.create("http://stackoverflow1");
     private static final URI URI_STACKOVERFLOW2 = URI.create("http://stackoverflow2");
-    @Autowired
-    private JooqStackOverflowLinkRepository stackOverflowLinkRepository;
-    @Autowired
-    private JooqLinkRepository linkRepository;
-    @Autowired
-    private JooqChatRepository chatRepository;
 
     @Test
     void addTest() {

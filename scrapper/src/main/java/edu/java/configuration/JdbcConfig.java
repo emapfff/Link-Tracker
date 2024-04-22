@@ -1,5 +1,10 @@
 package edu.java.configuration;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.ConsistsRepository;
+import edu.java.domain.GithubLinkRepository;
+import edu.java.domain.LinkRepository;
+import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.jdbc.JdbcChatRepository;
 import edu.java.domain.jdbc.JdbcConsistsRepository;
 import edu.java.domain.jdbc.JdbcGithubLinkRepository;
@@ -16,38 +21,28 @@ import org.springframework.validation.annotation.Validated;
 @ConditionalOnProperty(prefix = "app", name = "database-access-type", havingValue = "jdbc")
 public class JdbcConfig {
     @Bean
-    public JdbcChatRepository jdbcChatRepository(JdbcTemplate jdbcTemplate) {
+    public ChatRepository chatRepository(JdbcTemplate jdbcTemplate) {
         return new JdbcChatRepository(jdbcTemplate);
     }
 
     @Bean
-    public JdbcLinkRepository jdbcLinkRepository(
-        JdbcConsistsRepository jdbcConsistsRepository,
-        JdbcChatRepository jdbcChatRepository,
-        JdbcTemplate jdbcTemplate
-    ) {
-        return new JdbcLinkRepository(jdbcConsistsRepository, jdbcChatRepository, jdbcTemplate);
-    }
-
-    @Bean
-    public JdbcConsistsRepository jdbcConsistsRepository(JdbcTemplate jdbcTemplate) {
+    public ConsistsRepository consistsRepository(JdbcTemplate jdbcTemplate) {
         return new JdbcConsistsRepository(jdbcTemplate);
     }
 
     @Bean
-    public JdbcGithubLinkRepository jdbcGithubLinkRepository(
-        JdbcTemplate jdbcTemplate,
-        JdbcLinkRepository jdbcLinkRepository
-    ) {
-        return new JdbcGithubLinkRepository(jdbcTemplate, jdbcLinkRepository);
+    public LinkRepository linkRepository(JdbcTemplate jdbcTemplate) {
+        return new JdbcLinkRepository(jdbcTemplate);
     }
 
     @Bean
-    public JdbcStackOverflowLinkRepository jdbcStackOverflowLinkRepository(
-        JdbcTemplate jdbcTemplate,
-        JdbcLinkRepository jdbcLinkRepository
-    ) {
-        return new JdbcStackOverflowLinkRepository(jdbcTemplate, jdbcLinkRepository);
+    public GithubLinkRepository githubLinkRepository(JdbcTemplate jdbcTemplate) {
+        return new JdbcGithubLinkRepository(jdbcTemplate);
+    }
+
+    @Bean
+    public StackOverflowLinkRepository stackOverflowLinkRepository(JdbcTemplate jdbcTemplate) {
+        return new JdbcStackOverflowLinkRepository(jdbcTemplate);
     }
 
 }

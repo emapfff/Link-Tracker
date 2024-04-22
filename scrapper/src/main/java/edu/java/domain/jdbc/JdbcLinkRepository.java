@@ -12,8 +12,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class JdbcLinkRepository implements LinkRepository {
     private static final String JOIN_TABLES =
@@ -23,10 +26,12 @@ public class JdbcLinkRepository implements LinkRepository {
                 JOIN consists ON link.id = consists.link_id
                 JOIN chat ON chat.id = consists.chat_id
             """;
-
-    private final JdbcConsistsRepository jdbcConsistsRepository;
-    private final JdbcChatRepository jdbcChatRepository;
     private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private JdbcChatRepository jdbcChatRepository;
+    @Autowired
+    private JdbcConsistsRepository jdbcConsistsRepository;
 
     @Override
     public void add(Long tgChatId, @NotNull URI url, @NotNull OffsetDateTime lastUpdate) {

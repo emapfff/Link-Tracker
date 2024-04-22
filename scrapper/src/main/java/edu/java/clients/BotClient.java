@@ -1,8 +1,10 @@
 package edu.java.clients;
 
 import dto.LinkUpdateRequest;
+import edu.java.configuration.ClientConfig;
 import edu.java.exceptions.IncorrectParametersException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,6 +12,7 @@ import reactor.util.retry.Retry;
 
 @Service
 @RequiredArgsConstructor
+@EnableConfigurationProperties(ClientConfig.class)
 public class BotClient {
     private final WebClient botWebClient;
     private final Retry retry;

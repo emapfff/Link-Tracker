@@ -1,5 +1,10 @@
 package edu.java.configuration;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.ConsistsRepository;
+import edu.java.domain.GithubLinkRepository;
+import edu.java.domain.LinkRepository;
+import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.jooq.JooqChatRepository;
 import edu.java.domain.jooq.JooqConsistsRepository;
 import edu.java.domain.jooq.JooqGithubLinkRepository;
@@ -27,37 +32,27 @@ public class JooqConfig {
     }
 
     @Bean
-    public JooqChatRepository jooqChatRepository(DSLContext dslContext) {
+    public ChatRepository chatRepository(DSLContext dslContext) {
         return new JooqChatRepository(dslContext);
     }
 
     @Bean
-    public JooqLinkRepository jooqLinkRepository(
-        JooqConsistsRepository jooqConsistsRepository,
-        JooqChatRepository jooqChatRepository,
-        DSLContext dslContext
-    ) {
-        return new JooqLinkRepository(dslContext, jooqConsistsRepository, jooqChatRepository);
+    public LinkRepository linkRepository(DSLContext dslContext) {
+        return new JooqLinkRepository(dslContext);
     }
 
     @Bean
-    public JooqConsistsRepository jooqConsistsRepository(DSLContext dslContext) {
+    public ConsistsRepository consistsRepository(DSLContext dslContext) {
         return new JooqConsistsRepository(dslContext);
     }
 
     @Bean
-    public JooqGithubLinkRepository jooqGithubLinkRepository(
-        DSLContext dslContext,
-        JooqLinkRepository jooqLinkRepository
-    ) {
-        return new JooqGithubLinkRepository(dslContext, jooqLinkRepository);
+    public GithubLinkRepository githubLinkRepository(DSLContext dslContext) {
+        return new JooqGithubLinkRepository(dslContext);
     }
 
     @Bean
-    public JooqStackOverflowLinkRepository jooqStackOverflowLinkRepository(
-        DSLContext dslContext,
-        JooqLinkRepository jooqLinkRepository
-    ) {
-        return new JooqStackOverflowLinkRepository(dslContext, jooqLinkRepository);
+    public StackOverflowLinkRepository stackOverflowLinkRepository(DSLContext dslContext) {
+        return new JooqStackOverflowLinkRepository(dslContext);
     }
 }

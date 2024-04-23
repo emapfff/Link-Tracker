@@ -9,4 +9,4 @@ public record TopicProperties(
     String name,
     Integer partitions,
     Integer replicas
-){}
+) {}

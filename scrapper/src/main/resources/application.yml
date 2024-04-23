@@ -4,7 +4,7 @@ app:
     interval: 60s
     force-check-delay: 120s
   database-access-type: jdbc
-  use-queue: true
+  use-queue: false
 
 kafka:
   producer:
@@ -21,13 +21,6 @@ kafka:
     partitions: 10
     replicas: 1
 
-
-retry:
-  back-off-type: constant
-  max-attempts: 5
-  initial-interval: 2000
-  multiplier: 2
-
 spring:
   application:
     name: scrapper
@@ -40,9 +33,24 @@ spring:
     driverClassName: org.postgresql.Driver
 
 clients:
-  github_base_url: https://api.github.com
-  stackoverflow_base_url: https://api.stackexchange.com/2.3
-  bot_base_url: http://localhost:8090
+  github:
+    base-url: https://api.github.com
+    retry-policy:
+      back-off-type: exponential
+      max-attempts: 5
+      initial-interval: 10000
+  stackoverflow:
+    base-url: https://api.stackexchange.com/2.3
+    retry-policy:
+      back-off-type: exponential
+      max-attempts: 10
+      initial-interval: 1000
+  bot:
+    base-url: https://localhost:8090
+    retry-policy:
+      back-off-type: exponential
+      max-attempts: 3
+      initial-interval: 1000
 
 server:
   port: 8080

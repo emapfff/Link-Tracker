@@ -11,15 +11,18 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
+@Component
 public class JpaLinkRepository implements LinkRepository {
-    private final BaseJpaLinkRepository baseJpaLinkRepository;
-
-    private final BaseJpaChatRepository baseJpaChatRepository;
+    @Autowired
+    private BaseJpaLinkRepository baseJpaLinkRepository;
+    @Autowired
+    private BaseJpaChatRepository baseJpaChatRepository;
 
     @Override
     public void add(Long tgChatId, @NotNull URI url, @NotNull OffsetDateTime lastUpdate) {
@@ -36,10 +39,17 @@ public class JpaLinkRepository implements LinkRepository {
             .collect(Collectors.toList());
     }
 
+    public Link findLinkByChatAndUrl(@NotNull Chat chat, String url) {
+        return chat.getLinks().stream()
+            .filter(link -> link.getUrl().equals(url))
+            .findFirst()
+            .orElse(null);
+    }
+
     @Override
     public void remove(Long tgChatId, @NotNull URI url) {
         Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-        Link link = baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString());
+        Link link = findLinkByChatAndUrl(chat, url.toString());
         chat.removeLink(link);
         baseJpaLinkRepository.delete(link);
     }
@@ -47,13 +57,19 @@ public class JpaLinkRepository implements LinkRepository {
     @Override
     public LinkDto findLinkByChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-        return convertToLinkDto(baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString()));
+        return convertToLinkDto(findLinkByChatAndUrl(chat, url.toString()));
+    }
+
+    public Integer countLinkByUrlAndChat(Chat chat, String url) {
+        return Math.toIntExact(baseJpaLinkRepository.findAll().stream()
+            .filter(link -> link.getUrl().equals(url) && link.getChats().contains(chat))
+            .count());
     }
 
     @Override
     public Integer existLinkByUriAndTgChatId(Long tgChatId, @NotNull URI url) {
         Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-        return baseJpaLinkRepository.countLinkByUrlAndChats(chat, url.toString());
+        return countLinkByUrlAndChat(chat, url.toString());
     }
 
     @Override
@@ -67,17 +83,25 @@ public class JpaLinkRepository implements LinkRepository {
         return baseJpaLinkRepository.findAll();
     }
 
-    @Override
-    public List<LinkDto> findAllByTgChatId(Long tgChatId) {
-        Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-        return baseJpaLinkRepository.findAllByChats(chat).stream()
+    public List<LinkDto> findLinksByChat(Chat chat) {
+        return baseJpaLinkRepository.findAll().stream()
+            .filter(link -> link.getChats().contains(chat))
             .map(this::convertToLinkDto)
             .collect(Collectors.toList());
     }
 
     @Override
+    public List<LinkDto> findAllByTgChatId(Long tgChatId) {
+        Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
+        return findLinksByChat(chat);
+    }
+
+    @Override
     public List<Long> findAllTgChatIdsByUrl(@NotNull URI url) {
-        return baseJpaLinkRepository.findTgChatsIdsByUrl(url.toString());
+        return baseJpaLinkRepository.findAll().stream()
+            .filter(link -> link.getUrl().equals(url.toString()))
+            .flatMap(link -> link.getChats() != null ? link.getChats().stream().map(Chat::getTgChatId) : Stream.empty())
+            .collect(Collectors.toList());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package edu.java.domain.jooq;
 
 import edu.java.configuration.JooqConfig;
+import edu.java.domain.ChatRepository;
 import edu.java.domain.dto.ChatDto;
 import edu.java.scrapper.IntegrationTest;
 import java.util.List;
@@ -16,45 +17,36 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Transactional
 class JooqChatRepositoryTest extends IntegrationTest {
     @Autowired
-    private JooqChatRepository jooqChatRepository;
+    private ChatRepository chatRepository;
 
     @Test
-    void add() {
-        jooqChatRepository.add(22L);
+    void addTest() {
+        chatRepository.add(11L);
+        chatRepository.add(22L);
 
-        List<ChatDto> listChats = jooqChatRepository.findAll();
-        assertEquals(listChats.getLast().tgChatId(), 22);
+        List<ChatDto> listOfChats = chatRepository.findAll();
+
+        assertEquals(listOfChats.getLast().tgChatId(), 22);
     }
 
     @Test
-    void remove() {
-        jooqChatRepository.add(11L);
-        jooqChatRepository.add(22L);
+    void removeTest() {
+        chatRepository.add(11L);
+        chatRepository.add(22L);
 
-        jooqChatRepository.remove(22L);
+        chatRepository.remove(22L);
 
-        List<ChatDto> listChats = jooqChatRepository.findAll();
-        assertEquals(listChats.getLast().tgChatId(), 11);
+        List<ChatDto> chatDtoList = chatRepository.findAll();
+        assertEquals(chatDtoList.getLast().tgChatId(), 11);
     }
 
     @Test
-    void existIdByTgChatId() {
-        jooqChatRepository.add(11L);
-        jooqChatRepository.add(22L);
+    void existIdByTgChatIdTest() {
+        Long tgChatId = 123L;
+        chatRepository.add(tgChatId);
 
-        Integer exist = jooqChatRepository.existIdByTgChatId(11L);
+        Integer count = chatRepository.existIdByTgChatId(tgChatId);
 
-        assertEquals(exist, 1);
+        assertEquals(count, 1);
     }
-
-    @Test
-    void findIdByTgChatId() {
-        jooqChatRepository.add(11L);
-        jooqChatRepository.add(22L);
-
-        Long id = jooqChatRepository.findIdByTgChatId(11L);
-
-        assertNotNull(id);
-    }
-
 }

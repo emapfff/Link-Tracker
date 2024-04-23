@@ -6,17 +6,21 @@ import dto.RemoveLinkRequest;
 import edu.java.bot.backoff.ConstantBackOff;
 import edu.java.bot.backoff.ExponentialBackOff;
 import edu.java.bot.backoff.LinearBackOff;
-import edu.java.bot.configuration.BackOffProperties;
-import edu.java.bot.configuration.ScrapperClientProperties;
+import edu.java.bot.configuration.ClientConfig;
+import edu.java.bot.configuration.RetryBuilder;
+import edu.java.bot.configuration.RetryPolicy;
 import java.net.URI;
-import java.net.URISyntaxException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 import reactor.util.retry.Retry;
+import java.net.URI;
+import java.net.URISyntaxException;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
@@ -29,34 +33,48 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
+import static org.mockito.Mockito.when;
 
 @WireMockTest(httpPort = 8080)
-@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class,
-    BackOffProperties.class})
+@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
 class ScrapperClientTest {
     @Autowired
-    private ExponentialBackOff exponentialBackOff;
-    private ScrapperClientProperties properties;
+    RetryBuilder retryBuilder;
+    @Mock
+    private ClientConfig clientConfig;
+    @InjectMocks
     private ScrapperClient scrapperClient;
-    private Retry retry;
+
     @BeforeEach
     public void setUp() {
-        properties = new ScrapperClientProperties(
-            "http://localhost:8010",
-            new ScrapperClientProperties.Path("/links", "/tg-chat/"),
-            new ScrapperClientProperties.Header("Tg-Chat-Id")
-        );
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Path path = new ClientConfig.Path("/links", "/tg-chat/");
+        ClientConfig.Header header = new ClientConfig.Header("Tg-Chat-Id");
+        ClientConfig.Scrapper scrapper = new ClientConfig.Scrapper("", path, header, retryPolicy);
+        when(clientConfig.scrapper()).thenReturn(scrapper);
+
+        scrapperClient = new ScrapperClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
     }
 
     @Test
     void registrationChat() {
-        retry = exponentialBackOff;
-        scrapperClient = new ScrapperClient(retry, WebClient.create("http://localhost:8080"), properties);
-        stubFor(post(urlEqualTo("/tg-chat/123"))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-            )
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200))
         );
 
         StepVerifier.create(scrapperClient.registrationChat(123L)).verifyComplete();
@@ -66,29 +84,41 @@ class ScrapperClientTest {
 
     @Test
     void removeChat() {
-        retry = exponentialBackOff;
-        scrapperClient = new ScrapperClient(retry, WebClient.create("http://localhost:8080"), properties);
-        stubFor(post(urlEqualTo("/tg-chat/123"))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-            ));
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("removing")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("removing")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("removing")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200))
+        );
 
         StepVerifier.create(scrapperClient.removeChat(123L)).verifyComplete();
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }
 
-     @Test
+    @Test
     void getLinks() {
-         retry = exponentialBackOff;
-         scrapperClient = new ScrapperClient(retry, WebClient.create("http://localhost:8080"), properties);
-         stubFor(get(urlEqualTo("/links"))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-
-            ));
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200)));
 
         StepVerifier.create(scrapperClient.getLinks(123L)).verifyComplete();
 
@@ -98,15 +128,21 @@ class ScrapperClientTest {
     }
 
     @Test
-    void addLink() throws URISyntaxException {
-        retry = exponentialBackOff;
-        scrapperClient = new ScrapperClient(retry, WebClient.create("http://localhost:8080"), properties);
-        stubFor(post(urlEqualTo("/links"))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-            ));
-        AddLinkRequest addLinkRequest = new AddLinkRequest(new URI("http://mycore"));
+    void addLink() {
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200)));
+        AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create("http://mycore"));
         String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.addLink(123L, addLinkRequest)).verifyComplete();
@@ -118,16 +154,21 @@ class ScrapperClientTest {
     }
 
     @Test
-    void deleteLink() throws URISyntaxException {
-        retry = exponentialBackOff;
-        scrapperClient = new ScrapperClient(retry, WebClient.create("http://localhost:8080"), properties);
-        stubFor(delete(urlEqualTo("/links"))
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-            ));
-
-        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(new URI("http://mycore"));
+    void deleteLink() {
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200)));
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create("http://mycore"));
         String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.deleteLink(123L, removeLinkRequest)).verifyComplete();

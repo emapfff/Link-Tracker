@@ -1,46 +1,28 @@
 package edu.java.backoff;
 
-import edu.java.configuration.BackOffProperties;
+import edu.java.configuration.RetryPolicy.BackOffType;
 import java.time.Duration;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
-import reactor.core.Exceptions;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
+import org.springframework.stereotype.Component;
+import static edu.java.configuration.RetryPolicy.BackOffType.EXPONENTIAL;
 
-@Slf4j
-public class ExponentialBackOff extends Retry {
-    private final long baseTime;
-    private final int attempts;
-    private final int multiplying;
+@Component
+public class ExponentialBackOff extends CustomRetry {
 
-    public ExponentialBackOff(@NotNull BackOffProperties backOffProperties) {
-        this.baseTime = backOffProperties.initialInterval();
-        this.attempts = backOffProperties.maxAttempts();
-        this.multiplying = backOffProperties.multiplier();
+    @Override
+    public Duration duration(int attempt) {
+        int multiplier = 2;
+        long backOff = (long) (Math.pow(multiplier, attempt) * baseTime);
+        return Duration.ofMillis(backOff);
     }
 
     @Override
-    public Publisher<?> generateCompanion(@NotNull Flux<RetrySignal> retrySignals) {
-        return retrySignals.flatMap(this::getRetry);
+    public BackOffType retryType() {
+        return EXPONENTIAL;
     }
 
-    @NotNull
-    Mono<Long> getRetry(Retry.@NotNull RetrySignal rs) {
-        if (rs.totalRetries() < attempts) {
-            Duration delay = duration((int) rs.totalRetries());
-            log.info("# attempt {} with backoff {}s", rs.totalRetries(), delay.toSeconds());
-            return Mono.delay(delay).thenReturn(rs.totalRetries());
-        } else {
-            log.info("attempts exit with error: {}", rs.failure().getMessage());
-            throw Exceptions.propagate(rs.failure());
-        }
+    @Override
+    public CustomRetry createRetry() {
+        return new ExponentialBackOff();
     }
 
-    public Duration duration(int attempt) {
-        long backOff = (long) (Math.pow(multiplying, attempt) * baseTime);
-        return Duration.ofMillis(backOff);
-    }
 }

@@ -1,19 +1,17 @@
 package edu.java.bot;
 
-import edu.java.bot.configuration.ApplicationConfig;
-import edu.java.bot.configuration.RateLimitingProperties;
 import edu.java.bot.service.Bot;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties({ApplicationConfig.class, RateLimitingProperties.class})
+@ConfigurationPropertiesScan("edu.java.bot.configuration")
+@RequiredArgsConstructor
 public class BotApplication {
-    @Autowired
-    private Bot bot;
+    private final Bot bot;
 
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);

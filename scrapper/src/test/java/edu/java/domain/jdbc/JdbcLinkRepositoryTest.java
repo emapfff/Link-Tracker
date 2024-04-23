@@ -1,5 +1,7 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.ChatDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.scrapper.IntegrationTest;
@@ -18,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Transactional
 class JdbcLinkRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcLinkRepository jdbcLinkRepository;
+    private LinkRepository linkRepository;
     @Autowired
-    private JdbcChatRepository jdbcChatRepository;
+    private ChatRepository chatRepository;
     private static LinkDto firstTuple;
     private static LinkDto secondTuple;
     private static final URI URI_MYCORE1 = URI.create("http://mycore1");
@@ -37,63 +39,62 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
 
     @Test
     void addTest() {
-        jdbcChatRepository.add(22L);
-        jdbcLinkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
+        chatRepository.add(22L);
+        linkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
 
-        List<LinkDto> listOfChats = jdbcLinkRepository.findAll();
+        List<LinkDto> listOfChats = linkRepository.findAll();
         assertEquals(listOfChats.getLast().url(), URI_MYCORE2);
     }
 
-
     @Test
     void removeTest() {
-        jdbcChatRepository.add(11L);
-        jdbcChatRepository.add(22L);
-        List<ChatDto> dtoList = jdbcChatRepository.findAll();
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        List<ChatDto> dtoList = chatRepository.findAll();
         dtoList.forEach(System.out::println);
-        jdbcLinkRepository.add(11L, URI_MYCORE1, firstTuple.lastUpdate());
-        jdbcLinkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
+        linkRepository.add(11L, URI_MYCORE1, firstTuple.lastUpdate());
+        linkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
 
-        jdbcLinkRepository.remove(22L, URI_MYCORE2);
+        linkRepository.remove(22L, URI_MYCORE2);
 
-        List<LinkDto> chatDtoList = jdbcLinkRepository.findAll();
+        List<LinkDto> chatDtoList = linkRepository.findAll();
         assertEquals(chatDtoList.getLast().url(), URI_MYCORE1);
     }
 
     @Test
     void findLinkByChatIdAndUrlTest() {
-        jdbcChatRepository.add(1234L);
-        jdbcChatRepository.add(12345L);
-        jdbcLinkRepository.add(1234L, URI_MYCORE1, firstTuple.lastUpdate());
-        jdbcLinkRepository.add(12345L, URI_MYCORE2, secondTuple.lastUpdate());
+        chatRepository.add(1234L);
+        chatRepository.add(12345L);
+        linkRepository.add(1234L, URI_MYCORE1, firstTuple.lastUpdate());
+        linkRepository.add(12345L, URI_MYCORE2, secondTuple.lastUpdate());
 
-        Long linkId = jdbcLinkRepository.findLinkByChatIdAndUrl(12345L, URI_MYCORE2).id();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(12345L, URI_MYCORE2).id();
 
         assertNotNull(linkId);
     }
 
     @Test
-    void findAllByTgChatIdTest(){
-        jdbcChatRepository.add(11L);
-        jdbcChatRepository.add(22L);
-        jdbcLinkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
-        jdbcLinkRepository.add(11L, URI_MYCORE2, OffsetDateTime.now());
-        jdbcLinkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
+    void findAllByTgChatIdTest() {
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        linkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
+        linkRepository.add(11L, URI_MYCORE2, OffsetDateTime.now());
+        linkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
 
-        List<LinkDto> linkDtos = jdbcLinkRepository.findAllByTgChatId(11L);
+        List<LinkDto> linkDtos = linkRepository.findAllByTgChatId(11L);
 
         assertEquals(linkDtos.size(), 3);
     }
 
     @Test
     void findAllTgChatIdsByUrlTest() {
-        jdbcChatRepository.add(11L);
-        jdbcChatRepository.add(22L);
-        jdbcLinkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
-        jdbcLinkRepository.add(22L, URI_MYCORE1, OffsetDateTime.now());
-        jdbcLinkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
+        chatRepository.add(11L);
+        chatRepository.add(22L);
+        linkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
+        linkRepository.add(22L, URI_MYCORE1, OffsetDateTime.now());
+        linkRepository.add(11L, URI_MYCORE3, OffsetDateTime.now());
 
-        List<Long> listTgChatIds = jdbcLinkRepository.findAllTgChatIdsByUrl(URI_MYCORE1);
+        List<Long> listTgChatIds = linkRepository.findAllTgChatIdsByUrl(URI_MYCORE1);
 
         assertEquals(22, listTgChatIds.getLast());
     }
@@ -101,18 +102,18 @@ class JdbcLinkRepositoryTest extends IntegrationTest {
     @Test
     void setLastUpdateTest() {
         String time = "2019-08-31T15:20:30Z";
-        jdbcChatRepository.add(1L);
-        jdbcChatRepository.add(2L);
-        jdbcChatRepository.add(3L);
-        jdbcLinkRepository.add(1L, URI_LINK1, OffsetDateTime.now());
-        jdbcLinkRepository.add(1L, URI_LINK11, OffsetDateTime.now());
-        jdbcLinkRepository.add(2L, URI_LINK1, OffsetDateTime.now());
-        jdbcLinkRepository.add(3L, URI_LINK1, OffsetDateTime.now());
-        LinkDto link = jdbcLinkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
+        chatRepository.add(1L);
+        chatRepository.add(2L);
+        chatRepository.add(3L);
+        linkRepository.add(1L, URI_LINK1, OffsetDateTime.now());
+        linkRepository.add(1L, URI_LINK11, OffsetDateTime.now());
+        linkRepository.add(2L, URI_LINK1, OffsetDateTime.now());
+        linkRepository.add(3L, URI_LINK1, OffsetDateTime.now());
+        LinkDto link = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
 
-        jdbcLinkRepository.setLastUpdate(link, OffsetDateTime.parse(time));
+        linkRepository.setLastUpdate(link, OffsetDateTime.parse(time));
 
-        LinkDto linkDto = jdbcLinkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
+        LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
         assertEquals(linkDto.url(), URI_LINK1);
         assertEquals(linkDto.lastUpdate().toString(), time);
     }

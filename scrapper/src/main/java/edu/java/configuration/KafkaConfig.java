@@ -17,7 +17,6 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Configuration
 @EnableKafka
-@EnableConfigurationProperties({KafkaProducerProperties.class, TopicProperties.class})
 public class KafkaConfig {
 
     @Bean

@@ -8,15 +8,19 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import static edu.java.domain.jooq.generation.Tables.CHAT;
 import static edu.java.domain.jooq.generation.Tables.CONSISTS;
 import static edu.java.domain.jooq.generation.Tables.GITHUB_LINKS;
 import static edu.java.domain.jooq.generation.Tables.LINK;
 
+@Component
 @RequiredArgsConstructor
 public class JooqGithubLinkRepository implements GithubLinkRepository {
     private final DSLContext dslContext;
-    private final JooqLinkRepository jooqLinkRepository;
+    @Autowired
+    private JooqLinkRepository jooqLinkRepository;
 
     @Override
     public void add(Long tgChatId, URI url, Integer countBranches) {

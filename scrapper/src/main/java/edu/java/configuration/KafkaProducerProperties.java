@@ -15,5 +15,4 @@ public record KafkaProducerProperties(
     Integer batchSize,
     Integer maxInFlightPerConnection,
     Boolean enableIdempotence
-) {
-}
+) {}

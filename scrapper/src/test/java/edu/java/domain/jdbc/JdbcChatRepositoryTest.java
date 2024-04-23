@@ -1,5 +1,6 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.ChatRepository;
 import edu.java.domain.dto.ChatDto;
 import edu.java.scrapper.IntegrationTest;
 import java.util.List;
@@ -13,35 +14,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 class JdbcChatRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcChatRepository jdbcChatRepository;
+    private ChatRepository chatRepository;
 
     @Test
     void addTest() {
-        jdbcChatRepository.add(11L);
-        jdbcChatRepository.add(22L);
+        chatRepository.add(11L);
+        chatRepository.add(22L);
 
-        List<ChatDto> listOfChats = jdbcChatRepository.findAll();
+        List<ChatDto> listOfChats = chatRepository.findAll();
 
         assertEquals(listOfChats.getLast().tgChatId(), 22);
     }
 
     @Test
     void removeTest() {
-        jdbcChatRepository.add(11L);
-        jdbcChatRepository.add(22L);
+        chatRepository.add(11L);
+        chatRepository.add(22L);
 
-        jdbcChatRepository.remove(22L);
+        chatRepository.remove(22L);
 
-        List<ChatDto> chatDtoList = jdbcChatRepository.findAll();
+        List<ChatDto> chatDtoList = chatRepository.findAll();
         assertEquals(chatDtoList.getLast().tgChatId(), 11);
     }
 
     @Test
     void existIdByTgChatIdTest() {
         Long tgChatId = 123L;
-        jdbcChatRepository.add(tgChatId);
+        chatRepository.add(tgChatId);
 
-        Integer count = jdbcChatRepository.existIdByTgChatId(tgChatId);
+        Integer count = chatRepository.existIdByTgChatId(tgChatId);
 
         assertEquals(count, 1);
     }

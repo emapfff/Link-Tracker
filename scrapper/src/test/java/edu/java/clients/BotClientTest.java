@@ -5,12 +5,16 @@ import dto.LinkUpdateRequest;
 import edu.java.backoff.ConstantBackOff;
 import edu.java.backoff.ExponentialBackOff;
 import edu.java.backoff.LinearBackOff;
-import edu.java.configuration.BackOffProperties;
+import edu.java.configuration.ClientConfig;
+import edu.java.configuration.RetryBuilder;
+import edu.java.configuration.RetryPolicy;
 import java.net.URI;
 import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,17 +28,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class,
-    BackOffProperties.class})
+@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
 @WireMockTest(httpPort = 8080)
 class BotClientTest {
     @Autowired
-    private ExponentialBackOff exponentialBackOff;
-    @Autowired
-    private LinearBackOff linearBackOff;
-    @Autowired
-    private ConstantBackOff constantBackOff;
+    RetryBuilder retryBuilder;
+
+    @Mock
+    private ClientConfig clientConfig;
+    @InjectMocks
     private BotClient botClient;
     private Retry retry;
 
@@ -52,30 +56,26 @@ class BotClientTest {
         );
         stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
             .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("4")
-        );
-        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
-            .whenScenarioStateIs("4")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("5")
-        );
-        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
-            .whenScenarioStateIs("5")
             .willReturn(
                 aResponse()
                     .withStatus(200)
             ));
     }
+
     @AfterEach
     public void stop() {
         resetAllScenarios();
     }
 
     @Test
-    void sendUpdateExponentialBackOff() {
-        retry = exponentialBackOff;
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), retry);
+    void sendUpdateExponentialBlackOff() {
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
+        when(clientConfig.bot()).thenReturn(bot);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -95,8 +95,13 @@ class BotClientTest {
 
     @Test
     void sendUpdateLinearBackOff() {
-        retry = linearBackOff;
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
+        when(clientConfig.bot()).thenReturn(bot);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -112,12 +117,18 @@ class BotClientTest {
 
         verify(postRequestedFor(urlEqualTo("/updates"))
             .withRequestBody(equalToJson(expectedRequest)));
+
     }
 
     @Test
-    void sendUpdateConstantBackOff() {
-        retry = constantBackOff;
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), retry);
+    void sendUpdateConstantBlackOff() {
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
+        when(clientConfig.bot()).thenReturn(bot);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),

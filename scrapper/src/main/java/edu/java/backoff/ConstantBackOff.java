@@ -1,43 +1,25 @@
 package edu.java.backoff;
 
-import edu.java.configuration.BackOffProperties;
+import edu.java.configuration.RetryPolicy.BackOffType;
 import java.time.Duration;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
-import reactor.core.Exceptions;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
+import org.springframework.stereotype.Component;
+import static edu.java.configuration.RetryPolicy.BackOffType.CONSTANT;
 
-@Slf4j
-public class ConstantBackOff extends Retry {
-    private final long baseTime;
-    private final int attempts;
+@Component
+public class ConstantBackOff extends CustomRetry {
 
-    public ConstantBackOff(@NotNull BackOffProperties backOffProperties) {
-        this.baseTime = backOffProperties.initialInterval();
-        this.attempts = backOffProperties.maxAttempts();
+    @Override
+    public Duration duration(int attempts) {
+        return Duration.ofMillis(this.baseTime);
     }
 
     @Override
-    public Publisher<?> generateCompanion(@NotNull Flux<RetrySignal> retrySignals) {
-        return retrySignals.flatMap(this::getRetry);
+    public BackOffType retryType() {
+        return CONSTANT;
     }
 
-    @NotNull
-    Mono<Long> getRetry(Retry.@NotNull RetrySignal rs) {
-        if (rs.totalRetries() < attempts) {
-            Duration delay = duration();
-            log.debug("# attempt {} with backoff {}s", rs.totalRetries(), delay.toSeconds());
-            return Mono.delay(delay).thenReturn(rs.totalRetries());
-        } else {
-            log.debug("attempts exit with error: {}", rs.failure().getMessage());
-            throw Exceptions.propagate(rs.failure());
-        }
-    }
-
-    public Duration duration() {
-        return Duration.ofMillis(this.baseTime);
+    @Override
+    public CustomRetry createRetry() {
+        return new ConstantBackOff();
     }
 }

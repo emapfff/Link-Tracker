@@ -1,7 +1,7 @@
-package edu.java.backoff;
+package edu.java.bot.backoff;
 
-import edu.java.configuration.RetryBuilder;
-import edu.java.configuration.RetryPolicy;
+import edu.java.bot.configuration.RetryBuilder;
+import edu.java.bot.configuration.RetryPolicy;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

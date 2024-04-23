@@ -4,10 +4,15 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.backoff.ConstantBackOff;
 import edu.java.backoff.ExponentialBackOff;
 import edu.java.backoff.LinearBackOff;
+import edu.java.configuration.ClientConfig;
+import edu.java.configuration.RetryBuilder;
+import edu.java.configuration.RetryPolicy;
 import edu.java.response.QuestionResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,18 +26,19 @@ import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class,
-    RetryPolicy.class})
+@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
 @WireMockTest(httpPort = 8080)
 class StackOverflowClientTest {
     @Autowired
-    private ExponentialBackOff exponentialBackOff;
-    @Autowired
-    private LinearBackOff linearBackOff;
-    @Autowired
-    private ConstantBackOff constantBackOff;
+    RetryBuilder retryBuilder;
+    @Mock
+    private ClientConfig clientConfig;
+
     private Retry retry;
+
+    @InjectMocks
     private StackOverflowClient stackOverflowClient;
 
     @BeforeEach
@@ -49,16 +55,6 @@ class StackOverflowClientTest {
         );
         stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
             .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("4")
-        );
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("4")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("5")
-        );
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("5")
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -77,8 +73,14 @@ class StackOverflowClientTest {
 
     @Test
     void fetchQuestionExponentialBlackOff() {
-        retry = exponentialBackOff;
-        stackOverflowClient = new StackOverflowClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
+        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
+        stackOverflowClient =
+            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
 
@@ -91,8 +93,14 @@ class StackOverflowClientTest {
 
     @Test
     void fetchQuestionLinearBlackOff() {
-        retry = linearBackOff;
-        stackOverflowClient = new StackOverflowClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
+        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
+        stackOverflowClient =
+            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
 
@@ -105,8 +113,14 @@ class StackOverflowClientTest {
 
     @Test
     void fetchQuestionConstantBlackOff() {
-        retry = constantBackOff;
-        stackOverflowClient = new StackOverflowClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
+        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
+        stackOverflowClient =
+            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
 

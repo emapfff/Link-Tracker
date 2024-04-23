@@ -1,7 +1,7 @@
-package edu.java.backoff;
+package edu.java.bot.backoff;
 
-import edu.java.configuration.RetryBuilder;
-import edu.java.configuration.RetryPolicy;
+import edu.java.bot.configuration.RetryBuilder;
+import edu.java.bot.configuration.RetryPolicy;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +10,16 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.util.retry.Retry;
 
-@SpringBootTest(classes = {ExponentialBackOff.class, RetryPolicy.class, RetryBuilder.class})
-class ExponentialBackOffTest {
+@SpringBootTest(classes = {ConstantBackOff.class, RetryPolicy.class, RetryBuilder.class})
+class ConstantBackOffTest {
     RetryPolicy retryPolicy = new RetryPolicy();
     @Autowired RetryBuilder retryBuilder;
     private Retry retry;
 
     @Test
     void generateCompanion() {
-        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
-        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(5);
         retryPolicy.setInitialInterval(2000L);
 
         retry = retryBuilder.getRetry(retryPolicy);
@@ -30,8 +30,10 @@ class ExponentialBackOffTest {
             )
             .expectSubscription()
             .expectNoEvent(Duration.ofSeconds(2))
-            .expectNoEvent(Duration.ofSeconds(4))
-            .expectNoEvent(Duration.ofSeconds(8))
+            .expectNoEvent(Duration.ofSeconds(2))
+            .expectNoEvent(Duration.ofSeconds(2))
+            .expectNoEvent(Duration.ofSeconds(2))
+            .expectNoEvent(Duration.ofSeconds(2))
             .expectError()
             .verify();
     }

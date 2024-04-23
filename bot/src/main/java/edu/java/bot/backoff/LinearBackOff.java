@@ -1,19 +1,26 @@
 package edu.java.bot.backoff;
 
-import edu.java.bot.configuration.BackOffProperties;
+import edu.java.bot.configuration.RetryPolicy.BackOffType;
 import java.time.Duration;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
+import static edu.java.bot.configuration.RetryPolicy.BackOffType.LINEAR;
 
-@Slf4j
+@Component
 public class LinearBackOff extends CustomRetry {
-    public LinearBackOff(@NotNull BackOffProperties backOffProperties) {
-        super(backOffProperties);
-    }
 
     @Override
     public Duration duration(int attempts) {
         previousDelay = previousDelay + baseTime;
         return Duration.ofMillis(previousDelay);
+    }
+
+    @Override
+    public BackOffType retryType() {
+        return LINEAR;
+    }
+
+    @Override
+    public CustomRetry createRetry() {
+        return new LinearBackOff();
     }
 }

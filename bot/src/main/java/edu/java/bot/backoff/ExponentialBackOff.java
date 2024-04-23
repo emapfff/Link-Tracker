@@ -1,20 +1,28 @@
 package edu.java.bot.backoff;
 
-import edu.java.bot.configuration.BackOffProperties;
+import edu.java.bot.configuration.RetryPolicy.BackOffType;
 import java.time.Duration;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
+import static edu.java.bot.configuration.RetryPolicy.BackOffType.EXPONENTIAL;
 
-@Slf4j
+@Component
 public class ExponentialBackOff extends CustomRetry {
-
-    public ExponentialBackOff(@NotNull BackOffProperties backOffProperties) {
-        super(backOffProperties);
-    }
 
     @Override
     public Duration duration(int attempt) {
-        long backOff = (long) (Math.pow(multiplying, attempt) * baseTime);
+        int multiplier = 2;
+        long backOff = (long) (Math.pow(multiplier, attempt) * baseTime);
         return Duration.ofMillis(backOff);
     }
+
+    @Override
+    public BackOffType retryType() {
+        return EXPONENTIAL;
+    }
+
+    @Override
+    public CustomRetry createRetry() {
+        return new ExponentialBackOff();
+    }
+
 }

@@ -1,27 +1,26 @@
 package edu.java.bot.backoff;
 
-import edu.java.bot.configuration.BackOffProperties;
+import edu.java.bot.configuration.RetryPolicy.BackOffType;
+import java.time.Duration;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
+import org.springframework.stereotype.Component;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
-import java.time.Duration;
 
 @Slf4j
+@Setter
+@Getter
+@Component
 public abstract class CustomRetry extends Retry {
     protected static long previousDelay;
     protected int attempts;
     protected long baseTime;
-    protected int multiplying;
-
-    public CustomRetry(@NotNull BackOffProperties backOffProperties) {
-        this.attempts = backOffProperties.maxAttempts();
-        this.baseTime = backOffProperties.initialInterval();
-        this.multiplying = backOffProperties.multiplier();
-    }
 
     @Override
     public Publisher<?> generateCompanion(@NotNull Flux<RetrySignal> retrySignals) {
@@ -43,5 +42,8 @@ public abstract class CustomRetry extends Retry {
 
     public abstract Duration duration(int attempts);
 
+    public abstract BackOffType retryType();
+
+    public abstract CustomRetry createRetry();
 }
 

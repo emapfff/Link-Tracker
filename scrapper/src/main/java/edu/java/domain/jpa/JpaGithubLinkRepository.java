@@ -8,11 +8,9 @@ import edu.java.domain.entity.GithubLink;
 import edu.java.domain.entity.Link;
 import edu.java.domain.jpa.bases.BaseJpaChatRepository;
 import edu.java.domain.jpa.bases.BaseJpaGithubLinkRepository;
-import edu.java.domain.jpa.bases.BaseJpaLinkRepository;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,6 @@ public class JpaGithubLinkRepository implements GithubLinkRepository {
 
     @Autowired
     private JpaLinkRepository jpaLinkRepository;
-
 
     @Override
     public void add(Long tgChatId, URI url, Integer countBranches) {

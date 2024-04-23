@@ -1,4 +1,4 @@
-package edu.java.configuration;
+package edu.java.bot.configuration;
 
 import lombok.Getter;
 import lombok.Setter;

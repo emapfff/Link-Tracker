@@ -1,8 +1,6 @@
 package edu.java.configuration;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,12 +8,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Validated
 @ConfigurationProperties(prefix = "clients", ignoreUnknownFields = false)
 public record ClientConfig(
-    @NestedConfigurationProperty
-        @NotNull
+    @Bean
     Github github,
-    Stackoverflow stackoverflow
+    @Bean
+    Stackoverflow stackoverflow,
+    @Bean
+    Bot bot
 ) {
-
     @Bean
     public WebClient githubClient() {
         return WebClient
@@ -36,18 +35,16 @@ public record ClientConfig(
     public WebClient botWebClient() {
         return WebClient
             .builder()
-            .baseUrl("")
+            .baseUrl(bot.baseUrl())
             .build();
     }
 
-    public record Github(
-        String baseUrl,
-        RetryPolicy retryPolicy
-    ) {
+    public record Github(String baseUrl, RetryPolicy retryPolicy) {
     }
 
-    public record Stackoverflow(
-        String baseUrl
-    ) {
+    public record Stackoverflow(String baseUrl, RetryPolicy retryPolicy) {
+    }
+
+    public record Bot(String baseUrl, RetryPolicy retryPolicy) {
     }
 }

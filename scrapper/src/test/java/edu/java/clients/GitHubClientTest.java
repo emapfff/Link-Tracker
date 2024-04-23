@@ -4,14 +4,19 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.backoff.ConstantBackOff;
 import edu.java.backoff.ExponentialBackOff;
 import edu.java.backoff.LinearBackOff;
+import edu.java.configuration.ClientConfig;
+import edu.java.configuration.RetryBuilder;
+import edu.java.configuration.RetryPolicy;
 import edu.java.response.GitHubUserResponse;
-import edu.java.response.ListBranchesResponse;
-import edu.java.response.RepositoryResponse;
 import java.io.File;
 import java.io.IOException;
+import edu.java.response.ListBranchesResponse;
+import edu.java.response.RepositoryResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,20 +30,19 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class,
-    RetryPolicy.class})
+@SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
 @WireMockTest(httpPort = 8080)
-class GitHubClientTest {;
+class GitHubClientTest {
     @Autowired
-    private ExponentialBackOff exponentialBackOff;
-    @Autowired
-    private LinearBackOff linearBackOff;
-    @Autowired
-    private ConstantBackOff constantBackOff;
+    RetryBuilder retryBuilder;
+    @Mock
+    private ClientConfig clientConfig;
 
     private Retry retry;
 
+    @InjectMocks
     private GitHubClient gitHubClient;
 
     @BeforeEach
@@ -47,7 +51,6 @@ class GitHubClientTest {;
             new File("src/test/java/edu/java/json/Branches.json"),
             "UTF-8"
         );
-        //4 attempts for retrying
         stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
             .whenScenarioStateIs(STARTED)
             .willReturn(aResponse().withStatus(500))
@@ -60,16 +63,6 @@ class GitHubClientTest {;
         );
         stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
             .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("4")
-        );
-        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
-            .whenScenarioStateIs("4")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("5")
-        );
-        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
-            .whenScenarioStateIs("5")
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -90,16 +83,6 @@ class GitHubClientTest {;
         );
         stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
             .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("4")
-        );
-        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
-            .whenScenarioStateIs("4")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("5")
-        );
-        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
-            .whenScenarioStateIs("5")
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -121,16 +104,6 @@ class GitHubClientTest {;
         );
         stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
             .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("4")
-        );
-        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
-            .whenScenarioStateIs("4")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("5")
-        );
-        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
-            .whenScenarioStateIs("5")
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -147,8 +120,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchUserTestExponentialBackOff() {
-        retry = exponentialBackOff;
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         GitHubUserResponse gitHubUserResponse = gitHubClient.fetchUser("user").block();
 
@@ -159,8 +137,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchUserTestLinearBackOff() {
-        retry = linearBackOff;
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         GitHubUserResponse gitHubUserResponse = gitHubClient.fetchUser("user").block();
 
@@ -171,8 +154,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchUserTestConstantBackOff() {
-        retry = constantBackOff;
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         GitHubUserResponse gitHubUserResponse = gitHubClient.fetchUser("user").block();
 
@@ -183,9 +171,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchRepositoryTestExponentialBlackOff() {
-        retry = exponentialBackOff;
-
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         RepositoryResponse repositoryResponse = gitHubClient.fetchRepository("owner", "repo").block();
 
@@ -196,9 +188,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchRepositoryTestLinearBlackOff() {
-        retry = linearBackOff;
-
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         RepositoryResponse repositoryResponse = gitHubClient.fetchRepository("owner", "repo").block();
 
@@ -209,9 +205,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchRepositoryTestConstantBlackOff() {
-        retry = constantBackOff;
-
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         RepositoryResponse repositoryResponse = gitHubClient.fetchRepository("owner", "repo").block();
 
@@ -222,8 +222,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchBranchTestExponentialBlackOff() {
-        retry = exponentialBackOff;
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         ListBranchesResponse branchResponses = gitHubClient.fetchBranch("user", "repo").block();
 
@@ -235,8 +240,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchBranchTestLinearBlackOff() {
-        retry = linearBackOff;
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         ListBranchesResponse branchResponses = gitHubClient.fetchBranch("user", "repo").block();
 
@@ -248,8 +258,13 @@ class GitHubClientTest {;
 
     @Test
     void fetchBranchTestConstantBlackOff() {
-        retry = constantBackOff;
-        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), retry);
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         ListBranchesResponse branchResponses = gitHubClient.fetchBranch("user", "repo").block();
 

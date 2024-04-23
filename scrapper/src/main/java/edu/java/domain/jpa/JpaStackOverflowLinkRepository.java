@@ -7,7 +7,6 @@ import edu.java.domain.entity.Chat;
 import edu.java.domain.entity.Link;
 import edu.java.domain.entity.StackOverflowLink;
 import edu.java.domain.jpa.bases.BaseJpaChatRepository;
-import edu.java.domain.jpa.bases.BaseJpaLinkRepository;
 import edu.java.domain.jpa.bases.BaseJpaStackOverflowLinkRepository;
 import java.net.URI;
 import java.util.List;

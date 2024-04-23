@@ -9,10 +9,10 @@ import edu.java.responses.QuestionResponse;
 import edu.java.responses.QuestionResponse.ItemResponse;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.StackOverflowUpdater;
+import edu.java.tools.LinkParser;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import edu.java.tools.LinkParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class StackOverflowUpdaterTest extends IntegrationTest{
+class StackOverflowUpdaterTest extends IntegrationTest {
     private final LinkDto link = new LinkDto(
         1L,
         URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"),
@@ -47,7 +47,7 @@ class StackOverflowUpdaterTest extends IntegrationTest{
     private LinkRepository linkRepository;
 
     @Mock
-    private LinkParser linkParse;
+    private LinkParser linkParser;
 
     @Mock
     private StackOverflowLinkRepository stackOverflowLinkRepository;
@@ -59,7 +59,7 @@ class StackOverflowUpdaterTest extends IntegrationTest{
     void updateNeededTest() {
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(new QuestionResponse(itemsPlusDay)));
         doNothing().when(linkRepository).setLastUpdate(any(), any());
-        when(linkParse.getStackOverFlowId(link.url())).thenReturn(1642028L);
+        when(linkParser.getStackOverFlowId(link.url())).thenReturn(1642028L);
 
         boolean result = stackOverflowUpdater.update(link);
         assertTrue(result);
@@ -69,7 +69,7 @@ class StackOverflowUpdaterTest extends IntegrationTest{
     @Test
     void updateNoNeededTest() {
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(new QuestionResponse(itemsMinusDay)));
-        when(linkParse.getStackOverFlowId(link.url())).thenReturn(1642028L);
+        when(linkParser.getStackOverFlowId(link.url())).thenReturn(1642028L);
 
         boolean result = stackOverflowUpdater.update(link);
 
@@ -80,7 +80,7 @@ class StackOverflowUpdaterTest extends IntegrationTest{
         StackOverflowDto stackOverflowDto = new StackOverflowDto(1L, link.id(), 19);
         when(stackOverflowLinkRepository.findStackOverflowLinkByLinkId(anyLong())).thenReturn(stackOverflowDto);
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(new QuestionResponse(itemsMinusDay)));
-        when(linkParse.getStackOverFlowId(link.url())).thenReturn(1642028L);
+        when(linkParser.getStackOverFlowId(link.url())).thenReturn(1642028L);
         doNothing().when(stackOverflowLinkRepository).setAnswersCount(any(), any());
 
         boolean result = stackOverflowUpdater.checkAnswers(link);
@@ -92,7 +92,7 @@ class StackOverflowUpdaterTest extends IntegrationTest{
     void checkAnswersFalse() {
         StackOverflowDto stackOverflowDto = new StackOverflowDto(1L, link.id(), 20);
         when(stackOverflowLinkRepository.findStackOverflowLinkByLinkId(anyLong())).thenReturn(stackOverflowDto);
-        when(linkParse.getStackOverFlowId(link.url())).thenReturn(1642028L);
+        when(linkParser.getStackOverFlowId(link.url())).thenReturn(1642028L);
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(new QuestionResponse(itemsPlusDay)));
 
         boolean result = stackOverflowUpdater.checkAnswers(link);

@@ -1,4 +1,4 @@
-package edu.java.tools;
+package edu.java.bot.tools;
 
 public enum Urls {
     GITHUB,

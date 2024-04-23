@@ -8,6 +8,7 @@ import edu.java.domain.LinkRepository;
 import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
+import edu.java.exceptions.LinkNotFoundException;
 import edu.java.responses.BranchResponse;
 import edu.java.responses.QuestionResponse;
 import edu.java.responses.RepositoryResponse;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LinkService {
-    private final static String CHAT_NOT_FOUND = "Чат не был добавлен";
+    private final static String CHAT_NOT_FOUND = "Чат не был зарегистрирован. Для регистрации введите команду /start";
     private final static String LINK_NOT_FOUND = "Ссылка не найдена";
     private final static String INCORRECT_LINK = "Неверна указана ссылка";
     private final static String LINK_EXIST = "Ссылка уже была добавлена";
@@ -80,7 +81,7 @@ public class LinkService {
             throw new IncorrectParametersException(CHAT_NOT_FOUND);
         }
         if (linkRepository.existLinkByUriAndTgChatId(tgChatId, url) == 0) {
-            throw new IncorrectParametersException(LINK_NOT_FOUND);
+            throw new LinkNotFoundException(LINK_NOT_FOUND);
         } else {
             LinkDto removingLink = linkRepository.findLinkByChatIdAndUrl(tgChatId, url);
             linkRepository.remove(tgChatId, url);

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(properties = "app.database-access-type=jdbc")
 @Transactional
@@ -42,7 +44,7 @@ class JdbcGithubLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    void findAllByTgChatIdTest() {
+    void findGithubLinkByTgChatIdAndUrlTest() {
         jdbcChatRepository.add(1234L);
         jdbcChatRepository.add(123L);
         jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
@@ -51,10 +53,10 @@ class JdbcGithubLinkRepositoryTest extends IntegrationTest {
         jdbcGithubLinkRepository.add(1234L, URI_GITHUB, 5);
         jdbcGithubLinkRepository.add(123L, URI_GITHUB, 10);
 
-        List<GithubLinkDto> githubLinks = jdbcGithubLinkRepository.findAllByTgChatIdAndUrl(1234L, URI_GITHUB);
+        GithubLinkDto githubLink = jdbcGithubLinkRepository.findGithubLinkByTgChatIdAndUrl(1234L, URI_GITHUB);
 
-        assertEquals(1, githubLinks.size());
-        assertEquals(5, githubLinks.getLast().countBranches());
+        assertNotNull(githubLink);
+        assertEquals(5, githubLink.countBranches());
     }
 
     @Test
@@ -85,8 +87,8 @@ class JdbcGithubLinkRepositoryTest extends IntegrationTest {
 
         jdbcLinkRepository.remove(1234L, URI_GITHUB);
 
-        List<GithubLinkDto> githubLinks = jdbcGithubLinkRepository.findAllByTgChatIdAndUrl(1234L, URI_GITHUB);
-        assertEquals(githubLinks.size(), 0);
+        GithubLinkDto githubLinks = jdbcGithubLinkRepository.findGithubLinkByTgChatIdAndUrl(1234L, URI_GITHUB);
+        assertNull(githubLinks);
     }
 
     @Test
@@ -102,9 +104,9 @@ class JdbcGithubLinkRepositoryTest extends IntegrationTest {
 
         jdbcGithubLinkRepository.setCountBranches(link, 5);
 
-        List<GithubLinkDto> githubLinks = jdbcGithubLinkRepository.findAllByTgChatIdAndUrl(123L, URI_GITHUB);
-        assertEquals(githubLinks.size(), 1);
-        assertEquals(githubLinks.getLast().countBranches(), 5);
+        GithubLinkDto githubLinks = jdbcGithubLinkRepository.findGithubLinkByTgChatIdAndUrl(123L, URI_GITHUB);
+        assertNotNull(githubLinks);
+        assertEquals(githubLinks.countBranches(), 5);
 
     }
 }

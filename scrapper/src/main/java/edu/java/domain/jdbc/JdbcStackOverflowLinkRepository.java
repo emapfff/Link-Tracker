@@ -28,24 +28,28 @@ public class JdbcStackOverflowLinkRepository implements StackOverflowLinkReposit
     }
 
     @Override
-    public List<StackOverflowDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
-        return jdbcTemplate.query(
-            """
-                SELECT sl.link_id, sl.answer_count, sl.id
-                FROM chat c
-                JOIN consists co ON c.id = co.chat_id
-                JOIN stackoverflow_link sl ON co.link_id = sl.link_id
-                JOIN (
-                    SELECT id, url
-                    FROM link
-                    WHERE url = ?
-                ) l ON sl.link_id = l.id
-                WHERE c.tg_chat_id = ?;
-                """,
-            new DataClassRowMapper<>(StackOverflowDto.class),
-            url.toString(),
-            tgChatId
-        );
+    public StackOverflowDto findStackOverflowLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
+        try {
+            return jdbcTemplate.queryForObject(
+                """
+                    SELECT sl.link_id, sl.answer_count, sl.id
+                    FROM chat c
+                    JOIN consists co ON c.id = co.chat_id
+                    JOIN stackoverflow_link sl ON co.link_id = sl.link_id
+                    JOIN (
+                        SELECT id, url
+                        FROM link
+                        WHERE url = ?
+                    ) l ON sl.link_id = l.id
+                    WHERE c.tg_chat_id = ?;
+                    """,
+                new DataClassRowMapper<>(StackOverflowDto.class),
+                url.toString(),
+                tgChatId
+            );
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

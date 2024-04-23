@@ -14,6 +14,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GithubUpdater {
@@ -26,6 +27,7 @@ public class GithubUpdater {
     @Autowired
     private LinkRepository linkRepository;
 
+    @Transactional
     public boolean update(@NotNull LinkDto linkDto) {
         URI link = linkDto.url();
         String user = linkParse.getGithubUser(link);
@@ -39,6 +41,7 @@ public class GithubUpdater {
         return false;
     }
 
+    @Transactional
     public boolean checkBranches(@NotNull LinkDto linkDto) {
         GithubLinkDto githubLinkDto = githubLinkRepository.findGithubLinkByLinkId(linkDto.id());
         URI link = linkDto.url();

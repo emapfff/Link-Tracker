@@ -3,13 +3,15 @@ package edu.java.bot.commands;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.clients.ScrapperClient;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
+
 public class StartCommand implements Command {
-    @Autowired
-    private ScrapperClient scrapperClient;
+    private final ScrapperClient scrapperClient;
 
     @Override
     public String name() {
@@ -24,8 +26,9 @@ public class StartCommand implements Command {
     @Override
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
-        String userName = update.message().chat().firstName() + " " + update.message().chat().lastName();
-        scrapperClient.registrationChat(chatId);
-        return new SendMessage(chatId, "Добро пожаловать в worker бота, " + userName + "!");
+        return scrapperClient.registrationChat(chatId)
+            .then(Mono.just(new SendMessage(chatId, "Чат успешно добавлен")))
+            .onErrorResume(throwable -> Mono.just(new SendMessage(chatId, throwable.getMessage())))
+            .block();
     }
 }

@@ -63,8 +63,9 @@ public class Bot {
                     );
                     lastUpdate = waitingNewMessage(lastUpdate);
                     executeCommand(command.handle(lastUpdate));
+                } else {
+                    executeCommand(command.handle(lastUpdate));
                 }
-                executeCommand(command.handle(lastUpdate));
             } else {
                 long chatId = lastUpdate.message().chat().id();
                 this.executeCommand(new SendMessage(chatId, "Команда не найдена."));
@@ -80,7 +81,7 @@ public class Bot {
             getUpdate = new GetUpdates().limit(1).offset(update.updateId() + 1).timeout(0);
             lastUpdate = this.telegramBot.execute(getUpdate).updates();
         }
-        getUpdate = new GetUpdates().limit(1).offset(lastUpdate.getFirst().updateId() + 1).timeout(0);
+        getUpdate = new GetUpdates().limit(1).offset(lastUpdate.getLast().updateId() + 1).timeout(0);
         this.telegramBot.execute(getUpdate).updates();
         return lastUpdate.getFirst();
     }

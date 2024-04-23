@@ -29,24 +29,29 @@ public class JdbcGithubLinkRepository implements GithubLinkRepository {
     }
 
     @Override
-    public List<GithubLinkDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
-        return jdbcTemplate.query(
-            """
-                SELECT gl.link_id, gl.count_branches, gl.id
-                FROM chat c
-                JOIN consists co ON c.id = co.chat_id
-                JOIN github_links gl ON co.link_id = gl.link_id
-                JOIN (
-                    SELECT id, url
-                    FROM link
-                    WHERE url = ?
-                ) l ON gl.link_id = l.id
-                WHERE c.tg_chat_id = ?;
-                """,
-            new DataClassRowMapper<>(GithubLinkDto.class),
-            url.toString(),
-            tgChatId
-        );
+    public GithubLinkDto findGithubLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
+        try {
+            return jdbcTemplate.queryForObject(
+                """
+                    SELECT gl.link_id, gl.count_branches, gl.id
+                    FROM chat c
+                    JOIN consists co ON c.id = co.chat_id
+                    JOIN github_links gl ON co.link_id = gl.link_id
+                    JOIN (
+                        SELECT id, url
+                        FROM link
+                        WHERE url = ?
+                    ) l ON gl.link_id = l.id
+                    WHERE c.tg_chat_id = ?;
+                    """,
+                new DataClassRowMapper<>(GithubLinkDto.class),
+                url.toString(),
+                tgChatId
+            );
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     @Override

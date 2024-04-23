@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public interface GithubLinkRepository {
     void add(Long tgChatId, URI url, Integer countBranches);
 
-    List<GithubLinkDto> findAllByTgChatIdAndUrl(Long tgChatId, @NotNull URI url);
+    GithubLinkDto findGithubLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url);
 
     GithubLinkDto findGithubLinkByLinkId(Long linkId);
 

@@ -16,7 +16,9 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @Configuration
 @EnableKafka
-@EnableConfigurationProperties(KafkaConsumerProperties.class) public class KafkaConfig {
+@EnableConfigurationProperties(KafkaConsumerProperties.class)
+public class KafkaConfig {
+
     @Bean
     public ConsumerFactory<String, LinkUpdateRequest> consumerFactory(KafkaConsumerProperties properties) {
         Map<String, Object> props = new HashMap<>();

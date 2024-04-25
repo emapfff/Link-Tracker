@@ -5,10 +5,11 @@ import edu.java.configuration.ClientConfig;
 import edu.java.configuration.RetryBuilder;
 import edu.java.service.NotificationSender;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @RequiredArgsConstructor
 public class BotClient implements NotificationSender {
     private final WebClient botWebClient;
@@ -19,6 +20,7 @@ public class BotClient implements NotificationSender {
 
     @Override
     public void send(LinkUpdateRequest linkUpdateRequest) {
+        log.debug("HTTP!");
         this.botWebClient
             .post()
             .uri("/updates")

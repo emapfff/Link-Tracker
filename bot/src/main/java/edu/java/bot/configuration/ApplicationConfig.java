@@ -9,7 +9,8 @@ import org.springframework.validation.annotation.Validated;
 public record ApplicationConfig(
     @NotEmpty
     String telegramToken,
-    ScrapperTopic scrapperTopic
+    ScrapperTopic scrapperTopic,
+    Boolean useQueue
 ) {
     public record ScrapperTopic(
         String name

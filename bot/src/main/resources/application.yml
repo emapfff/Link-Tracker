@@ -33,9 +33,9 @@ clients:
     header:
       chatId: "Tg-Chat-Id"
     retry-policy:
-      back-off-type: linear
-      max-attempts: 5
-      initial-interval: 2000
+      back-off-type: constant
+      max-attempts: 4
+      initial-interval: 1000
 
 
 server:

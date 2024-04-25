@@ -16,6 +16,7 @@ public class ScrapperQueueProducer implements NotificationSender {
 
     @Override
     public void send(LinkUpdateRequest linkUpdateRequest) {
+        log.debug("KAFKA!");
         try {
             log.info(topic.name());
             linkProducer.send(topic.name(), linkUpdateRequest);

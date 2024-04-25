@@ -24,7 +24,6 @@ public class ScrapperClient {
     private final ClientConfig clientConfig;
     private final RetryBuilder retryBuilder;
 
-
     public Mono<Void> registrationChat(Long id) {
         log.info("chat registration");
         return this.scrapperWebClient

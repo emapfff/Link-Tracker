@@ -11,7 +11,6 @@ public record ClientConfig(
     @Bean
     Scrapper scrapper
 ) {
-
     @Bean
     public WebClient scrapperWebClient() {
         return WebClient
@@ -20,7 +19,8 @@ public record ClientConfig(
             .build();
     }
 
-    public record Scrapper(String baseUrl, Path path, Header header, RetryPolicy retryPolicy) {}
+    public record Scrapper(String baseUrl, Path path, Header header, RetryPolicy retryPolicy) {
+    }
 
     public record Path(
         String link,

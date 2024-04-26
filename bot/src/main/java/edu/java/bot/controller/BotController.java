@@ -18,6 +18,7 @@ public class BotController implements Listener {
     @Override
     @PostMapping("/updates")
     public void listen(@RequestBody LinkUpdateRequest linkUpdateRequest) {
+        log.info("HTTP send message!");
         log.info("{} {}", linkUpdateRequest.description(), linkUpdateRequest.url());
         updateService.sendUpdate(linkUpdateRequest);
     }

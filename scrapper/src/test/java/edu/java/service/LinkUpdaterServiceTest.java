@@ -88,6 +88,7 @@ class LinkUpdaterServiceTest {
         when(linkRepository.findAll()).thenReturn(links);
         when(linkParser.parse(link.url())).thenReturn(Resource.STACKOVERFLOW);
         when(stackOverflowUpdater.update(link)).thenReturn(true);
+        when(stackOverflowUpdater.checkAnswers(link)).thenReturn(Changes.NOTHING);
 
         linkUpdaterService.checkUpdates();
 

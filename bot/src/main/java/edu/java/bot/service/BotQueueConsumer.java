@@ -21,7 +21,8 @@ public class BotQueueConsumer implements Listener {
     )
     @Override
     public void listen(@Payload @NotNull LinkUpdateRequest linkUpdateRequest) {
-        log.info("{} {} {}", linkUpdateRequest.description(), linkUpdateRequest.url(), linkUpdateRequest.id());
+        log.info("Kafka producer send message!");
+        log.info("{} {}", linkUpdateRequest.description(), linkUpdateRequest.url());
         updateService.sendUpdate(linkUpdateRequest);
     }
 }

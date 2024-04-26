@@ -28,7 +28,8 @@ public class ProducerConfig {
     @Bean
     public ProducerFactory<String, LinkUpdateRequest> producerFactory(KafkaProducerProperties properties) {
         Map<String, Object> props = new HashMap<>();
-        props.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.bootstrapServers());
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+            properties.bootstrapServers());
         props.put(org.apache.kafka.clients.producer.ProducerConfig.CLIENT_ID_CONFIG, properties.clientId());
         props.put(org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG, properties.ackMode());
         props.put(
@@ -41,7 +42,8 @@ public class ProducerConfig {
             org.apache.kafka.clients.producer.ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION,
             properties.maxInFlightPerConnection()
         );
-        props.put(org.apache.kafka.clients.producer.ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, properties.enableIdempotence());
+        props.put(org.apache.kafka.clients.producer.ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG,
+            properties.enableIdempotence());
         props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
         props.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);

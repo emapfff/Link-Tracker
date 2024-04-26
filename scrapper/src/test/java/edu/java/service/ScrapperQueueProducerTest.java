@@ -1,55 +1,62 @@
 package edu.java.service;
 
 import dto.LinkUpdateRequest;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.BeforeAll;
+import edu.java.configuration.TopicProperties;
+import java.net.URI;
+import java.util.Arrays;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.KafkaMessageListenerContainer;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonDeserializer;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.deser.std.StringDeserializer;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.kafka.core.KafkaTemplate;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-@EmbeddedKafka
-@SpringBootTest(properties = "kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}")
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ScrapperQueueProducerTest {
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private KafkaMessageListenerContainer<String, LinkUpdateRequest> container;
-    private BlockingQueue<ConsumerRecord<String, LinkUpdateRequest>> records;
-    
-    private EmbeddedKafkaBroker embeddedKafkaBroker;
-    @Autowired
-    private NotificationSender queueProducer;
+public class ScrapperQueueProducerTest {
+    @Mock
+    private KafkaTemplate<String, LinkUpdateRequest> linkProducer;
 
-    @BeforeAll
+    private ScrapperQueueProducer scrapperQueueProducer;
+    @Captor
+    private ArgumentCaptor<String> topicCaptor;
+
+    @Captor
+    private ArgumentCaptor<LinkUpdateRequest> requestCaptor;
+
+    @BeforeEach
     void setUp() {
-        DefaultKafkaConsumerFactory<String, LinkUpdateRequest> consumerFactory =
-            new DefaultKafkaConsumerFactory<>(consProps())
-    }
-
-    private Map<String, Object> consProps() {
-        return Map.of(
-            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString(),
-            ConsumerConfig.GROUP_ID_CONFIG, "consumer",
-            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true",
-            ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "10",
-            ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "60000",
-            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"
-        );
+        MockitoAnnotations.openMocks(this);
+        scrapperQueueProducer = new ScrapperQueueProducer(linkProducer,
+            new TopicProperties("topicName", 5, 1));
     }
 
     @Test
-    void send() {
+    void send_True_message() {
+        //true message
+        LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
+            123L,
+            URI.create("http://mycore"),
+            "updating link",
+            Arrays.asList(1L, 2L, 3L)
+        );
+
+        //fake message
+        LinkUpdateRequest fakeLinkUpdateRequest = new LinkUpdateRequest(
+            123L,
+            URI.create(""),
+            "fake message",
+            Arrays.asList(1L, 2L)
+        );
+
+        scrapperQueueProducer.send(linkUpdateRequest);
+
+        verify(linkProducer, times(1)).send(topicCaptor.capture(), requestCaptor.capture());
+        Assertions.assertEquals(topicCaptor.getValue(), "topicName");
+        Assertions.assertEquals(requestCaptor.getValue(), linkUpdateRequest);
     }
+
 }
+

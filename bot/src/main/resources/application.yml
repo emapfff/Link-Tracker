@@ -5,7 +5,7 @@ app:
 
 kafka:
   consumer:
-    bootstrap-servers: localhost:29092, localhost:29093
+    bootstrap-servers: localhost:9092, localhost:9093
     client-id: bot
     auto-offset-reset: latest
     max-poll-interval: 300_000

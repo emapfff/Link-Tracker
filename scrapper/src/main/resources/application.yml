@@ -8,7 +8,7 @@ app:
 
 kafka:
   producer:
-    bootstrap-servers: localhost:29092, localhost:29093
+    bootstrap-servers: localhost:9092, localhost:9093
     client-id: scrapper
     ack-mode: all
     delivery-timeout: 60s

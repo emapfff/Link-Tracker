@@ -27,6 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
@@ -51,9 +52,6 @@ class BotClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("3")
         );
-        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
-            .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(200)));
     }
 
     @AfterEach
@@ -63,6 +61,9 @@ class BotClientTest {
 
     @Test
     void sendUpdateExponentialBlackOff() {
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200)));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
         retryPolicy.setMaxAttempts(3);
@@ -90,6 +91,9 @@ class BotClientTest {
 
     @Test
     void sendUpdateLinearBackOff() {
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200)));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
         retryPolicy.setMaxAttempts(3);
@@ -117,6 +121,9 @@ class BotClientTest {
 
     @Test
     void sendUpdateConstantBlackOff() {
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200)));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
         retryPolicy.setMaxAttempts(3);
@@ -142,4 +149,129 @@ class BotClientTest {
 
     }
 
+    @Test
+    void failSendUpdateExponentialBlackOff() {
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500)));
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
+        when(clientConfig.bot()).thenReturn(bot);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
+            123L,
+            URI.create("http://mycore"),
+            "updating link",
+            Arrays.asList(1L, 2L, 3L)
+        );
+        String expectedRequest = "{\"id\": 123, " +
+            "\"url\": \"http://mycore\"," +
+            "\"description\": \"updating link\"," +
+            "\"tgChatIds\": [1, 2, 3]}";
+
+        assertThrows(Exception.class, () -> {
+            botClient.sendUpdate(linkUpdateRequest);
+        });
+    }
+
+    @Test
+    void failSendUpdateLinearBackOff() {
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500)));
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
+        when(clientConfig.bot()).thenReturn(bot);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
+            123L,
+            URI.create("http://mycore"),
+            "updating link",
+            Arrays.asList(1L, 2L, 3L)
+        );
+        String expectedRequest = "{\"id\": 123, " +
+            "\"url\": \"http://mycore\"," +
+            "\"description\": \"updating link\"," +
+            "\"tgChatIds\": [1, 2, 3]}";
+
+        assertThrows(Exception.class, () -> {
+            botClient.sendUpdate(linkUpdateRequest);
+        });
+    }
+
+    @Test
+    void failSendUpdateConstantBlackOff() {
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500)));
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
+        when(clientConfig.bot()).thenReturn(bot);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
+            123L,
+            URI.create("http://mycore"),
+            "updating link",
+            Arrays.asList(1L, 2L, 3L)
+        );
+        String expectedRequest = "{\"id\": 123, " +
+            "\"url\": \"http://mycore\"," +
+            "\"description\": \"updating link\"," +
+            "\"tgChatIds\": [1, 2, 3]}";
+
+        assertThrows(Exception.class, () -> {
+            botClient.sendUpdate(linkUpdateRequest);
+        });
+    }
 }

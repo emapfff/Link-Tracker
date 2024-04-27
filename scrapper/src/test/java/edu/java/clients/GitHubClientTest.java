@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
+import reactor.test.StepVerifier;
 import reactor.util.retry.Retry;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -46,11 +47,7 @@ class GitHubClientTest {
     private GitHubClient gitHubClient;
 
     @BeforeEach
-    public void setUp() throws IOException {
-        String branchesJson = FileUtils.readFileToString(
-            new File("src/test/java/edu/java/json/Branches.json"),
-            "UTF-8"
-        );
+    public void setUp() {
         stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
             .whenScenarioStateIs(STARTED)
             .willReturn(aResponse().withStatus(500))
@@ -61,15 +58,7 @@ class GitHubClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("3")
         );
-        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
-            .whenScenarioStateIs("3")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody("{\"login\" : \"Emil\", " +
-                        "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
-            ));
+
 
         stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
             .whenScenarioStateIs(STARTED)
@@ -81,16 +70,7 @@ class GitHubClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("3")
         );
-        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
-            .whenScenarioStateIs("3")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-type", "application/json")
-                    .withBody("{\"name\" : \"repo_name\", " +
-                        "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
-                        "\"owner:login\" : \"user\"}")
-            ));
+
 
         stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
             .whenScenarioStateIs(STARTED)
@@ -101,15 +81,6 @@ class GitHubClientTest {
             .whenScenarioStateIs("2")
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("3")
-        );
-        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
-            .whenScenarioStateIs("3")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(branchesJson)
-            )
         );
     }
 
@@ -120,6 +91,15 @@ class GitHubClientTest {
 
     @Test
     void fetchUserTestExponentialBackOff() {
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"login\" : \"Emil\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
+            ));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
         retryPolicy.setMaxAttempts(3);
@@ -137,6 +117,15 @@ class GitHubClientTest {
 
     @Test
     void fetchUserTestLinearBackOff() {
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"login\" : \"Emil\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
+            ));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
         retryPolicy.setMaxAttempts(3);
@@ -154,6 +143,15 @@ class GitHubClientTest {
 
     @Test
     void fetchUserTestConstantBackOff() {
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"login\" : \"Emil\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
+            ));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
         retryPolicy.setMaxAttempts(3);
@@ -170,7 +168,113 @@ class GitHubClientTest {
     }
 
     @Test
+    void failFetchUserTestExponentialBackOff() {
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"login\" : \"Emil\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchUser("user")).verifyError();
+    }
+
+    @Test
+    void failFetchUserTestLinearBackOff() {
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"login\" : \"Emil\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchUser("user")).verifyError();
+    }
+
+    @Test
+    void failFetchUserTestConstantBackOff() {
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/users/user")).inScenario("Check retry for user")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"login\" : \"Emil\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\"}")
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchUser("user")).verifyError();
+    }
+
+    @Test
     void fetchRepositoryTestExponentialBlackOff() {
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-type", "application/json")
+                    .withBody("{\"name\" : \"repo_name\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
+                        "\"owner:login\" : \"user\"}")
+            ));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
         retryPolicy.setMaxAttempts(3);
@@ -188,6 +292,16 @@ class GitHubClientTest {
 
     @Test
     void fetchRepositoryTestLinearBlackOff() {
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-type", "application/json")
+                    .withBody("{\"name\" : \"repo_name\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
+                        "\"owner:login\" : \"user\"}")
+            ));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
         retryPolicy.setMaxAttempts(3);
@@ -205,6 +319,16 @@ class GitHubClientTest {
 
     @Test
     void fetchRepositoryTestConstantBlackOff() {
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-type", "application/json")
+                    .withBody("{\"name\" : \"repo_name\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
+                        "\"owner:login\" : \"user\"}")
+            ));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
         retryPolicy.setMaxAttempts(3);
@@ -221,7 +345,119 @@ class GitHubClientTest {
     }
 
     @Test
-    void fetchBranchTestExponentialBlackOff() {
+    void failFetchRepositoryTestExponentialBlackOff() {
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-type", "application/json")
+                    .withBody("{\"name\" : \"repo_name\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
+                        "\"owner:login\" : \"user\"}")
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchRepository("owner", "repo")).verifyError();
+    }
+
+    @Test
+    void failFetchRepositoryTestLinearBlackOff() {
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-type", "application/json")
+                    .withBody("{\"name\" : \"repo_name\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
+                        "\"owner:login\" : \"user\"}")
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchRepository("owner", "repo")).verifyError();
+    }
+
+    @Test
+    void failFetchRepositoryTestConstantBlackOff() {
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-type", "application/json")
+                    .withBody("{\"name\" : \"repo_name\", " +
+                        "\"updated_at\" : \"2024-02-09T17:47:19Z\", " +
+                        "\"owner:login\" : \"user\"}")
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchRepository("owner", "repo")).verifyError();
+    }
+
+    @Test
+    void fetchBranchTestExponentialBlackOff() throws IOException {
+        String branchesJson = FileUtils.readFileToString(
+            new File("src/test/java/edu/java/json/Branches.json"),
+            "UTF-8"
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(branchesJson)
+            )
+        );
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
         retryPolicy.setMaxAttempts(3);
@@ -239,7 +475,20 @@ class GitHubClientTest {
     }
 
     @Test
-    void fetchBranchTestLinearBlackOff() {
+    void fetchBranchTestLinearBlackOff() throws IOException {
+        String branchesJson = FileUtils.readFileToString(
+            new File("src/test/java/edu/java/json/Branches.json"),
+            "UTF-8"
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(branchesJson)
+            )
+        );
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
         retryPolicy.setMaxAttempts(3);
@@ -257,7 +506,20 @@ class GitHubClientTest {
     }
 
     @Test
-    void fetchBranchTestConstantBlackOff() {
+    void fetchBranchTestConstantBlackOff() throws IOException {
+        String branchesJson = FileUtils.readFileToString(
+            new File("src/test/java/edu/java/json/Branches.json"),
+            "UTF-8"
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("3")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(branchesJson)
+            )
+        );
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
         retryPolicy.setMaxAttempts(3);
@@ -272,6 +534,111 @@ class GitHubClientTest {
         assertEquals(branchResponses.listBranches().size(), 2);
         assertEquals(branchResponses.listBranches().getFirst().name(), "hw1");
         assertEquals(branchResponses.listBranches().getLast().name(), "hw2");
+    }
+
+    @Test
+    void failFetchBranchTestExponentialBlackOff() throws IOException {
+        String branchesJson = FileUtils.readFileToString(
+            new File("src/test/java/edu/java/json/Branches.json"),
+            "UTF-8"
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+                .whenScenarioStateIs("5")
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(branchesJson)
+                ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchBranch("user", "repo")).verifyError();
+    }
+
+    @Test
+    void failFetchBranchTestLinearBlackOff() throws IOException {
+        String branchesJson = FileUtils.readFileToString(
+            new File("src/test/java/edu/java/json/Branches.json"),
+            "UTF-8"
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(branchesJson)
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchBranch("user", "repo")).verifyError();
+    }
+
+    @Test
+    void failFetchBranchTestConstantBlackOff() throws IOException {
+        String branchesJson = FileUtils.readFileToString(
+            new File("src/test/java/edu/java/json/Branches.json"),
+            "UTF-8"
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(branchesJson)
+            ));
+        RetryPolicy retryPolicy = new RetryPolicy();
+        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
+        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setInitialInterval(2000L);
+        ClientConfig.Github github = new ClientConfig.Github("", retryPolicy);
+        when(clientConfig.github()).thenReturn(github);
+        gitHubClient = new GitHubClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
+        StepVerifier.create(gitHubClient.fetchBranch("user", "repo")).verifyError();
     }
 }
 

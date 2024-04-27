@@ -83,6 +83,38 @@ class ScrapperClientTest {
     }
 
     @Test
+    void failRegistrationChat() {
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+
+        StepVerifier.create(scrapperClient.removeChat(123L)).verifyError();
+
+        verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
+    }
+
+    @Test
     void removeChat() {
         stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("removing")
             .whenScenarioStateIs(STARTED)
@@ -100,6 +132,38 @@ class ScrapperClientTest {
         );
 
         StepVerifier.create(scrapperClient.removeChat(123L)).verifyComplete();
+
+        verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
+    }
+
+    @Test
+    void failRemoveChat() {
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(post(urlEqualTo("/tg-chat/123")).inScenario("registration")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+
+        StepVerifier.create(scrapperClient.removeChat(123L)).verifyError();
 
         verify(postRequestedFor(urlEqualTo("/tg-chat/123")));
     }
@@ -128,6 +192,73 @@ class ScrapperClientTest {
     }
 
     @Test
+    void failGetLinks() {
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(get(urlEqualTo("/links")).inScenario("get")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+
+        StepVerifier.create(scrapperClient.getLinks(123L)).verifyError();
+
+        verify(getRequestedFor(urlEqualTo("/links")));
+    }
+
+    @Test
+    void failAddLink() {
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(post(urlEqualTo("/links")).inScenario("post")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+
+        AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create("http://mycore"));
+        String expectedRequest = "{ \"link\" : \"http://mycore\"}";
+
+        StepVerifier.create(scrapperClient.addLink(123L, addLinkRequest)).verifyError();
+
+        verify(postRequestedFor(urlEqualTo("/links")));
+    }
+
+    @Test
     void addLink() {
         stubFor(post(urlEqualTo("/links")).inScenario("post")
             .whenScenarioStateIs(STARTED)
@@ -142,6 +273,7 @@ class ScrapperClientTest {
         stubFor(post(urlEqualTo("/links")).inScenario("post")
             .whenScenarioStateIs("3")
             .willReturn(aResponse().withStatus(200)));
+
         AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create("http://mycore"));
         String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
@@ -177,5 +309,40 @@ class ScrapperClientTest {
             .withHeader("Tg-Chat-Id", equalTo(String.valueOf(123)))
             .withRequestBody(equalToJson(expectedRequest))
         );
+    }
+
+    @Test
+    void failDeleteLink() {
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs(STARTED)
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("2")
+        );
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs("2")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("3")
+        );
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("4")
+        );
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs("4")
+            .willReturn(aResponse().withStatus(500))
+            .willSetStateTo("5")
+        );
+        stubFor(delete(urlEqualTo("/links")).inScenario("delete")
+            .whenScenarioStateIs("5")
+            .willReturn(aResponse().withStatus(200))
+        );
+
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create("http://mycore"));
+        String expectedRequest = "{ \"link\" : \"http://mycore\"}";
+
+        StepVerifier.create(scrapperClient.deleteLink(123L, removeLinkRequest)).verifyError();
+
+        verify(deleteRequestedFor(urlEqualTo("/links")));
     }
 }

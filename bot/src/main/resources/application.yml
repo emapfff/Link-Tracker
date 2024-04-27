@@ -7,10 +7,17 @@ kafka:
   consumer:
     bootstrap-servers: localhost:9092, localhost:9093
     client-id: bot
-    auto-offset-reset: latest
+    auto-offset-reset: earliest
+
     max-poll-interval: 300_000
     enable-auto-commit: false
-
+  dlq:
+    topic: notification_dlq
+    partitions: 2
+    bootstrap-servers: localhost:9092, localhost:9093
+    ack-mode: all
+    delivery-timeout: 60s
+    linger-ms: 5000
 spring:
   application:
     name: worker

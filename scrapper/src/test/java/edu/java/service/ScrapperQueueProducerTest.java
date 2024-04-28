@@ -4,6 +4,7 @@ import dto.LinkUpdateRequest;
 import edu.java.configuration.TopicProperties;
 import java.net.URI;
 import java.util.Arrays;
+import io.micrometer.core.instrument.Counter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import static org.mockito.Mockito.verify;
 public class ScrapperQueueProducerTest {
     @Mock
     private KafkaTemplate<String, LinkUpdateRequest> linkProducer;
+    @Mock
+    private Counter messageCounter;
 
     private ScrapperQueueProducer scrapperQueueProducer;
     @Captor
@@ -30,7 +33,7 @@ public class ScrapperQueueProducerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         scrapperQueueProducer = new ScrapperQueueProducer(linkProducer,
-            new TopicProperties("topicName", 5, 1));
+            new TopicProperties("topicName", 5, 1),  messageCounter);
     }
 
     @Test

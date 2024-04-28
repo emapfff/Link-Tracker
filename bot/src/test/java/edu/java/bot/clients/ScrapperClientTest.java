@@ -36,7 +36,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.mockito.Mockito.when;
 
-@WireMockTest(httpPort = 8080)
+@WireMockTest(httpPort = 8001)
 @SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
 class ScrapperClientTest {
     @Autowired
@@ -57,7 +57,7 @@ class ScrapperClientTest {
         ClientConfig.Scrapper scrapper = new ClientConfig.Scrapper("", path, header, retryPolicy);
         when(clientConfig.scrapper()).thenReturn(scrapper);
 
-        scrapperClient = new ScrapperClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        scrapperClient = new ScrapperClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder);
     }
 
     @Test

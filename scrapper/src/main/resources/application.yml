@@ -1,9 +1,25 @@
 app:
   scheduler:
     enable: true
-    interval: 60s
+    interval: 30s
     force-check-delay: 120s
   database-access-type: jdbc
+  use-queue: true
+
+kafka:
+  producer:
+    bootstrap-servers: localhost:9092, localhost:9093
+    client-id: scrapper
+    ack-mode: all
+    delivery-timeout: 60s
+    linger-ms: 0
+    batch-size: 100_000
+    max-in-flight-per-connection: 5
+    enable-idempotence: true
+  topic:
+    name: notification
+    partitions: 10
+    replicas: 2
 
 spring:
   application:
@@ -21,16 +37,16 @@ clients:
     base-url: https://api.github.com
     retry-policy:
       back-off-type: exponential
-      max-attempts: 5
-      initial-interval: 10000
+      max-attempts: 10
+      initial-interval: 2000
   stackoverflow:
     base-url: https://api.stackexchange.com/2.3
     retry-policy:
       back-off-type: exponential
       max-attempts: 10
-      initial-interval: 1000
+      initial-interval: 2000
   bot:
-    base-url: https://localhost:8090
+    base-url: http://localhost:8090
     retry-policy:
       back-off-type: exponential
       max-attempts: 3

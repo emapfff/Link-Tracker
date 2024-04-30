@@ -13,6 +13,10 @@
     <version>${revision}</version>
 
     <dependencies>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
         <!-- Database -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

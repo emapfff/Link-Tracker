@@ -68,7 +68,7 @@ class TrackCommandTest {
         SendMessage result = trackCommand.handle(update);
 
         assertTrue(result.getParameters().containsValue("Указана неверная ссылка.\n"
-            + "Требуются ссылки репозитория Github или вопроса из StackOverflow"));
+            + "Требуются ссылки репозиториев Github или вопросов из StackOverflow"));
 
     }
 

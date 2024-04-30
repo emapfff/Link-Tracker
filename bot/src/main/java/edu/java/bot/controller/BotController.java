@@ -1,25 +1,26 @@
 package edu.java.bot.controller;
 
 import dto.LinkUpdateRequest;
-import edu.java.bot.service.Bot;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import edu.java.bot.service.Listener;
+import edu.java.bot.service.UpdateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
 @Slf4j
+@RestController
 @RequiredArgsConstructor
-public class BotController {
-    private final Bot bot;
+public class BotController implements Listener {
+    private final UpdateService updateService;
 
+    @Override
     @PostMapping("/updates")
-    @Operation(summary = "Отправить обновление", description = "Обновление обработано")
-    @ApiResponse(responseCode = "200", description = "Обновление обработано")
-    public void sendUpdates(@RequestBody LinkUpdateRequest linkUpdateRequest) {
-        log.info("update");
+    public void listen(@RequestBody LinkUpdateRequest linkUpdateRequest) {
+        log.info("HTTP send message!");
+        log.info("{} {}", linkUpdateRequest.description(), linkUpdateRequest.url());
+        updateService.sendUpdate(linkUpdateRequest);
     }
 }
+

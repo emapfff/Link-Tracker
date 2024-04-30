@@ -10,17 +10,20 @@ import edu.java.response.ListBranchesResponse;
 import edu.java.response.RepositoryResponse;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.service.GithubUpdater;
+import edu.java.tool.Changes;
+import edu.java.tool.LinkParser;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import edu.java.tool.LinkParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectReader;
 import reactor.core.publisher.Mono;
+import static edu.java.tool.Changes.ADD;
+import static edu.java.tool.Changes.NOTHING;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -84,9 +87,9 @@ class GithubUpdaterTest extends IntegrationTest{
         when(githubClient.fetchBranch(any(), any())).thenReturn(Mono.just(listBranchesResponse));
         doNothing().when(githubLinkRepository).setCountBranches(any(), any());
 
-        boolean result = githubUpdater.checkBranches(link);
+        Changes result = githubUpdater.checkBranches(link);
 
-        assertTrue(result);
+        assertEquals(result, ADD);
     }
 
     @Test
@@ -102,9 +105,9 @@ class GithubUpdaterTest extends IntegrationTest{
         when(linkParse.getGithubRepo(link.url())).thenReturn("java-backend-2024");
         when(githubClient.fetchBranch(any(), any())).thenReturn(Mono.just(listBranchesResponse));
 
-        boolean result = githubUpdater.checkBranches(link);
+        Changes result = githubUpdater.checkBranches(link);
 
-        assertFalse(result);
+        assertEquals(result, NOTHING);
     }
 
 

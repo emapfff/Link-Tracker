@@ -6,12 +6,16 @@ import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
 import edu.java.response.QuestionResponse;
+import edu.java.tool.Changes;
 import edu.java.tool.LinkParser;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static edu.java.tool.Changes.ADD;
+import static edu.java.tool.Changes.DELETE;
+import static edu.java.tool.Changes.NOTHING;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class StackOverflowUpdater {
     }
 
     @Transactional
-    public boolean checkAnswers(@NotNull LinkDto linkDto) {
+    public Changes checkAnswers(@NotNull LinkDto linkDto) {
         URI link = linkDto.url();
         Long id = linkParse.getStackOverFlowId(link);
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(id).block();
@@ -43,8 +47,11 @@ public class StackOverflowUpdater {
         Integer newAnswerCount = questionResponse.items().getLast().answerCount();
         if (newAnswerCount > oldAnswerCount) {
             stackOverflowLinkRepository.setAnswersCount(linkDto, newAnswerCount);
-            return true;
+            return ADD;
+        } else if (newAnswerCount < oldAnswerCount) {
+            stackOverflowLinkRepository.setAnswersCount(linkDto, newAnswerCount);
+            return DELETE;
         }
-        return false;
+        return NOTHING;
     }
 }

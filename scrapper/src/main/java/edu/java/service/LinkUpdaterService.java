@@ -1,7 +1,6 @@
 package edu.java.service;
 
 import dto.LinkUpdateRequest;
-import edu.java.clients.BotClient;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
@@ -16,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class LinkUpdaterService {
-    private final BotClient botClient;
+    private final NotificationSender notificationSender;
     private final LinkRepository linkRepository;
     private final GithubUpdater githubUpdater;
     private final StackOverflowUpdater stackOverflowUpdater;
@@ -30,45 +29,72 @@ public class LinkUpdaterService {
                 case GITHUB -> {
                     if (githubUpdater.update(link)) {
                         log.info("Требуются обновления для гитхаба");
-                        botClient.sendUpdate(new LinkUpdateRequest(
+                        LinkUpdateRequest updatedRepo = new LinkUpdateRequest(
                             link.id(),
                             link.url(),
                             "Пришло обновление с github!",
                             linkRepository.findAllTgChatIdsByUrl(link.url())
-                        ));
+                        );
+                        notificationSender.send(updatedRepo);
                     }
-                    if (githubUpdater.checkBranches(link)) {
-                        log.info("Требуются обновления для гитхаба по веткам");
-                        botClient.sendUpdate(new LinkUpdateRequest(
-                            link.id(),
-                            link.url(),
-                            "Добавлена новая ветка!",
-                            linkRepository.findAllTgChatIdsByUrl(link.url())
-                        ));
+                    switch (githubUpdater.checkBranches(link)) {
+                        case ADD -> {
+                            LinkUpdateRequest newBranch = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Добавлена новая ветка!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(newBranch.description());
+                            notificationSender.send(newBranch);
+                        }
+                        case DELETE -> {
+                            LinkUpdateRequest deleteBranch = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Удалена ветка!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(deleteBranch.description());
+                            notificationSender.send(deleteBranch);
+                        }
+                        default -> log.info("Нет изменений в ветках");
                     }
-                    log.info("Обновления не требуются для гитхаба");
                 }
                 case STACKOVERFLOW -> {
                     if (stackOverflowUpdater.update(link)) {
-                        log.info("Требуются обновления для стака");
-                        botClient.sendUpdate(new LinkUpdateRequest(
+                        LinkUpdateRequest newNotification = new LinkUpdateRequest(
                             link.id(),
                             link.url(),
                             "Пришло уведомление со stackoverflow!",
                             linkRepository.findAllTgChatIdsByUrl(link.url())
-                        ));
+                        );
+                        log.info(newNotification.description());
+                        notificationSender.send(newNotification);
                     }
-                    if (stackOverflowUpdater.checkAnswers(link)) {
-                        log.info("Требуются обновления для стака по ответам");
-                        botClient.sendUpdate(new LinkUpdateRequest(
-                            link.id(),
-                            link.url(),
-                            "Пришел новый ответ!",
-                            linkRepository.findAllTgChatIdsByUrl(link.url())
-                        ));
+                    switch (stackOverflowUpdater.checkAnswers(link)) {
+                        case ADD -> {
+                            LinkUpdateRequest newAnswer = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Пришел новый ответ!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(newAnswer.description());
+                            notificationSender.send(newAnswer);
+                        }
+                        case DELETE -> {
+                            LinkUpdateRequest deleteAnswer = new LinkUpdateRequest(
+                                link.id(),
+                                link.url(),
+                                "Ответ был удален!",
+                                linkRepository.findAllTgChatIdsByUrl(link.url())
+                            );
+                            log.info(deleteAnswer.description());
+                            notificationSender.send(deleteAnswer);
+                        }
+                        default -> log.info("Нет изменений в вопросе");
                     }
-                    log.info("Обновления не требуются для стака");
-
                 }
                 default -> throw new IncorrectParametersException("Неверная ссылка");
             }

@@ -34,7 +34,7 @@ public class TrackCommand implements Command {
         URI url = URI.create(update.message().text());
         if (linkParser.parse(url) == Resource.INCORRECT_URL) {
             return new SendMessage(chatId, "Указана неверная ссылка.\n"
-                + "Требуются ссылки репозитория Github или вопроса из StackOverflow");
+                + "Требуются ссылки репозиториев Github или вопросов из StackOverflow");
         }
         AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create(update.message().text()));
         return scrapperClient.addLink(chatId, addLinkRequest)

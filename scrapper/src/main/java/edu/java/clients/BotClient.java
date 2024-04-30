@@ -3,21 +3,24 @@ package edu.java.clients;
 import dto.LinkUpdateRequest;
 import edu.java.configuration.ClientConfig;
 import edu.java.configuration.RetryBuilder;
+import edu.java.service.NotificationSender;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Service
+@Slf4j
 @RequiredArgsConstructor
-public class BotClient {
+public class BotClient implements NotificationSender {
     private final WebClient botWebClient;
 
     private final ClientConfig clientConfig;
 
     private final RetryBuilder retryBuilder;
 
-    public void sendUpdate(LinkUpdateRequest linkUpdateRequest) {
+    @Override
+    public void send(LinkUpdateRequest linkUpdateRequest) {
+        log.debug("HTTP!");
         this.botWebClient
             .post()
             .uri("/updates")

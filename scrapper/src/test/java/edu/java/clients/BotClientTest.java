@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.util.retry.Retry;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -52,6 +53,9 @@ class BotClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("3")
         );
+        stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
+            .whenScenarioStateIs("3")
+            .willReturn(aResponse().withStatus(200)));
     }
 
     @AfterEach
@@ -82,7 +86,7 @@ class BotClientTest {
             "\"description\": \"updating link\"," +
             "\"tgChatIds\": [1, 2, 3]}";
 
-        botClient.sendUpdate(linkUpdateRequest);
+        botClient.send(linkUpdateRequest);
 
         verify(postRequestedFor(urlEqualTo("/updates"))
             .withRequestBody(equalToJson(expectedRequest)));
@@ -112,7 +116,7 @@ class BotClientTest {
             "\"description\": \"updating link\"," +
             "\"tgChatIds\": [1, 2, 3]}";
 
-        botClient.sendUpdate(linkUpdateRequest);
+        botClient.send(linkUpdateRequest);
 
         verify(postRequestedFor(urlEqualTo("/updates"))
             .withRequestBody(equalToJson(expectedRequest)));
@@ -142,7 +146,7 @@ class BotClientTest {
             "\"description\": \"updating link\"," +
             "\"tgChatIds\": [1, 2, 3]}";
 
-        botClient.sendUpdate(linkUpdateRequest);
+        botClient.send(linkUpdateRequest);
 
         verify(postRequestedFor(urlEqualTo("/updates"))
             .withRequestBody(equalToJson(expectedRequest)));
@@ -187,7 +191,7 @@ class BotClientTest {
             "\"tgChatIds\": [1, 2, 3]}";
 
         assertThrows(Exception.class, () -> {
-            botClient.sendUpdate(linkUpdateRequest);
+            botClient.send(linkUpdateRequest);
         });
     }
 
@@ -229,7 +233,7 @@ class BotClientTest {
             "\"tgChatIds\": [1, 2, 3]}";
 
         assertThrows(Exception.class, () -> {
-            botClient.sendUpdate(linkUpdateRequest);
+            botClient.send(linkUpdateRequest);
         });
     }
 
@@ -271,7 +275,7 @@ class BotClientTest {
             "\"tgChatIds\": [1, 2, 3]}";
 
         assertThrows(Exception.class, () -> {
-            botClient.sendUpdate(linkUpdateRequest);
+            botClient.send(linkUpdateRequest);
         });
     }
 }

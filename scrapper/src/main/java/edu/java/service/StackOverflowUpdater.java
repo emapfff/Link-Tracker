@@ -5,24 +5,21 @@ import edu.java.domain.LinkRepository;
 import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
-import edu.java.responses.QuestionResponse;
-import edu.java.tools.LinkParser;
+import edu.java.response.QuestionResponse;
+import edu.java.tool.LinkParser;
 import java.net.URI;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class StackOverflowUpdater {
-    @Autowired
-    private StackOverflowClient stackOverflowClient;
-    @Autowired
-    private StackOverflowLinkRepository stackOverflowLinkRepository;
-    @Autowired
-    private LinkParser linkParse;
-    @Autowired
-    private LinkRepository linkRepository;
+    private final StackOverflowClient stackOverflowClient;
+    private final StackOverflowLinkRepository stackOverflowLinkRepository;
+    private final LinkParser linkParse;
+    private final LinkRepository linkRepository;
 
     @Transactional
     public boolean update(@NotNull LinkDto linkDto) {

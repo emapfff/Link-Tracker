@@ -1,4 +1,4 @@
-package edu.java.tools;
+package edu.java.tool;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +41,18 @@ class LinkParserTest {
     }
 
     @Test
-    void getGithubRepo() {
-        String repo = linkParser.getGithubRepo(URI.create("https://github.com/emapfff/java-backend-2024/"));
+    void getGithubUserIncorrect() {
+        String user = linkParser.getGithubUser(URI.create("https:////github.com////emapfff/java-backend-2024/"));
 
-        assertEquals(repo, "java-backend-2024");
+        assertNotEquals(user, "emapfff");
+    }
+
+
+    @Test
+    void getGithubRepo() {
+        String repo = linkParser.getGithubRepo(URI.create("https://github.com////emapfff////java-backend-2024/"));
+
+        assertNotEquals(repo, "java-backend-2024");
     }
 
     @Test

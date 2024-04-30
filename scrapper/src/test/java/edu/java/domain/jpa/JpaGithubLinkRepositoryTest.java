@@ -1,5 +1,8 @@
 package edu.java.domain.jpa;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.GithubLinkRepository;
+import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.GithubLinkDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.scrapper.IntegrationTest;
@@ -18,92 +21,93 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @Transactional
 class JpaGithubLinkRepositoryTest extends IntegrationTest {
     @Autowired
-    private JpaGithubLinkRepository jpaGithubLinkRepository;
+    private GithubLinkRepository githubLinkRepository;
     @Autowired
-    private JpaLinkRepository jpaLinkRepository;
+    private LinkRepository linkRepository;
     @Autowired
-    private JpaChatRepository jpaChatRepository;
+    private ChatRepository chatRepository;
 
     private static final URI URI_GITHUB = URI.create("http://github");
     private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
 
     @Test
-    void add() {
-        jpaChatRepository.add(1234L);
-        jpaChatRepository.add(123L);
-        jpaLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jpaLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
-        jpaLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+    void addTest() {
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
 
-        jpaGithubLinkRepository.add(1234L, URI_GITHUB, 5);
+        githubLinkRepository.add(1234L, URI_GITHUB, 5);
 
-        List<GithubLinkDto> githubLinks = jpaGithubLinkRepository.findAll();
-        LinkDto linkDto = jpaLinkRepository.findLinkByChatIdAndUrl(1234L, URI_GITHUB);
+        List<GithubLinkDto> githubLinks = githubLinkRepository.findAll();
+        LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1234L, URI_GITHUB);
         assertEquals(githubLinks.getLast().linkId(), linkDto.id());
         assertEquals(githubLinks.getLast().countBranches(), 5);
     }
 
     @Test
     void findGithubLinkByTgChatIdAndUrlTest() {
-        jpaChatRepository.add(1234L);
-        jpaChatRepository.add(123L);
-        jpaLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jpaLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
-        jpaLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jpaGithubLinkRepository.add(1234L, URI_GITHUB, 5);
-        jpaGithubLinkRepository.add(123L, URI_GITHUB, 10);
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        githubLinkRepository.add(1234L, URI_GITHUB, 5);
+        githubLinkRepository.add(123L, URI_GITHUB, 10);
 
-        GithubLinkDto githubLink = jpaGithubLinkRepository.findGithubLinkByTgChatIdAndUrl(1234L, URI_GITHUB);
+        GithubLinkDto githubLink = githubLinkRepository.findGithubLinkByTgChatIdAndUrl(1234L, URI_GITHUB);
 
         assertNotNull(githubLink);
         assertEquals(5, githubLink.countBranches());
     }
+
     @Test
     void findGithubLinkByLinkIdTest() {
-        jpaChatRepository.add(1234L);
-        jpaChatRepository.add(123L);
-        jpaLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jpaLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
-        jpaLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jpaGithubLinkRepository.add(1234L, URI_GITHUB, 5);
-        jpaGithubLinkRepository.add(123L, URI_GITHUB, 10);
-        Long linkId = jpaLinkRepository.findLinkByChatIdAndUrl(1234L, URI_GITHUB).id();
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        githubLinkRepository.add(1234L, URI_GITHUB, 5);
+        githubLinkRepository.add(123L, URI_GITHUB, 10);
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(1234L, URI_GITHUB).id();
 
-        GithubLinkDto githubLinkDto = jpaGithubLinkRepository.findGithubLinkByLinkId(linkId);
+        GithubLinkDto githubLinkDto = githubLinkRepository.findGithubLinkByLinkId(linkId);
 
         assertEquals(githubLinkDto.countBranches(), 5);
         assertEquals(githubLinkDto.linkId(), linkId);
     }
-
     @Test
     void checkRemove() {
-        jpaChatRepository.add(1234L);
-        jpaChatRepository.add(123L);
-        jpaLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jpaLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
-        jpaLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jpaGithubLinkRepository.add(1234L, URI_GITHUB, 5);
-        jpaGithubLinkRepository.add(123L, URI_GITHUB, 10);
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        githubLinkRepository.add(1234L, URI_GITHUB, 5);
+        githubLinkRepository.add(123L, URI_GITHUB, 10);
 
-        jpaLinkRepository.remove(1234L, URI_GITHUB);
+        linkRepository.remove(1234L, URI_GITHUB);
 
-        GithubLinkDto githubLinks = jpaGithubLinkRepository.findGithubLinkByTgChatIdAndUrl(1234L, URI_GITHUB);
+        GithubLinkDto githubLinks = githubLinkRepository.findGithubLinkByTgChatIdAndUrl(1234L, URI_GITHUB);
         assertNull(githubLinks);
     }
+
     @Test
     void setCountBranchesTest() {
-        jpaChatRepository.add(1234L);
-        jpaChatRepository.add(123L);
-        jpaLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jpaLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
-        jpaLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jpaGithubLinkRepository.add(1234L, URI_GITHUB, 5);
-        jpaGithubLinkRepository.add(123L, URI_GITHUB, 10);
-        LinkDto link = jpaLinkRepository.findLinkByChatIdAndUrl(123L, URI_GITHUB);
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        githubLinkRepository.add(1234L, URI_GITHUB, 5);
+        githubLinkRepository.add(123L, URI_GITHUB, 10);
+        LinkDto link = linkRepository.findLinkByChatIdAndUrl(123L, URI_GITHUB);
 
-        jpaGithubLinkRepository.setCountBranches(link, 5);
+        githubLinkRepository.setCountBranches(link, 5);
 
-        GithubLinkDto githubLinks = jpaGithubLinkRepository.findGithubLinkByTgChatIdAndUrl(123L, URI_GITHUB);
+        GithubLinkDto githubLinks = githubLinkRepository.findGithubLinkByTgChatIdAndUrl(123L, URI_GITHUB);
         assertNotNull(githubLinks);
         assertEquals(githubLinks.countBranches(), 5);
 

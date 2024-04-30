@@ -1,54 +1,41 @@
 package edu.java.configuration;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.GithubLinkRepository;
+import edu.java.domain.LinkRepository;
+import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.jpa.JpaChatRepository;
 import edu.java.domain.jpa.JpaGithubLinkRepository;
 import edu.java.domain.jpa.JpaLinkRepository;
 import edu.java.domain.jpa.JpaStackOverflowLinkRepository;
-import edu.java.domain.jpa.bases.BaseJpaChatRepository;
-import edu.java.domain.jpa.bases.BaseJpaGithubLinkRepository;
-import edu.java.domain.jpa.bases.BaseJpaLinkRepository;
-import edu.java.domain.jpa.bases.BaseJpaStackOverflowLinkRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
+@Validated
 @ConditionalOnProperty(prefix = "app", name = "database-access-type", havingValue = "jpa")
 public class JpaConfig {
+
     @Bean
-    @Primary
-    public JpaChatRepository jpaChatRepository(BaseJpaChatRepository baseJpaChatRepository) {
-        return new JpaChatRepository(baseJpaChatRepository);
+    public ChatRepository chatRepository() {
+        return new JpaChatRepository();
     }
 
     @Bean
-    @Primary
-    public JpaLinkRepository jpaLinkRepository(
-        BaseJpaLinkRepository baseJpaLinkRepository,
-        BaseJpaChatRepository baseJpaChatRepository
-    ) {
-        return new JpaLinkRepository(baseJpaLinkRepository, baseJpaChatRepository);
+    public LinkRepository linkRepository() {
+        return new JpaLinkRepository();
     }
 
     @Bean
-    @Primary
-    public JpaGithubLinkRepository jpaGithubLinkRepository(
-        BaseJpaLinkRepository baseJpaLinkRepository,
-        BaseJpaGithubLinkRepository baseJpaGithubLinkRepository, BaseJpaChatRepository baseJpaChatRepository
-    ) {
-        return new JpaGithubLinkRepository(baseJpaGithubLinkRepository, baseJpaLinkRepository, baseJpaChatRepository);
+    public GithubLinkRepository githubLinkRepository() {
+        return new JpaGithubLinkRepository();
     }
 
     @Bean
-    @Primary
-    public JpaStackOverflowLinkRepository jpaStackOverflowLinkRepository(
-        BaseJpaChatRepository baseJpaChatRepository, BaseJpaLinkRepository baseJpaLinkRepository,
-        BaseJpaStackOverflowLinkRepository baseJpaStackOverflowLinkRepository
-    ) {
-        return new JpaStackOverflowLinkRepository(baseJpaStackOverflowLinkRepository, baseJpaChatRepository,
-            baseJpaLinkRepository
-        );
+    public StackOverflowLinkRepository stackOverflowLinkRepository() {
+        return new JpaStackOverflowLinkRepository();
     }
 
 }

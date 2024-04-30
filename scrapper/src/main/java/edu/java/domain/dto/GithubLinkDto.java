@@ -4,4 +4,5 @@ public record GithubLinkDto(
     Long id,
     Long linkId,
     Integer countBranches
-) { }
+) {
+}

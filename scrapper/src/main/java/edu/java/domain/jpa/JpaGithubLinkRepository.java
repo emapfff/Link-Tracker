@@ -8,28 +8,29 @@ import edu.java.domain.entity.GithubLink;
 import edu.java.domain.entity.Link;
 import edu.java.domain.jpa.bases.BaseJpaChatRepository;
 import edu.java.domain.jpa.bases.BaseJpaGithubLinkRepository;
-import edu.java.domain.jpa.bases.BaseJpaLinkRepository;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Repository
-@RequiredArgsConstructor
+@Component
 public class JpaGithubLinkRepository implements GithubLinkRepository {
-    private final BaseJpaGithubLinkRepository baseJpaGithubLinkRepository;
+    @Autowired
+    private BaseJpaGithubLinkRepository baseJpaGithubLinkRepository;
 
-    private final BaseJpaLinkRepository baseJpaLinkRepository;
+    @Autowired
+    private BaseJpaChatRepository baseJpaChatRepository;
 
-    private final BaseJpaChatRepository baseJpaChatRepository;
+    @Autowired
+    private JpaLinkRepository jpaLinkRepository;
 
     @Override
     public void add(Long tgChatId, URI url, Integer countBranches) {
         Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-        Link link = baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString());
+        Link link = jpaLinkRepository.findLinkByChatAndUrl(chat, url.toString());
         GithubLink githubLink = new GithubLink(link, countBranches);
         baseJpaGithubLinkRepository.save(githubLink);
     }
@@ -38,7 +39,7 @@ public class JpaGithubLinkRepository implements GithubLinkRepository {
     public GithubLinkDto findGithubLinkByTgChatIdAndUrl(Long tgChatId, @NotNull URI url) {
         try {
             Chat chat = baseJpaChatRepository.findChatByTgChatId(tgChatId);
-            Link link = baseJpaLinkRepository.findLinkByChatsAndUrl(chat, url.toString());
+            Link link = jpaLinkRepository.findLinkByChatAndUrl(chat, url.toString());
             GithubLink githubLink = baseJpaGithubLinkRepository.findGithubLinkByLink(link);
             return convertToGithubDto(githubLink);
         } catch (Exception e) {

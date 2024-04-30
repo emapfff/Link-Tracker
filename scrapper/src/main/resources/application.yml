@@ -3,22 +3,38 @@ app:
     enable: true
     interval: 60s
     force-check-delay: 120s
-  database-access-type: jpa
+  database-access-type: jdbc
+
 spring:
   application:
     name: scrapper
   liquibase:
     enabled: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/scrapper
+    url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
 
 clients:
-  github_base_url: https://api.github.com
-  stackoverflow_base_url: https://api.stackexchange.com/2.3
-  bot_base_url: https://localhost:8090
+  github:
+    base-url: https://api.github.com
+    retry-policy:
+      back-off-type: exponential
+      max-attempts: 5
+      initial-interval: 10000
+  stackoverflow:
+    base-url: https://api.stackexchange.com/2.3
+    retry-policy:
+      back-off-type: exponential
+      max-attempts: 10
+      initial-interval: 1000
+  bot:
+    base-url: https://localhost:8090
+    retry-policy:
+      back-off-type: exponential
+      max-attempts: 3
+      initial-interval: 1000
 
 server:
   port: 8080

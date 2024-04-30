@@ -7,13 +7,15 @@ import edu.java.domain.jpa.bases.BaseJpaChatRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class JpaChatRepository implements ChatRepository {
 
-    private final BaseJpaChatRepository baseJpaChatRepository;
+    @Autowired
+    private BaseJpaChatRepository baseJpaChatRepository;
 
     @Override
     public void add(Long tgChatId) {
@@ -32,7 +34,13 @@ public class JpaChatRepository implements ChatRepository {
 
     @Override
     public Long findIdByTgChatId(Long tgChatId) {
-        return baseJpaChatRepository.findIdByTgChatId(tgChatId);
+        List<Chat> chats = baseJpaChatRepository.findAll();
+        for (Chat chat : chats) {
+            if (chat.getTgChatId().equals(tgChatId)) {
+                return chat.getId();
+            }
+        }
+        return null;
     }
 
     public List<Chat> getChat() {

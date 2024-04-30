@@ -12,17 +12,20 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import static edu.java.domain.jooq.generation.Tables.CHAT;
 import static edu.java.domain.jooq.generation.Tables.CONSISTS;
 import static edu.java.domain.jooq.generation.Tables.LINK;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class JooqLinkRepository implements LinkRepository {
     private final DSLContext dslContext;
-    private final JooqConsistsRepository jooqConsistsRepository;
-    private final JooqChatRepository jooqChatRepository;
+    @Autowired
+    private JooqConsistsRepository jooqConsistsRepository;
+    @Autowired
+    private JooqChatRepository jooqChatRepository;
 
     @Override
     public void add(Long tgChatId, @NotNull URI url, @NotNull OffsetDateTime lastUpdate) {

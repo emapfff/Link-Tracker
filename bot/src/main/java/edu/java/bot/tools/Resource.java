@@ -1,6 +1,6 @@
 package edu.java.bot.tools;
 
-public enum Urls {
+public enum Resource {
     GITHUB,
     STACKOVERFLOW,
     INCORRECT_URL

@@ -10,8 +10,8 @@ import edu.java.service.TgChatService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.Collection;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +21,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class ScrapperController {
-    @Autowired
-    private TgChatService tgChatService;
-    @Autowired
-    private LinkService linkService;
+    private final TgChatService tgChatService;
+    private final LinkService linkService;
 
     @ApiResponse(responseCode = "200", description = "Чат зарегистрирован")
     @PostMapping("/tg-chat/{id}")

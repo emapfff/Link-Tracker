@@ -9,10 +9,10 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
-public record ApplicationConfigScrapper(
+public record ApplicationConfig(
     @NestedConfigurationProperty
-        @Bean
-        @NotNull
+    @Bean
+    @NotNull
     Scheduler scheduler,
     AccessType databaseAccessType
 ) {
@@ -26,6 +26,5 @@ public record ApplicationConfigScrapper(
         boolean enable,
         Duration interval,
         Duration forceCheckDelay) {
-
     }
 }

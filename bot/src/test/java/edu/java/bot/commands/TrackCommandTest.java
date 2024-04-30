@@ -6,8 +6,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import dto.AddLinkRequest;
 import edu.java.bot.clients.ScrapperClient;
-import edu.java.bot.tools.LinkParse;
-import edu.java.bot.tools.Urls;
+import edu.java.bot.tools.LinkParser;
+import edu.java.bot.tools.Resource;
 import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,7 +29,7 @@ class TrackCommandTest {
     @Mock
     private Chat chat;
     @Mock
-    private LinkParse linkParse;
+    private LinkParser linkParser;
     @Mock
     private ScrapperClient scrapperClient;
     @InjectMocks
@@ -47,7 +46,7 @@ class TrackCommandTest {
         when(update.message().chat()).thenReturn(chat);
         when(message.chat().id()).thenReturn(123L);
         when(message.text()).thenReturn("https://example.com");
-        when(linkParse.parse(any())).thenReturn(Urls.GITHUB);
+        when(linkParser.parse(any())).thenReturn(Resource.GITHUB);
         AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create("https://example.com"));
         when(scrapperClient.addLink(123L, addLinkRequest)).thenReturn(Mono.empty());
 
@@ -62,7 +61,7 @@ class TrackCommandTest {
         when(update.message().chat()).thenReturn(chat);
         when(message.chat().id()).thenReturn(123L);
         when(message.text()).thenReturn("https://example.com");
-        when(linkParse.parse(any())).thenReturn(Urls.INCORRECT_URL);
+        when(linkParser.parse(any())).thenReturn(Resource.INCORRECT_URL);
         AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create("https://example.com"));
         when(scrapperClient.addLink(123L, addLinkRequest)).thenReturn(Mono.empty());
 

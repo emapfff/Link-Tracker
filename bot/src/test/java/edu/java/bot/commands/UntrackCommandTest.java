@@ -4,11 +4,10 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import dto.AddLinkRequest;
 import dto.RemoveLinkRequest;
 import edu.java.bot.clients.ScrapperClient;
-import edu.java.bot.tools.LinkParse;
-import edu.java.bot.tools.Urls;
+import edu.java.bot.tools.LinkParser;
+import edu.java.bot.tools.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,7 +29,7 @@ class UntrackCommandTest {
     @Mock
     private Chat chat;
     @Mock
-    private LinkParse linkParse;
+    private LinkParser linkParser;
     @Mock
     private ScrapperClient scrapperClient;
     @InjectMocks
@@ -47,7 +46,7 @@ class UntrackCommandTest {
         when(update.message().chat()).thenReturn(chat);
         when(message.chat().id()).thenReturn(123L);
         when(message.text()).thenReturn("https://example.com");
-        when(linkParse.parse(any())).thenReturn(Urls.STACKOVERFLOW);
+        when(linkParser.parse(any())).thenReturn(Resource.STACKOVERFLOW);
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create("https://example.com"));
         when(scrapperClient.deleteLink(123L, removeLinkRequest)).thenReturn(Mono.empty());
 
@@ -62,7 +61,7 @@ class UntrackCommandTest {
         when(update.message().chat()).thenReturn(chat);
         when(message.chat().id()).thenReturn(123L);
         when(message.text()).thenReturn("https://example.com");
-        when(linkParse.parse(any())).thenReturn(Urls.INCORRECT_URL);
+        when(linkParser.parse(any())).thenReturn(Resource.INCORRECT_URL);
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create("https://example.com"));
         when(scrapperClient.deleteLink(123L, removeLinkRequest)).thenReturn(Mono.empty());
 

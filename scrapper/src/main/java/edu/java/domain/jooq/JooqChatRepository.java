@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import static edu.java.domain.jooq.generation.tables.Chat.CHAT;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class JooqChatRepository implements ChatRepository {
 

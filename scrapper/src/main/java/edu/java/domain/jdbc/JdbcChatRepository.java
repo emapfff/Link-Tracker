@@ -6,9 +6,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class JdbcChatRepository implements ChatRepository {
     private final JdbcTemplate jdbcTemplate;

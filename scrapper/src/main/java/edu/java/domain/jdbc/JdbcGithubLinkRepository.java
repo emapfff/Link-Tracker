@@ -7,16 +7,18 @@ import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class JdbcGithubLinkRepository implements GithubLinkRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    private final JdbcLinkRepository linkRepository;
+    @Autowired
+    private JdbcLinkRepository linkRepository;
 
     @Override
     public void add(Long tgChatId, URI url, Integer countBranches) {

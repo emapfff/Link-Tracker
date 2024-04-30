@@ -7,13 +7,31 @@ spring:
   jackson:
     time-zone: UTC
 
-scrapper-client:
-  base-url: http://localhost:8080
-  path:
-    link: "/links"
-    tgChat: "/tg-chat/"
-  header:
-    chatId: "Tg-Chat-Id"
+retry:
+  back-off-type: constant
+  max-attempts: 5
+  initial-interval: 2000
+  multiplier: 2
+
+rate-limiting:
+  capacity: 3
+  refill-rate: 100
+  refill-time-seconds: 3600
+  cache-size: 10_000
+  expire-after-access: 2h
+
+clients:
+  scrapper:
+    base-url: http://localhost:8080
+    path:
+      link: "/links"
+      tgChat: "/tg-chat/"
+    header:
+      chatId: "Tg-Chat-Id"
+    retry-policy:
+      back-off-type: linear
+      max-attempts: 5
+      initial-interval: 2000
 
 server:
   port: 8090

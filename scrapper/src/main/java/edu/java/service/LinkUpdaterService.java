@@ -5,26 +5,22 @@ import edu.java.clients.BotClient;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
-import edu.java.tools.LinkParser;
+import edu.java.tool.LinkParser;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class LinkUpdaterService {
-    @Autowired
-    private BotClient botClient;
-    @Autowired
-    private LinkRepository linkRepository;
-    @Autowired
-    private GithubUpdater githubUpdater;
-    @Autowired
-    private StackOverflowUpdater stackOverflowUpdater;
-    @Autowired
-    private LinkParser linkParse;
+    private final BotClient botClient;
+    private final LinkRepository linkRepository;
+    private final GithubUpdater githubUpdater;
+    private final StackOverflowUpdater stackOverflowUpdater;
+    private final LinkParser linkParse;
 
     @Transactional
     public void checkUpdates() {

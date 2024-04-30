@@ -1,5 +1,8 @@
 package edu.java.domain.jdbc;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.LinkRepository;
+import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.domain.dto.StackOverflowDto;
 import edu.java.scrapper.IntegrationTest;
@@ -18,12 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @Transactional
 class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcStackOverflowLinkRepository jdbcStackOverflowLinkRepository;
-
+    private StackOverflowLinkRepository stackOverflowLinkRepository;
     @Autowired
-    private JdbcLinkRepository jdbcLinkRepository;
+    private LinkRepository linkRepository;
     @Autowired
-    private JdbcChatRepository jdbcChatRepository;
+    private ChatRepository chatRepository;
 
     private static final URI URI_GITHUB = URI.create("http://github");
     private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
@@ -32,32 +34,32 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
 
     @Test
     void addTest() {
-        jdbcChatRepository.add(1234L);
-        jdbcChatRepository.add(123L);
-        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
-        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
 
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW, 5);
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW, 5);
 
-        List<StackOverflowDto> stackOverflowDtos = jdbcStackOverflowLinkRepository.findAll();
-        LinkDto linkDto = jdbcLinkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW);
+        List<StackOverflowDto> stackOverflowDtos = stackOverflowLinkRepository.findAll();
+        LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW);
         assertEquals(stackOverflowDtos.getLast().linkId(), linkDto.id());
         assertEquals(stackOverflowDtos.getLast().answerCount(), 5);
     }
 
     @Test
     void findStackOverflowLinkByTgChatIdAndUrlTest() {
-        jdbcChatRepository.add(1234L);
-        jdbcChatRepository.add(123L);
-        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
-        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
 
-        StackOverflowDto stackOverflowLink = jdbcStackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
+        StackOverflowDto stackOverflowLink = stackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
             1234L,
             URI_STACKOVERFLOW2
         );
@@ -68,34 +70,34 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
 
     @Test
     void findStackOverflowLinkIdByLinkIdTest() {
-        jdbcChatRepository.add(1234L);
-        jdbcChatRepository.add(123L);
-        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
-        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
 
-        Long linkId = jdbcLinkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW1).id();
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW1).id();
 
-        StackOverflowDto stackOverflowDto = jdbcStackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkId);
+        StackOverflowDto stackOverflowDto = stackOverflowLinkRepository.findStackOverflowLinkByLinkId(linkId);
         assertEquals(stackOverflowDto.answerCount(), 5);
         assertEquals(stackOverflowDto.linkId(), linkId);
     }
 
     @Test
     void checkRemove() {
-        jdbcChatRepository.add(1234L);
-        jdbcChatRepository.add(123L);
-        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
-        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW, 5);
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW, 5);
 
-        jdbcLinkRepository.remove(1234L, URI_STACKOVERFLOW);
+        linkRepository.remove(1234L, URI_STACKOVERFLOW);
 
-        StackOverflowDto stackOverflowLink = jdbcStackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
+        StackOverflowDto stackOverflowLink = stackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
             1234L,
             URI_STACKOVERFLOW);
 
@@ -104,19 +106,19 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
 
     @Test
     void setAnswersCountTest() {
-        jdbcChatRepository.add(1234L);
-        jdbcChatRepository.add(123L);
-        jdbcLinkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
-        jdbcLinkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
-        jdbcLinkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
-        jdbcStackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
-        LinkDto link = jdbcLinkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
+        chatRepository.add(1234L);
+        chatRepository.add(123L);
+        linkRepository.add(1234L, URI_GITHUB, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW1, OffsetDateTime.now());
+        linkRepository.add(1234L, URI_STACKOVERFLOW2, OffsetDateTime.now());
+        linkRepository.add(123L, URI_GITHUB, OffsetDateTime.now());
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW1, 5);
+        stackOverflowLinkRepository.add(1234L, URI_STACKOVERFLOW2, 10);
+        LinkDto link = linkRepository.findLinkByChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
 
-        jdbcStackOverflowLinkRepository.setAnswersCount(link, 5);
+        stackOverflowLinkRepository.setAnswersCount(link, 5);
 
-        StackOverflowDto stackOverflowLink = jdbcStackOverflowLinkRepository
+        StackOverflowDto stackOverflowLink = stackOverflowLinkRepository
             .findStackOverflowLinkByTgChatIdAndUrl(1234L, URI_STACKOVERFLOW2);
         assertNotNull(stackOverflowLink);
         assertEquals(stackOverflowLink.answerCount(), 5);

@@ -9,37 +9,30 @@ import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.LinkNotFoundException;
-import edu.java.responses.BranchResponse;
-import edu.java.responses.QuestionResponse;
-import edu.java.responses.RepositoryResponse;
-import edu.java.tools.LinkParser;
+import edu.java.response.ListBranchesResponse;
+import edu.java.response.QuestionResponse;
+import edu.java.response.RepositoryResponse;
+import edu.java.tool.LinkParser;
 import java.net.URI;
 import java.util.Collection;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class LinkService {
     private final static String CHAT_NOT_FOUND = "Чат не был зарегистрирован. Для регистрации введите команду /start";
     private final static String LINK_NOT_FOUND = "Ссылка не найдена";
     private final static String INCORRECT_LINK = "Неверна указана ссылка";
     private final static String LINK_EXIST = "Ссылка уже была добавлена";
-    @Autowired
-    private LinkParser linkParse;
-    @Autowired
-    private GitHubClient gitHubClient;
-    @Autowired
-    private StackOverflowClient stackOverflowClient;
-    @Autowired
-    private ChatRepository chatRepository;
-    @Autowired
-    private LinkRepository linkRepository;
-    @Autowired
-    private GithubLinkRepository githubLinkRepository;
-    @Autowired
-    private StackOverflowLinkRepository stackOverflowLinkRepository;
+    private final LinkParser linkParse;
+    private final GitHubClient gitHubClient;
+    private final StackOverflowClient stackOverflowClient;
+    private final ChatRepository chatRepository;
+    private final LinkRepository linkRepository;
+    private final GithubLinkRepository githubLinkRepository;
+    private final StackOverflowLinkRepository stackOverflowLinkRepository;
 
     @Transactional
     public LinkDto add(Long tgChatId, URI url) {
@@ -57,12 +50,12 @@ public class LinkService {
                     githubUser,
                     githubRepo
                 ).block();
-                List<BranchResponse> branchResponse = gitHubClient.fetchBranch(
+                ListBranchesResponse listBranchesResponse = gitHubClient.fetchBranch(
                     githubUser,
                     githubRepo
                 ).block();
                 linkRepository.add(tgChatId, url, repositoryResponse.lastUpdate());
-                githubLinkRepository.add(tgChatId, url, branchResponse.size());
+                githubLinkRepository.add(tgChatId, url, listBranchesResponse.listBranches().size());
             }
             case STACKOVERFLOW -> {
                 Long questionId = linkParse.getStackOverFlowId(url);

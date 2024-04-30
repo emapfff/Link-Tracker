@@ -1,5 +1,7 @@
 package edu.java.domain.jooq;
 
+import edu.java.domain.ChatRepository;
+import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.ChatDto;
 import edu.java.domain.dto.LinkDto;
 import edu.java.scrapper.IntegrationTest;
@@ -17,17 +19,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(properties = "app.database-access-type=jooq")
 @Transactional
 class JooqLinkRepositoryTest extends IntegrationTest {
+    @Autowired
+    private LinkRepository linkRepository;
+    @Autowired
+    private ChatRepository chatRepository;
+    private static LinkDto firstTuple;
+    private static LinkDto secondTuple;
     private static final URI URI_MYCORE1 = URI.create("http://mycore1");
     private static final URI URI_MYCORE2 = URI.create("http://mycore2");
     private static final URI URI_MYCORE3 = URI.create("http://mycore3");
     private static final URI URI_LINK1 = URI.create("http://link1");
     private static final URI URI_LINK11 = URI.create("http://link11");
-    private static LinkDto firstTuple;
-    private static LinkDto secondTuple;
-    @Autowired
-    private JooqLinkRepository linkRepository;
-    @Autowired
-    private JooqChatRepository chatRepository;
 
     @BeforeAll
     public static void setUp() {
@@ -36,9 +38,8 @@ class JooqLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    void add() {
+    void addTest() {
         chatRepository.add(22L);
-
         linkRepository.add(22L, URI_MYCORE2, secondTuple.lastUpdate());
 
         List<LinkDto> listOfChats = linkRepository.findAll();
@@ -61,7 +62,19 @@ class JooqLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    void findAllByTgChatId() {
+    void findLinkByChatIdAndUrlTest() {
+        chatRepository.add(1234L);
+        chatRepository.add(12345L);
+        linkRepository.add(1234L, URI_MYCORE1, firstTuple.lastUpdate());
+        linkRepository.add(12345L, URI_MYCORE2, secondTuple.lastUpdate());
+
+        Long linkId = linkRepository.findLinkByChatIdAndUrl(12345L, URI_MYCORE2).id();
+
+        assertNotNull(linkId);
+    }
+
+    @Test
+    void findAllByTgChatIdTest() {
         chatRepository.add(11L);
         chatRepository.add(22L);
         linkRepository.add(11L, URI_MYCORE1, OffsetDateTime.now());
@@ -87,18 +100,6 @@ class JooqLinkRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    void findLinkByChatIdAndUrl() {
-        chatRepository.add(1234L);
-        chatRepository.add(12345L);
-        linkRepository.add(1234L, URI_MYCORE1, firstTuple.lastUpdate());
-        linkRepository.add(12345L, URI_MYCORE2, secondTuple.lastUpdate());
-
-        Long linkId = linkRepository.findLinkByChatIdAndUrl(12345L, URI_MYCORE2).id();
-
-        assertNotNull(linkId);
-    }
-
-    @Test
     void setLastUpdateTest() {
         String time = "2019-08-31T15:20:30Z";
         chatRepository.add(1L);
@@ -109,6 +110,7 @@ class JooqLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(2L, URI_LINK1, OffsetDateTime.now());
         linkRepository.add(3L, URI_LINK1, OffsetDateTime.now());
         LinkDto link = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);
+
         linkRepository.setLastUpdate(link, OffsetDateTime.parse(time));
 
         LinkDto linkDto = linkRepository.findLinkByChatIdAndUrl(1L, URI_LINK1);

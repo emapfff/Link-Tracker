@@ -9,17 +9,17 @@ import edu.java.domain.StackOverflowLinkRepository;
 import edu.java.domain.dto.LinkDto;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.LinkNotFoundException;
-import edu.java.responses.BranchResponse;
-import edu.java.responses.QuestionResponse;
-import edu.java.responses.RepositoryResponse;
-import edu.java.tools.LinkParser;
-import edu.java.tools.Resource;
+import edu.java.response.BranchResponse;
+import edu.java.response.ListBranchesResponse;
+import edu.java.response.QuestionResponse;
+import edu.java.response.RepositoryResponse;
+import edu.java.tool.LinkParser;
+import edu.java.tool.Resource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -55,12 +55,15 @@ class LinkServiceTest {
         URI url = URI.create("https://github.com/user/repo");
         Long tgChatId = 123456L;
         RepositoryResponse repositoryResponse = new RepositoryResponse("repo", OffsetDateTime.now());
-        List<BranchResponse> branchResponses = List.of(
-            new BranchResponse("branch1", new BranchResponse.Commit("sha1", "url1"), false));
+        List<BranchResponse> branches = List.of((new BranchResponse(
+            "branch1",
+            new BranchResponse.Commit("sha1", "url1"), false
+        )));
+        ListBranchesResponse listBranchesResponse = new ListBranchesResponse(branches);
         when(chatRepository.existIdByTgChatId(tgChatId)).thenReturn(1);
         when(linkParser.parse(url)).thenReturn(Resource.GITHUB);
         when(gitHubClient.fetchRepository(anyString(), anyString())).thenReturn(Mono.just(repositoryResponse));
-        when(gitHubClient.fetchBranch(anyString(), anyString())).thenReturn(Mono.just(branchResponses));
+        when(gitHubClient.fetchBranch(anyString(), anyString())).thenReturn(Mono.just(listBranchesResponse));
         when(linkParser.getGithubUser(url)).thenReturn("user");
         when(linkParser.getGithubRepo(url)).thenReturn("repo");
         when(linkRepository.findAllByUrl(url)).thenReturn(List.of(new LinkDto(1L, url, OffsetDateTime.now())));

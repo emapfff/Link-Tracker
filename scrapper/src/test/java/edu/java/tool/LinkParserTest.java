@@ -14,7 +14,7 @@ class LinkParserTest {
 
     @Test
     void parseGithub() {
-        Resource typeLink = linkParser.parse(URI.create("https://github.com/emapfff/java-backend-2024/"));
+        Resource typeLink = linkParser.parse(URI.create("https://github.com/emapfff/java-backend_2024/"));
 
         assertEquals(typeLink, Resource.GITHUB);
     }

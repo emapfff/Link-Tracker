@@ -4,6 +4,7 @@ import dto.LinkUpdateRequest;
 import edu.java.configuration.ClientConfig;
 import edu.java.configuration.RetryBuilder;
 import edu.java.service.NotificationSender;
+import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -18,9 +19,12 @@ public class BotClient implements NotificationSender {
 
     private final RetryBuilder retryBuilder;
 
+    private final Counter messageCounter;
+
     @Override
     public void send(LinkUpdateRequest linkUpdateRequest) {
         log.debug("HTTP!");
+        messageCounter.increment();
         this.botWebClient
             .post()
             .uri("/updates")

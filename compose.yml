@@ -39,6 +39,7 @@ services:
       - zookeeper:/var/lib/zookeeper/data
   kafka-1:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka-1
     ports:
       - "9092:9092"
       - "29092:29092"
@@ -56,6 +57,7 @@ services:
 
   kafka-2:
     image: confluentinc/cp-kafka:latest
+    container_name: kafka-2
     ports:
       - "9093:9093"
       - "29093:29093"
@@ -70,11 +72,35 @@ services:
       - zookeeper
     volumes:
       - kafka2:/var/lib/kafka2/data
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/config.yml'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/config.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
 volumes:
   postgresql: { }
   kafka1: { }
   zookeeper: { }
   kafka2: { }
+  prometheus_data: { }
+  grafana_data: { }
 
 networks:
   backend: { }

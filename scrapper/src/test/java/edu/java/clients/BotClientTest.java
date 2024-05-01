@@ -10,6 +10,7 @@ import edu.java.configuration.RetryBuilder;
 import edu.java.configuration.RetryPolicy;
 import java.net.URI;
 import java.util.Arrays;
+import io.micrometer.core.instrument.Counter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,12 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
-@WireMockTest(httpPort = 8080)
+@WireMockTest(httpPort = 8001)
 class BotClientTest {
     @Autowired
     RetryBuilder retryBuilder;
     @Mock
     private ClientConfig clientConfig;
+    @Mock
+    private Counter messageCounter;
     @InjectMocks
     private BotClient botClient;
 
@@ -74,7 +77,7 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -104,7 +107,7 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -134,7 +137,7 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -178,7 +181,7 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -220,7 +223,7 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -262,7 +265,7 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),

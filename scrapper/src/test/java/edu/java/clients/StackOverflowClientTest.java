@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
-@WireMockTest(httpPort = 8080)
+@WireMockTest(httpPort = 8001)
 class StackOverflowClientTest {
     @Autowired
     RetryBuilder retryBuilder;
@@ -82,7 +82,7 @@ class StackOverflowClientTest {
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
         when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
         stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+            new StackOverflowClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder);
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
 
@@ -113,7 +113,7 @@ class StackOverflowClientTest {
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
         when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
         stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+            new StackOverflowClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder);
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
 
@@ -144,7 +144,7 @@ class StackOverflowClientTest {
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
         when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
         stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+            new StackOverflowClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder);
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
 
@@ -185,7 +185,7 @@ class StackOverflowClientTest {
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
         when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
         stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+            new StackOverflowClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder);
 
         StepVerifier.create(stackOverflowClient.fetchQuestion(123)).verifyError();
     }
@@ -220,7 +220,7 @@ class StackOverflowClientTest {
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
         when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
         stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+            new StackOverflowClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder);
 
         StepVerifier.create(stackOverflowClient.fetchQuestion(123)).verifyError();
     }
@@ -255,7 +255,7 @@ class StackOverflowClientTest {
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
         when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
         stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+            new StackOverflowClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder);
 
         StepVerifier.create(stackOverflowClient.fetchQuestion(123)).verifyError();
     }

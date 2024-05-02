@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GithubUpdaterTest extends IntegrationTest{
+class GithubUpdaterTest extends IntegrationTest {
     private final LinkDto link =
         new LinkDto(1L, URI.create("https://github.com/emapfff/java-backend-2024"), OffsetDateTime.now());
 
@@ -109,7 +109,5 @@ class GithubUpdaterTest extends IntegrationTest{
 
         assertEquals(result, NOTHING);
     }
-
-
 
 }

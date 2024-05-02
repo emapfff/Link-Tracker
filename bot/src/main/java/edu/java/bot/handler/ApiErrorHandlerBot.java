@@ -1,6 +1,6 @@
 package edu.java.bot.handler;
 
-import dto.ApiErrorResponse;
+import edu.java.bot.dto.ApiErrorResponse;
 import edu.java.bot.exceptions.IncorrectParametersException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

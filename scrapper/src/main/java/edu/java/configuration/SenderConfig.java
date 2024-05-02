@@ -1,7 +1,7 @@
 package edu.java.configuration;
 
-import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
+import edu.java.dto.LinkUpdateRequest;
 import edu.java.service.NotificationSender;
 import edu.java.service.ScrapperQueueProducer;
 import io.micrometer.core.instrument.Counter;

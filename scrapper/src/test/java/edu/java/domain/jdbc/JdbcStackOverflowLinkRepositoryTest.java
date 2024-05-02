@@ -20,17 +20,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest(properties = "app.database-access-type=jdbc")
 @Transactional
 class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
+    private static final URI URI_GITHUB = URI.create("http://github");
+    private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
+    private static final URI URI_STACKOVERFLOW1 = URI.create("http://stackoverflow1");
+    private static final URI URI_STACKOVERFLOW2 = URI.create("http://stackoverflow2");
     @Autowired
     private StackOverflowLinkRepository stackOverflowLinkRepository;
     @Autowired
     private LinkRepository linkRepository;
     @Autowired
     private ChatRepository chatRepository;
-
-    private static final URI URI_GITHUB = URI.create("http://github");
-    private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
-    private static final URI URI_STACKOVERFLOW1 = URI.create("http://stackoverflow1");
-    private static final URI URI_STACKOVERFLOW2 = URI.create("http://stackoverflow2");
 
     @Test
     void addTest() {
@@ -99,7 +98,8 @@ class JdbcStackOverflowLinkRepositoryTest extends IntegrationTest {
 
         StackOverflowDto stackOverflowLink = stackOverflowLinkRepository.findStackOverflowLinkByTgChatIdAndUrl(
             1234L,
-            URI_STACKOVERFLOW);
+            URI_STACKOVERFLOW
+        );
 
         assertNull(stackOverflowLink);
     }

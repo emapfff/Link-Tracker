@@ -1,6 +1,6 @@
 package edu.java.bot.configuration;
 
-import dto.LinkUpdateRequest;
+import edu.java.bot.dto.LinkUpdateRequest;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

@@ -20,15 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest(properties = "app.database-access-type=jooq")
 @Transactional
 class JooqGitHubLinkRepositoryTest extends IntegrationTest {
+    private static final URI URI_GITHUB = URI.create("http://github");
+    private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
     @Autowired
     private GithubLinkRepository githubLinkRepository;
     @Autowired
     private LinkRepository linkRepository;
     @Autowired
     private ChatRepository chatRepository;
-
-    private static final URI URI_GITHUB = URI.create("http://github");
-    private static final URI URI_STACKOVERFLOW = URI.create("http://stackoverflow");
 
     @Test
     void addTest() {
@@ -78,6 +77,7 @@ class JooqGitHubLinkRepositoryTest extends IntegrationTest {
         assertEquals(githubLinkDto.countBranches(), 5);
         assertEquals(githubLinkDto.linkId(), linkId);
     }
+
     @Test
     void checkRemove() {
         chatRepository.add(1234L);

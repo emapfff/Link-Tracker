@@ -1,4 +1,4 @@
-package dto;
+package edu.java.bot.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.net.URI;

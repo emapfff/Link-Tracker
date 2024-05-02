@@ -1,10 +1,10 @@
 package edu.java.service;
 
-import dto.LinkUpdateRequest;
 import edu.java.configuration.TopicProperties;
+import edu.java.dto.LinkUpdateRequest;
+import io.micrometer.core.instrument.Counter;
 import java.net.URI;
 import java.util.Arrays;
-import io.micrometer.core.instrument.Counter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,8 @@ public class ScrapperQueueProducerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         scrapperQueueProducer = new ScrapperQueueProducer(linkProducer,
-            new TopicProperties("topicName", 5, 1),  messageCounter);
+            new TopicProperties("topicName", 5, 1), messageCounter
+        );
     }
 
     @Test

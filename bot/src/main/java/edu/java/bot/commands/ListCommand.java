@@ -2,8 +2,8 @@ package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import dto.LinkResponse;
 import edu.java.bot.clients.ScrapperClient;
+import edu.java.bot.dto.LinkResponse;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,7 +41,7 @@ public class ListCommand implements Command {
                             urls.stream()
                                 .map(URI::toString)
                                 .collect(Collectors.joining("\n"))
-                            );
+                        );
                     }
                 }
             )

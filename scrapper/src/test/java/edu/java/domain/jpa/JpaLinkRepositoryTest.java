@@ -19,17 +19,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(properties = "app.database-access-type=jpa")
 @Transactional
 class JpaLinkRepositoryTest extends IntegrationTest {
-    @Autowired
-    private LinkRepository linkRepository;
-    @Autowired
-    private ChatRepository chatRepository;
-    private static LinkDto firstTuple;
-    private static LinkDto secondTuple;
     private static final URI URI_MYCORE1 = URI.create("http://mycore1");
     private static final URI URI_MYCORE2 = URI.create("http://mycore2");
     private static final URI URI_MYCORE3 = URI.create("http://mycore3");
     private static final URI URI_LINK1 = URI.create("http://link1");
     private static final URI URI_LINK11 = URI.create("http://link11");
+    private static LinkDto firstTuple;
+    private static LinkDto secondTuple;
+    @Autowired
+    private LinkRepository linkRepository;
+    @Autowired
+    private ChatRepository chatRepository;
 
     @BeforeAll
     public static void setUp() {

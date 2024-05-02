@@ -1,4 +1,32 @@
 services:
+  bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    command: java -jar /app/bot.jar
+    volumes:
+      - bot:/app
+    depends_on:
+      - scrapper
+      - kafka-1
+      - kafka-2
+    networks:
+      - backend
+
+  scrapper:
+    build:
+      context: .
+      dockerfile: scrapper/Dockerfile
+    command: java -jar /app/scrapper.jar
+    volumes:
+      - scrapper:/app
+    depends_on:
+      - postgresql
+      - kafka-1
+      - kafka-2
+    networks:
+      - backend
+
   postgresql:
     image: postgres:16
     ports:
@@ -95,12 +123,14 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
 volumes:
+  bot: { }
   postgresql: { }
   kafka1: { }
   zookeeper: { }
   kafka2: { }
   prometheus_data: { }
   grafana_data: { }
+  scrapper: { }
 
 networks:
   backend: { }

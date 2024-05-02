@@ -1,14 +1,14 @@
 package edu.java.bot.clients;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import dto.AddLinkRequest;
-import dto.RemoveLinkRequest;
 import edu.java.bot.backoff.ConstantBackOff;
 import edu.java.bot.backoff.ExponentialBackOff;
 import edu.java.bot.backoff.LinearBackOff;
 import edu.java.bot.configuration.ClientConfig;
 import edu.java.bot.configuration.RetryBuilder;
 import edu.java.bot.configuration.RetryPolicy;
+import edu.java.bot.dto.AddLinkRequest;
+import edu.java.bot.dto.RemoveLinkRequest;
 import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
-import reactor.util.retry.Retry;
-import java.net.URI;
-import java.net.URISyntaxException;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;

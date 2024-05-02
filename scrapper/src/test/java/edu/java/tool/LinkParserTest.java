@@ -1,11 +1,11 @@
 package edu.java.tool;
 
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.net.URI;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest(classes = LinkParser.class)
 class LinkParserTest {
@@ -21,7 +21,8 @@ class LinkParserTest {
 
     @Test
     void parseStackOverFlow() {
-        Resource typeLink = linkParser.parse(URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"));
+        Resource typeLink =
+            linkParser.parse(URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"));
 
         assertEquals(typeLink, Resource.STACKOVERFLOW);
     }
@@ -47,7 +48,6 @@ class LinkParserTest {
         assertNotEquals(user, "emapfff");
     }
 
-
     @Test
     void getGithubRepo() {
         String repo = linkParser.getGithubRepo(URI.create("https://github.com////emapfff////java-backend-2024/"));
@@ -57,7 +57,8 @@ class LinkParserTest {
 
     @Test
     void getStackOverFlowId() {
-        long id = linkParser.getStackOverFlowId(URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"));
+        long id = linkParser.getStackOverFlowId(URI.create(
+            "https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c"));
 
         assertEquals(id, 1642028);
     }

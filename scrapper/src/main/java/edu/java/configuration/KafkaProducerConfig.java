@@ -1,6 +1,6 @@
 package edu.java.configuration;
 
-import dto.LinkUpdateRequest;
+import edu.java.dto.LinkUpdateRequest;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;

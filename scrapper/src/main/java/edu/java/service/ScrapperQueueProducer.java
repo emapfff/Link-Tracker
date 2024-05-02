@@ -1,7 +1,7 @@
 package edu.java.service;
 
-import dto.LinkUpdateRequest;
 import edu.java.configuration.TopicProperties;
+import edu.java.dto.LinkUpdateRequest;
 import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

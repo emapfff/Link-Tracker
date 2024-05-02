@@ -1,16 +1,16 @@
 package edu.java.clients;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import dto.LinkUpdateRequest;
 import edu.java.backoff.ConstantBackOff;
 import edu.java.backoff.ExponentialBackOff;
 import edu.java.backoff.LinearBackOff;
 import edu.java.configuration.ClientConfig;
 import edu.java.configuration.RetryBuilder;
 import edu.java.configuration.RetryPolicy;
+import edu.java.dto.LinkUpdateRequest;
+import io.micrometer.core.instrument.Counter;
 import java.net.URI;
 import java.util.Arrays;
-import io.micrometer.core.instrument.Counter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.util.retry.Retry;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -77,7 +76,8 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
+        botClient =
+            new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -107,7 +107,8 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
+        botClient =
+            new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -137,7 +138,8 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
+        botClient =
+            new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -181,7 +183,8 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
+        botClient =
+            new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -223,7 +226,8 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
+        botClient =
+            new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -265,7 +269,8 @@ class BotClientTest {
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
+        botClient =
+            new BotClient(WebClient.create("http://localhost:8001"), clientConfig, retryBuilder, messageCounter);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),

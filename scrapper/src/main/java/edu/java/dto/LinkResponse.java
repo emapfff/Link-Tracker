@@ -1,4 +1,4 @@
-package dto;
+package edu.java.dto;
 
 import java.net.URI;
 

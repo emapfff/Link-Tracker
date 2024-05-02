@@ -1,8 +1,8 @@
 package edu.java.clients;
 
-import dto.LinkUpdateRequest;
 import edu.java.configuration.ClientConfig;
 import edu.java.configuration.RetryBuilder;
+import edu.java.dto.LinkUpdateRequest;
 import edu.java.service.NotificationSender;
 import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;

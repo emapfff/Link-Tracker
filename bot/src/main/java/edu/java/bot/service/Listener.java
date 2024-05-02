@@ -1,6 +1,6 @@
 package edu.java.bot.service;
 
-import dto.LinkUpdateRequest;
+import edu.java.bot.dto.LinkUpdateRequest;
 
 public interface Listener {
     void listen(LinkUpdateRequest linkUpdateRequest);

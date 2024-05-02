@@ -1,6 +1,6 @@
 package edu.java.bot.service;
 
-import dto.LinkUpdateRequest;
+import edu.java.bot.dto.LinkUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

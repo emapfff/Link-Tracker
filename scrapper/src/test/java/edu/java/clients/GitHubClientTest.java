@@ -8,10 +8,10 @@ import edu.java.configuration.ClientConfig;
 import edu.java.configuration.RetryBuilder;
 import edu.java.configuration.RetryPolicy;
 import edu.java.response.GitHubUserResponse;
-import java.io.File;
-import java.io.IOException;
 import edu.java.response.ListBranchesResponse;
 import edu.java.response.RepositoryResponse;
+import java.io.File;
+import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,6 @@ class GitHubClientTest {
             .willSetStateTo("3")
         );
 
-
         stubFor(get(urlEqualTo("/repos/owner/repo")).inScenario("Check retry for repo")
             .whenScenarioStateIs(STARTED)
             .willReturn(aResponse().withStatus(500))
@@ -70,7 +69,6 @@ class GitHubClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("3")
         );
-
 
         stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
             .whenScenarioStateIs(STARTED)
@@ -553,13 +551,13 @@ class GitHubClientTest {
             .willSetStateTo("5")
         );
         stubFor(get(urlEqualTo("/repos/user/repo/branches")).inScenario("Check retry for branches")
-                .whenScenarioStateIs("5")
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(branchesJson)
-                ));
+            .whenScenarioStateIs("5")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(branchesJson)
+            ));
         RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
         retryPolicy.setMaxAttempts(3);

@@ -1,8 +1,8 @@
 package edu.java.service;
 
-import dto.LinkUpdateRequest;
 import edu.java.domain.LinkRepository;
 import edu.java.domain.dto.LinkDto;
+import edu.java.dto.LinkUpdateRequest;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.tool.LinkParser;
 import java.util.List;

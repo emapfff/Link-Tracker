@@ -1,4 +1,4 @@
-package dto;
+package edu.java.bot.dto;
 
 import java.util.List;
 

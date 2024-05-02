@@ -1,6 +1,6 @@
 package edu.java.handler;
 
-import dto.ApiErrorResponse;
+import edu.java.dto.ApiErrorResponse;
 import edu.java.exceptions.AbsentChatException;
 import edu.java.exceptions.IncorrectParametersException;
 import edu.java.exceptions.LinkNotFoundException;

@@ -1,23 +1,17 @@
 package edu.java.bot.service;
 
-import dto.LinkUpdateRequest;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import edu.java.bot.dto.LinkUpdateRequest;
+import java.net.URI;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.CommonErrorHandler;
-import org.springframework.kafka.listener.MessageListenerContainer;
-import java.net.URI;
-import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -55,7 +49,8 @@ class BotQueueConsumerTest {
     void invalidLink() {
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(null, null, null, null);
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> botQueueConsumer.listen(linkUpdateRequest));
+        RuntimeException exception =
+            assertThrows(RuntimeException.class, () -> botQueueConsumer.listen(linkUpdateRequest));
         assertEquals("Invalid link update request", exception.getMessage());
     }
 

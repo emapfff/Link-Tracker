@@ -1,6 +1,6 @@
 package edu.java.service;
 
-import dto.LinkUpdateRequest;
+import edu.java.dto.LinkUpdateRequest;
 
 public interface NotificationSender {
     void send(LinkUpdateRequest linkUpdateRequest);

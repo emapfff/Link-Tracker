@@ -2,8 +2,8 @@ package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import dto.RemoveLinkRequest;
 import edu.java.bot.clients.ScrapperClient;
+import edu.java.bot.dto.RemoveLinkRequest;
 import edu.java.bot.tools.LinkParser;
 import edu.java.bot.tools.Resource;
 import java.net.URI;

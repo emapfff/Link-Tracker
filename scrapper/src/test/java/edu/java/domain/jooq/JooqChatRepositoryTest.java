@@ -1,6 +1,5 @@
 package edu.java.domain.jooq;
 
-import edu.java.configuration.JooqConfig;
 import edu.java.domain.ChatRepository;
 import edu.java.domain.dto.ChatDto;
 import edu.java.scrapper.IntegrationTest;
@@ -8,10 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(properties = "app.database-access-type=jooq")
 @Transactional

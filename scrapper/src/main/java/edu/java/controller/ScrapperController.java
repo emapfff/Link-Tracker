@@ -1,10 +1,10 @@
 package edu.java.controller;
 
-import dto.AddLinkRequest;
-import dto.LinkResponse;
-import dto.ListLinksResponse;
-import dto.RemoveLinkRequest;
 import edu.java.domain.dto.LinkDto;
+import edu.java.dto.AddLinkRequest;
+import edu.java.dto.LinkResponse;
+import edu.java.dto.ListLinksResponse;
+import edu.java.dto.RemoveLinkRequest;
 import edu.java.service.LinkService;
 import edu.java.service.TgChatService;
 import java.util.Collection;

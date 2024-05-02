@@ -8,7 +8,6 @@ kafka:
     bootstrap-servers: localhost:9092, localhost:9093
     client-id: bot
     auto-offset-reset: earliest
-
     max-poll-interval: 300_000
     enable-auto-commit: false
   dlq:
@@ -56,7 +55,7 @@ clients:
       chatId: "Tg-Chat-Id"
     retry-policy:
       back-off-type: constant
-      max-attempts: 4
+      max-attempts: 2
       initial-interval: 1000
 
 

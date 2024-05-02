@@ -1,6 +1,6 @@
 package edu.java.bot.controller;
 
-import dto.LinkUpdateRequest;
+import edu.java.bot.dto.LinkUpdateRequest;
 import edu.java.bot.service.Listener;
 import edu.java.bot.service.UpdateService;
 import lombok.RequiredArgsConstructor;

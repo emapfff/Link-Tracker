@@ -67,7 +67,6 @@ class StackOverflowUpdaterTest extends IntegrationTest {
         assertTrue(result);
     }
 
-
     @Test
     void updateNoNeededTest() {
         when(stackOverflowClient.fetchQuestion(anyLong())).thenReturn(Mono.just(new QuestionResponse(itemsMinusDay)));
@@ -77,6 +76,7 @@ class StackOverflowUpdaterTest extends IntegrationTest {
 
         assertFalse(result);
     }
+
     @Test
     void checkAnswersTrue() {
         StackOverflowDto stackOverflowDto = new StackOverflowDto(1L, link.id(), 19);

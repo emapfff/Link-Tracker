@@ -38,14 +38,16 @@ class StackOverflowClientTest {
     RetryBuilder retryBuilder;
     @Mock
     private ClientConfig clientConfig;
-
-    private Retry retry;
-
     @InjectMocks
     private StackOverflowClient stackOverflowClient;
+    private final RetryPolicy retryPolicy = new RetryPolicy();
 
     @BeforeEach
     void setUp() {
+        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
+        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
+        stackOverflowClient = new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+
         stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
             .whenScenarioStateIs(STARTED)
             .willReturn(aResponse().withStatus(500))
@@ -56,7 +58,6 @@ class StackOverflowClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("3")
         );
-
     }
 
     @AfterEach
@@ -78,14 +79,9 @@ class StackOverflowClientTest {
                         "\"question_id\" : \"123\"," +
                         "\"last_activity_date\" : \"1709846695\"}]}"
                     )));
-        RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(backOffType);
         retryPolicy.setMaxAttempts(3);
         retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
-        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
-        stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
 
@@ -109,14 +105,9 @@ class StackOverflowClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("5")
         );
-        RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(backOffType);
         retryPolicy.setMaxAttempts(3);
         retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
-        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
-        stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
 
         StepVerifier.create(stackOverflowClient.fetchQuestion(123)).verifyError();
     }

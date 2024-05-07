@@ -45,6 +45,7 @@ class BotControllerTest {
         );
         doNothing().when(bot).executeCommand(any());
         doNothing().when(updateService).sendUpdate(linkUpdateRequest);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/updates")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(linkUpdateRequest)))

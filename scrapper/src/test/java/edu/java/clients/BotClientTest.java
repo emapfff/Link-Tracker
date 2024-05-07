@@ -40,9 +40,13 @@ class BotClientTest {
     private ClientConfig clientConfig;
     @InjectMocks
     private BotClient botClient;
+    private final RetryPolicy retryPolicy = new RetryPolicy();
 
     @BeforeEach
     public void setUp() {
+        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
+        when(clientConfig.bot()).thenReturn(bot);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
         stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
             .whenScenarioStateIs(STARTED)
             .willReturn(aResponse().withStatus(500))
@@ -66,13 +70,9 @@ class BotClientTest {
         stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
             .whenScenarioStateIs("3")
             .willReturn(aResponse().withStatus(200)));
-        RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(backOffType);
         retryPolicy.setMaxAttempts(3);
         retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
-        when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
@@ -108,13 +108,9 @@ class BotClientTest {
             .whenScenarioStateIs("5")
             .willReturn(aResponse().withStatus(200))
         );
-        RetryPolicy retryPolicy = new RetryPolicy();
         retryPolicy.setBackOffType(backOffType);
         retryPolicy.setMaxAttempts(3);
         retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
-        when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),

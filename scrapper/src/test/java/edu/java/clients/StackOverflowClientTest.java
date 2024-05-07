@@ -11,6 +11,8 @@ import edu.java.response.QuestionResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +64,9 @@ class StackOverflowClientTest {
         resetAllScenarios();
     }
 
-    @Test
-    void fetchQuestionExponentialBlackOff() {
+    @ParameterizedTest
+    @EnumSource(RetryPolicy.BackOffType.class)
+    void fetchQuestionTest(RetryPolicy.BackOffType backOffType) {
         stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
             .whenScenarioStateIs("3")
             .willReturn(
@@ -76,7 +79,7 @@ class StackOverflowClientTest {
                         "\"last_activity_date\" : \"1709846695\"}]}"
                     )));
         RetryPolicy retryPolicy = new RetryPolicy();
-        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setBackOffType(backOffType);
         retryPolicy.setMaxAttempts(3);
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
@@ -93,70 +96,9 @@ class StackOverflowClientTest {
         assertEquals(questionResponse.items().getFirst().lastActivity().toString(), "2024-03-07T21:24:55Z");
     }
 
-    @Test
-    void fetchQuestionLinearBlackOff() {
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("3")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-type", "application/json")
-                    .withBody("{ \"items\" : [ { \"is_answered\" : true," +
-                        "\"answer_count\" : 23," +
-                        "\"question_id\" : \"123\"," +
-                        "\"last_activity_date\" : \"1709846695\"}]}"
-                    )));
-        RetryPolicy retryPolicy = new RetryPolicy();
-        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
-        retryPolicy.setMaxAttempts(3);
-        retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
-        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
-        stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
-
-        QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
-
-        assertNotNull(questionResponse);
-        assertTrue(questionResponse.items().getFirst().isAnswered());
-        assertEquals(questionResponse.items().getFirst().answerCount(), 23);
-        assertEquals(questionResponse.items().getFirst().questionId(), 123);
-        assertEquals(questionResponse.items().getFirst().lastActivity().toString(), "2024-03-07T21:24:55Z");
-    }
-
-    @Test
-    void fetchQuestionConstantBlackOff() {
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("3")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-type", "application/json")
-                    .withBody("{ \"items\" : [ { \"is_answered\" : true," +
-                        "\"answer_count\" : 23," +
-                        "\"question_id\" : \"123\"," +
-                        "\"last_activity_date\" : \"1709846695\"}]}"
-                    )));
-        RetryPolicy retryPolicy = new RetryPolicy();
-        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
-        retryPolicy.setMaxAttempts(3);
-        retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
-        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
-        stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
-
-        QuestionResponse questionResponse = stackOverflowClient.fetchQuestion(123).block();
-
-        assertNotNull(questionResponse);
-        assertTrue(questionResponse.items().getFirst().isAnswered());
-        assertEquals(questionResponse.items().getFirst().answerCount(), 23);
-        assertEquals(questionResponse.items().getFirst().questionId(), 123);
-        assertEquals(questionResponse.items().getFirst().lastActivity().toString(), "2024-03-07T21:24:55Z");
-    }
-
-    @Test
-    void failFetchQuestionExponentialBlackOff() {
+    @ParameterizedTest
+    @EnumSource(RetryPolicy.BackOffType.class)
+    void failFetchQuestionTest(RetryPolicy.BackOffType backOffType) {
         stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
             .whenScenarioStateIs("3")
             .willReturn(aResponse().withStatus(500))
@@ -167,19 +109,8 @@ class StackOverflowClientTest {
             .willReturn(aResponse().withStatus(500))
             .willSetStateTo("5")
         );
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("5")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-type", "application/json")
-                    .withBody("{ \"items\" : [ { \"is_answered\" : true," +
-                        "\"answer_count\" : 23," +
-                        "\"question_id\" : \"123\"," +
-                        "\"last_activity_date\" : \"1709846695\"}]}"
-                    )));
         RetryPolicy retryPolicy = new RetryPolicy();
-        retryPolicy.setBackOffType(RetryPolicy.BackOffType.EXPONENTIAL);
+        retryPolicy.setBackOffType(backOffType);
         retryPolicy.setMaxAttempts(3);
         retryPolicy.setInitialInterval(2000L);
         ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
@@ -190,73 +121,4 @@ class StackOverflowClientTest {
         StepVerifier.create(stackOverflowClient.fetchQuestion(123)).verifyError();
     }
 
-    @Test
-    void failFetchQuestionLinearBlackOff() {
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("4")
-        );
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("4")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("5")
-        );
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("5")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-type", "application/json")
-                    .withBody("{ \"items\" : [ { \"is_answered\" : true," +
-                        "\"answer_count\" : 23," +
-                        "\"question_id\" : \"123\"," +
-                        "\"last_activity_date\" : \"1709846695\"}]}"
-                    )));
-        RetryPolicy retryPolicy = new RetryPolicy();
-        retryPolicy.setBackOffType(RetryPolicy.BackOffType.LINEAR);
-        retryPolicy.setMaxAttempts(3);
-        retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
-        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
-        stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
-
-        StepVerifier.create(stackOverflowClient.fetchQuestion(123)).verifyError();
-    }
-
-    @Test
-    void failFetchQuestionConstantBlackOff() {
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("3")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("4")
-        );
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("4")
-            .willReturn(aResponse().withStatus(500))
-            .willSetStateTo("5")
-        );
-        stubFor(get(urlEqualTo("/questions/123?site=stackoverflow")).inScenario("Check retry for stack")
-            .whenScenarioStateIs("5")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-type", "application/json")
-                    .withBody("{ \"items\" : [ { \"is_answered\" : true," +
-                        "\"answer_count\" : 23," +
-                        "\"question_id\" : \"123\"," +
-                        "\"last_activity_date\" : \"1709846695\"}]}"
-                    )));
-        RetryPolicy retryPolicy = new RetryPolicy();
-        retryPolicy.setBackOffType(RetryPolicy.BackOffType.CONSTANT);
-        retryPolicy.setMaxAttempts(3);
-        retryPolicy.setInitialInterval(2000L);
-        ClientConfig.Stackoverflow stackoverflow = new ClientConfig.Stackoverflow("", retryPolicy);
-        when(clientConfig.stackoverflow()).thenReturn(stackoverflow);
-        stackOverflowClient =
-            new StackOverflowClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
-
-        StepVerifier.create(stackOverflowClient.fetchQuestion(123)).verifyError();
-    }
 }

@@ -32,5 +32,4 @@ public record ClientConfig(
         String chatId
     ) {
     }
-
 }

@@ -24,35 +24,42 @@ public class LinkUpdaterService {
     @Transactional
     public void checkUpdates() {
         List<LinkDto> links = linkRepository.findAll();
+        String message;
         for (var link : links) {
             switch (linkParse.parse(link.url())) {
                 case GITHUB -> {
                     if (githubUpdater.update(link)) {
                         log.info("Требуются обновления для гитхаба");
+                        message = "Пришло обновление с "
+                            + linkParse.getGithubRepo(link.url()) + " репозитория у пользователя "
+                            + linkParse.getGithubUser(link.url()) + "!";
                         LinkUpdateRequest updatedRepo = new LinkUpdateRequest(
                             link.id(),
                             link.url(),
-                            "Пришло обновление с github!",
+                            message,
                             linkRepository.findAllTgChatIdsByUrl(link.url())
                         );
                         notificationSender.send(updatedRepo);
                     }
                     switch (githubUpdater.checkBranches(link)) {
                         case ADD -> {
+                            message =
+                                "Добавлена новая ветка в " + linkParse.getGithubRepo(link.url()) + " репозитории";
                             LinkUpdateRequest newBranch = new LinkUpdateRequest(
                                 link.id(),
                                 link.url(),
-                                "Добавлена новая ветка!",
+                                message,
                                 linkRepository.findAllTgChatIdsByUrl(link.url())
                             );
                             log.info(newBranch.description());
                             notificationSender.send(newBranch);
                         }
                         case DELETE -> {
+                            message = "Ветка была удалена в " + linkParse.getGithubRepo(link.url()) + " репозитории!";
                             LinkUpdateRequest deleteBranch = new LinkUpdateRequest(
                                 link.id(),
                                 link.url(),
-                                "Удалена ветка!",
+                                message,
                                 linkRepository.findAllTgChatIdsByUrl(link.url())
                             );
                             log.info(deleteBranch.description());

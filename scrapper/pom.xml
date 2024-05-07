@@ -201,7 +201,7 @@
         </dependency>
         <dependency>
             <groupId>edu.java.models</groupId>
-            <artifactId>connector</artifactId>
+            <artifactId>models</artifactId>
             <version>0.1</version>
             <scope>compile</scope>
         </dependency>

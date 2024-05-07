@@ -21,21 +21,12 @@ public class BotQueueConsumer implements Listener {
     )
     @Override
     public void listen(@Payload @NotNull LinkUpdateRequest linkUpdateRequest) {
-        log.info("Kafka producer send message!");
-        if (!checkFail(linkUpdateRequest)) {
-            throw new RuntimeException("Invalid link update request");
-        }
+        log.info("Kafka producer has sent message!");
         try {
             log.info("{} {}", linkUpdateRequest.description(), linkUpdateRequest.url());
             updateService.sendUpdate(linkUpdateRequest);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.debug("DLQ activated!!!");
         }
-    }
-
-    private boolean checkFail(LinkUpdateRequest linkUpdateRequest) {
-        return linkUpdateRequest.id() != null && linkUpdateRequest.url() != null
-            && linkUpdateRequest.description() != null
-            && linkUpdateRequest.tgChatIds() != null;
     }
 }

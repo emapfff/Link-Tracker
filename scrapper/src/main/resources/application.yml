@@ -2,7 +2,7 @@ app:
   scheduler:
     enable: true
     interval: 30s
-    force-check-delay: 120s
+    force-check-delay: 60s
   database-access-type: jdbc
   use-queue: false
 

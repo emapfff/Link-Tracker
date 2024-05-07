@@ -8,6 +8,7 @@ import edu.java.backoff.LinearBackOff;
 import edu.java.configuration.ClientConfig;
 import edu.java.configuration.RetryBuilder;
 import edu.java.configuration.RetryPolicy;
+import io.micrometer.core.instrument.Counter;
 import java.net.URI;
 import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
@@ -34,19 +35,21 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = {ExponentialBackOff.class, LinearBackOff.class, ConstantBackOff.class, RetryBuilder.class})
 @WireMockTest(httpPort = 8080)
 class BotClientTest {
+    private final RetryPolicy retryPolicy = new RetryPolicy();
     @Autowired
     RetryBuilder retryBuilder;
     @Mock
     private ClientConfig clientConfig;
     @InjectMocks
     private BotClient botClient;
-    private final RetryPolicy retryPolicy = new RetryPolicy();
+    @Mock
+    private Counter messageCounter;
 
     @BeforeEach
     public void setUp() {
         ClientConfig.Bot bot = new ClientConfig.Bot("", retryPolicy);
         when(clientConfig.bot()).thenReturn(bot);
-        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder);
+        botClient = new BotClient(WebClient.create("http://localhost:8080"), clientConfig, retryBuilder, messageCounter);
         stubFor(post(urlEqualTo("/updates")).inScenario("Check retry for bot")
             .whenScenarioStateIs(STARTED)
             .willReturn(aResponse().withStatus(500))

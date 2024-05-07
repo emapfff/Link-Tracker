@@ -44,7 +44,7 @@ public class LinkUpdaterService {
                     switch (githubUpdater.checkBranches(link)) {
                         case ADD -> {
                             message =
-                                "Добавилась новая ветка в " + linkParse.getGithubRepo(link.url()) + " репозитории!";
+                                "Добавлена новая ветка в " + linkParse.getGithubRepo(link.url()) + " репозитории";
                             LinkUpdateRequest newBranch = new LinkUpdateRequest(
                                 link.id(),
                                 link.url(),

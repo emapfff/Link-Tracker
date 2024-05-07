@@ -1,6 +1,5 @@
 package edu.java.bot.configuration;
 
-import dto.LinkUpdateRequest;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -19,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 @Configuration
 public class DlqConfig {
     @Bean
-    public NewTopic dlq_topic(DlqProps dlqProps) {
+    public NewTopic dlqTopic(DlqProps dlqProps) {
         return TopicBuilder.name(dlqProps.topic())
             .partitions(dlqProps.partitions())
             .build();

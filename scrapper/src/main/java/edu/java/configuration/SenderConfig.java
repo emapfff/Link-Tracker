@@ -4,6 +4,7 @@ import dto.LinkUpdateRequest;
 import edu.java.clients.BotClient;
 import edu.java.service.NotificationSender;
 import edu.java.service.ScrapperQueueProducer;
+import io.micrometer.core.instrument.Counter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -20,16 +21,17 @@ public class SenderConfig {
     @ConditionalOnProperty(prefix = "app", name = "use-queue", havingValue = "true")
     public NotificationSender queueProducer(
         KafkaTemplate<String, LinkUpdateRequest> linkProducer,
-        TopicProperties topicProperties
+        TopicProperties topicProperties, Counter messageCounter
     ) {
         log.info("kafka");
-        return new ScrapperQueueProducer(linkProducer, topicProperties);
+        return new ScrapperQueueProducer(linkProducer, topicProperties, messageCounter);
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "app", name = "use-queue", havingValue = "false")
-    public NotificationSender httpSender(WebClient botWebClient, ClientConfig clientConfig, RetryBuilder retryBuilder) {
+    public NotificationSender httpSender(WebClient botWebClient, ClientConfig clientConfig, RetryBuilder retryBuilder,
+        Counter messageCounter) {
         log.info("http");
-        return new BotClient(botWebClient, clientConfig, retryBuilder);
+        return new BotClient(botWebClient, clientConfig, retryBuilder, messageCounter);
     }
 }

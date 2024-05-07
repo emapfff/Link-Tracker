@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import edu.java.bot.commands.Command;
 import edu.java.bot.configuration.ApplicationConfig;
+import io.micrometer.core.instrument.Counter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ public class Bot {
     private final TelegramBot telegramBot;
     private final List<Command> commands;
     private final Map<String, Command> commandMap;
+    @Autowired
+    private Counter messageCounter;
 
     @Autowired
     public Bot(@NotNull ApplicationConfig applicationConfig, @NotNull List<Command> commands) {
@@ -87,6 +90,7 @@ public class Bot {
     }
 
     public void executeCommand(SendMessage sendMessage) {
+        messageCounter.increment();
         this.telegramBot.execute(sendMessage);
     }
 }

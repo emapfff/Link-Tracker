@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,15 +13,14 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.CommonErrorHandler;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @Configuration
 @EnableKafka
 @EnableConfigurationProperties(KafkaConsumerProperties.class)
 public class KafkaConsumerConfig {
-    @Autowired
-    private CommonErrorHandler errorHandler;
 
     @Bean
     public ConsumerFactory<String, LinkUpdateRequest> consumerFactory(KafkaConsumerProperties properties) {
@@ -43,12 +41,13 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, LinkUpdateRequest> listenerContainerFactory(
-        ConsumerFactory<String, LinkUpdateRequest> consumerFactory, KafkaTemplate<String, LinkUpdateRequest> template
+        ConsumerFactory<String, LinkUpdateRequest> consumerFactory, KafkaTemplate<String, Object> dlq
     ) {
         ConcurrentKafkaListenerContainerFactory<String, LinkUpdateRequest> factory =
             new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory);
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(new DeadLetterPublishingRecoverer(dlq));
         factory.setCommonErrorHandler(errorHandler);
+        factory.setConsumerFactory(consumerFactory);
         return factory;
     }
 

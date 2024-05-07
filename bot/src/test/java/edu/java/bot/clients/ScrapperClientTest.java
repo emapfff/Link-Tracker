@@ -18,9 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
-import reactor.util.retry.Retry;
-import java.net.URI;
-import java.net.URISyntaxException;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
@@ -251,7 +248,6 @@ class ScrapperClientTest {
         );
 
         AddLinkRequest addLinkRequest = new AddLinkRequest(URI.create("http://mycore"));
-        String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.addLink(123L, addLinkRequest)).verifyError();
 
@@ -339,7 +335,6 @@ class ScrapperClientTest {
         );
 
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(URI.create("http://mycore"));
-        String expectedRequest = "{ \"link\" : \"http://mycore\"}";
 
         StepVerifier.create(scrapperClient.deleteLink(123L, removeLinkRequest)).verifyError();
 

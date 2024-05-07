@@ -41,7 +41,6 @@ public class TgChatServiceTest extends IntegrationTest {
         verify(chatRepository, never()).add(tgChatId);
     }
 
-
     @Test
     void unregisterValidIdTest() {
         Long tgChatId = 123456L;
@@ -50,7 +49,6 @@ public class TgChatServiceTest extends IntegrationTest {
         assertDoesNotThrow(() -> tgChatService.unregister(tgChatId));
         verify(chatRepository, times(1)).remove(tgChatId);
     }
-
 
     @Test
     void unregisterNonExistingChatTest() {

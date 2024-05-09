@@ -37,21 +37,13 @@ public class ScrapperQueueProducerTest {
     }
 
     @Test
-    void send_True_message() {
+    void sendTrueTest() {
         //true message
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
             123L,
             URI.create("http://mycore"),
             "updating link",
             Arrays.asList(1L, 2L, 3L)
-        );
-
-        //fake message
-        LinkUpdateRequest fakeLinkUpdateRequest = new LinkUpdateRequest(
-            123L,
-            URI.create(""),
-            "fake message",
-            Arrays.asList(1L, 2L)
         );
 
         scrapperQueueProducer.send(linkUpdateRequest);

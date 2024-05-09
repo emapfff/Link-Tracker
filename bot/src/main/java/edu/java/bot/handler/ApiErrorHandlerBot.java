@@ -2,9 +2,6 @@ package edu.java.bot.handler;
 
 import dto.ApiErrorResponse;
 import edu.java.bot.exceptions.IncorrectParametersException;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,13 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiErrorHandlerBot {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IncorrectParametersException.class)
-    @ApiResponse(responseCode = "400",
-                 description = "Некорректные параметры запроса",
-                 content = @Content(
-                     mediaType = "application/json",
-                     schema = @Schema(implementation = ApiErrorResponse.class)
-                 )
-    )
     public ApiErrorResponse incorrectParametersHandler(@NotNull IncorrectParametersException exception) {
         return new ApiErrorResponse(
             "Некорректные параметры запроса",

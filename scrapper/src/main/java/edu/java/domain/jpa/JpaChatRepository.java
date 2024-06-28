@@ -17,6 +17,7 @@ public class JpaChatRepository implements ChatRepository {
     @Autowired
     private BaseJpaChatRepository baseJpaChatRepository;
 
+
     @Override
     public void add(Long tgChatId) {
         baseJpaChatRepository.save(new Chat(tgChatId));

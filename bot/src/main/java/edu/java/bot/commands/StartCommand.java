@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-
 public class StartCommand implements Command {
     private final ScrapperClient scrapperClient;
 

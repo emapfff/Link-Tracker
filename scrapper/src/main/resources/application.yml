@@ -4,7 +4,7 @@ app:
     interval: 30s
     force-check-delay: 60s
   database-access-type: jdbc
-  use-queue: false
+  use-queue: true
 
 kafka:
   producer:
@@ -20,7 +20,6 @@ kafka:
     name: notification
     partitions: 10
     replicas: 2
-
 spring:
   application:
     name: scrapper

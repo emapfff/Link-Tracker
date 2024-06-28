@@ -1,4 +1,6 @@
 services:
+  bot:
+
   postgresql:
     image: postgres:16
     ports:
